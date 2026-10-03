@@ -1,0 +1,504 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #F5F1E8;
+  --surface: #141210;
+  --text-secondary: #A39B8B;
+  --border-color: #2A2620;
+  --accent-gold: #C9A063;
+  --accent-gold-hover: #E8CD97;
+
+  /* Typography scale colors overrides */
+  --text-h2: #F4F2EE;
+  --text-product: #ECE7DF;
+  --text-price: #FFFFFF;
+
+  /* Theme Background bases */
+  --bg-indigo-base: #0A0A0A;
+  --bg-charcoal-base: #141210;
+  --bg-matte-base: #0A0A0A;
+  --page-bg: var(--bg-indigo-base);
+
+  /* Denim Twill Texture variables */
+  --twill-color: rgba(255, 255, 255, 0.012);
+  --vignette-color: rgba(10, 10, 10, 0.9);
+
+  /* Diamond / Divider elements */
+  --divider-color: #2A2620;
+  --diamond-color: rgba(255, 255, 255, 0.2);
+
+  /* WHITE Card Variables */
+  --card-white-bg: #141210;
+  --card-white-grid: rgba(255, 255, 255, 0.01);
+  --card-white-text: #F5F1E8;
+  --card-white-border: #2A2620;
+
+  /* Logo filter */
+  --logo-filter: invert(0);
+}
+
+:root.light,
+.light {
+  --background: #F7F5F1;
+  --foreground: #17140F;
+  --surface: #FFFFFF;
+  --text-secondary: #6B655C;
+  --border-color: #E4E0D8;
+  --accent-gold: #9C7A3F;
+  --accent-gold-hover: #7C5F30;
+
+  /* Typography scale colors overrides */
+  --text-h2: #1C1C1C;
+  --text-product: #252525;
+  --text-price: #3D3D3D;
+
+  /* Theme Background bases */
+  --bg-indigo-base: #F7F5F1;
+  --bg-charcoal-base: #E4E0D8;
+  --bg-matte-base: #FFFFFF;
+  --page-bg: var(--bg-indigo-base);
+
+  /* Denim Twill Texture variables */
+  --twill-color: rgba(0, 0, 0, 0.015);
+  --vignette-color: rgba(247, 245, 241, 0.85);
+
+  /* Diamond / Divider elements */
+  --divider-color: #E4E0D8;
+  --diamond-color: rgba(23, 20, 15, 0.3);
+
+  /* WHITE Card Variables */
+  --card-white-bg: #FFFFFF;
+  --card-white-grid: rgba(23, 20, 15, 0.02);
+  --card-white-text: #17140F;
+  --card-white-border: #E4E0D8;
+
+  /* Logo filter */
+  --logo-filter: invert(1) hue-rotate(180deg);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-color: var(--border-color);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-gold-hover: var(--accent-gold-hover);
+  --color-text-h2: var(--text-h2);
+  --color-text-product: var(--text-product);
+  --color-text-price: var(--text-price);
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), Georgia, serif;
+  --font-editorial: var(--font-serif), Georgia, serif;
+  --font-mono: var(--font-mono), monospace;
+  --font-oswald: var(--font-oswald), sans-serif;
+}
+
+html,
+body,
+main {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: clip !important;
+  position: relative;
+}
+
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at center, var(--background) 30%, var(--vignette-color) 100%),
+    repeating-linear-gradient(45deg,
+      var(--twill-color) 0px,
+      var(--twill-color) 1.2px,
+      transparent 1.2px,
+      transparent 4.5px);
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+select {
+  cursor: pointer !important;
+}
+
+/* Tailwind v4 custom utilities */
+
+@utility bg-denim-luxury {
+  --page-bg: var(--bg-indigo-base);
+  background-color: var(--page-bg);
+  transition: background-color 0.4s ease;
+}
+
+@utility bg-raw-denim {
+  background-color: #0b1931;
+}
+
+@utility bg-charcoal-denim {
+  --page-bg: var(--bg-charcoal-base);
+  background-color: var(--page-bg);
+  transition: background-color 0.4s ease;
+}
+
+@utility bg-matte-black {
+  --page-bg: var(--bg-matte-base);
+  background-color: var(--page-bg);
+  transition: background-color 0.4s ease;
+}
+
+@utility bg-page-active {
+  background-color: var(--page-bg, var(--background));
+  transition: background-color 0.4s ease;
+}
+
+@utility bg-pitch-black {
+  background-color: #060709;
+}
+
+@utility bg-white-canvas {
+  background-color: #ffffff;
+}
+
+@utility theme-logo-invert {
+  filter: var(--logo-filter);
+  transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Webkit Scrollbar for mobile/standard */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--card-white-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Hide default browser scrollbars on desktop to present our custom denim zipper scrollbar */
+@media (min-width: 768px) {
+  html {
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  body {
+    -ms-overflow-style: none;
+    /* IE/Edge */
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
+}
+
+/* Hide default browser scrollbars on desktop to present our custom denim zipper scrollbar */
+@media (min-width: 768px) {
+  html {
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  body {
+    -ms-overflow-style: none;
+    /* IE/Edge */
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
+}
+
+@keyframes scrollDown {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  80% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@utility animate-scrollDown {
+  animation: scrollDown 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* Fabric Light Shine Effect */
+@keyframes shine {
+  0% {
+    left: -150%;
+  }
+
+  50% {
+    left: 150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+.animate-shine {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.12) 30%,
+      rgba(255, 255, 255, 0.22) 50%,
+      rgba(255, 255, 255, 0.12) 70%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.group\/img:hover .animate-shine {
+  animation: shine 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Distressed/textured typography styles for Homepage hero columns */
+.text-raw-textured {
+  font-family: 'Arial Black', -apple-system, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background-image: linear-gradient(to bottom, rgba(185, 150, 90, 0.82), rgba(185, 150, 90, 0.82)), url('/white_fabric.png');
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  -webkit-text-stroke: 1.5px #000000;
+}
+
+.text-black-textured {
+  font-family: 'Arial Black', -apple-system, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background-image: linear-gradient(to bottom, rgba(50, 50, 55, 0.9), rgba(25, 25, 30, 0.95)), url('/white_fabric.png');
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  -webkit-text-stroke: 1.5px #FFFFFF;
+}
+
+.text-white-textured {
+  font-family: 'Arial Black', -apple-system, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #0A2A5E;
+  display: inline-block;
+  -webkit-text-stroke: 1.5px #F5F5F5;
+  text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Eliminate Chrome / Edge / Safari browser autofill grey box */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 50000s ease-in-out 0s !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+}
+
+.light input:-webkit-autofill,
+.light input:-webkit-autofill:hover,
+.light input:-webkit-autofill:focus,
+.light input:-webkit-autofill:active,
+.light select:-webkit-autofill {
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Denim Modal Entrance Animations (250ms - 280ms subtle motion) */
+@keyframes denimModalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes denimLogoFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes denimInputSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes denimButtonFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-denim-modal {
+  animation: denimModalFade 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-denim-logo {
+  animation: denimLogoFade 250ms ease-out forwards;
+}
+
+.animate-denim-input {
+  animation: denimInputSlideUp 280ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+}
+
+.animate-denim-button {
+  animation: denimButtonFade 280ms ease-out 120ms both;
+}
+
+/* Split Modal 250ms Animations */
+@keyframes denimSplitCardScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes denimSplitFormSlide {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes denimSplitImageFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-split-card {
+  animation: denimSplitCardScale 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-split-form {
+  animation: denimSplitFormSlide 250ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
+}
+
+.animate-split-image {
+  animation: denimSplitImageFade 250ms ease-out forwards;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.96; transform: scale(1.015); }
+}
+
+@utility animate-pulse-subtle {
+  animation: pulse-subtle 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+body.hide-footer footer {
+  display: none !important;
+}
+
+@keyframes rbwFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+}
+
+@keyframes rbwFloatShadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.4; }
+  50% { transform: scaleX(0.8); opacity: 0.2; }
+}
+
+/* Luxury Denim & Gold Design Utilities */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #DFCFA8 0%, #B9965A 50%, #8C6B2F 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-glow {
+  box-shadow: 0 0 25px rgba(185, 150, 90, 0.35);
+}
+
+.denim-stitch-border {
+  border: 1px dashed rgba(185, 150, 90, 0.45);
+}
+
+.glass-luxury-panel {
+  background: rgba(250, 248, 245, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(235, 230, 220, 0.8);
+}
+
+.dark .glass-luxury-panel {
+  background: rgba(14, 13, 12, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
