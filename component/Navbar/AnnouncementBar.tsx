@@ -53,7 +53,10 @@ export default function AnnouncementBar({ isScrolled, isRbwStore: propIsRbwStore
 
     return (
       <div
-        className={`w-full bg-[#E5E7EB] dark:bg-stone-900 text-[#18181B] dark:text-[#F5F1E8] text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] h-[34px] flex items-center justify-center overflow-hidden fixed top-0 left-0 z-[101] select-none border-b border-[#D1D5DB] dark:border-stone-800 uppercase shadow-2xs transition-all duration-300 ${isScrolled
+        className={`w-full ${pathname === "/stores/rbw" || pathname === "/stores/rbw/"
+            ? "bg-[#EFECE6] border-b border-[#E2DDD5]/60 text-[#18181B]"
+            : "bg-[#E5E7EB] dark:bg-stone-900 text-[#18181B] dark:text-[#F5F1E8] border-b border-[#D1D5DB] dark:border-stone-800 shadow-2xs"
+          } text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] h-[34px] flex items-center justify-center overflow-hidden fixed top-0 left-0 z-[101] select-none uppercase transition-all duration-300 ${isScrolled
             ? "-translate-y-full opacity-0 pointer-events-none invisible"
             : "translate-y-0 opacity-100"
           }`}

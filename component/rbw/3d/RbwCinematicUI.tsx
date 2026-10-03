@@ -14,7 +14,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { CategoryId, CATEGORY_DEFS } from "./RbwFilterPanel";
+import { CategoryId } from "./RbwFilterPanel";
 import { CarouselItemData } from "./RbwOrbitCarousel";
 import "./rbw-showroom.css";
 
@@ -42,12 +42,13 @@ interface RbwCinematicUIProps {
   hoveredIndex?: number | null;
 }
 
-/** Title scales with word length so long names (VINTAGE JACKET) never overflow */
+/** Title scales with word length so editorial phrases (RAW YOU NEVER SAW) never overflow */
 function titleSize(name: string): string {
   const len = (name || "").length;
-  if (len <= 5) return "clamp(3.2rem, min(10vw, 11vh), 7.5rem)";
-  if (len <= 9) return "clamp(2.4rem, min(7.2vw, 8.4vh), 5.6rem)";
-  return "clamp(1.9rem, min(5.4vw, 6.2vh), 4.2rem)";
+  if (len <= 5) return "clamp(2rem, min(3.7vw, 7.6vh), 4.2rem)";
+  if (len <= 10) return "clamp(1.7rem, min(3.1vw, 6.4vh), 3.5rem)";
+  if (len <= 15) return "clamp(1.35rem, min(2.5vw, 5.0vh), 2.7rem)";
+  return "clamp(1.15rem, min(1.85vw, 3.8vh), 1.85rem)";
 }
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -63,7 +64,6 @@ export function RbwCinematicUI({
   autoRotate,
   onToggleAutoRotate,
   selectedCategories = ["jeans"],
-  onSelectCategory,
   onToggleFilterDrawer,
   isFilterOpen = false,
   activeFilterCount = 0,
@@ -129,9 +129,9 @@ export function RbwCinematicUI({
       : itemCount === 2
         ? [{ idx: nextIdx, side: "right" }]
         : [
-            { idx: prevIdx, side: "left" },
-            { idx: nextIdx, side: "right" },
-          ];
+          { idx: prevIdx, side: "left" },
+          { idx: nextIdx, side: "right" },
+        ];
 
   const handleShop = () => {
     confirm();
@@ -153,23 +153,9 @@ export function RbwCinematicUI({
       {/* TOP — category navigation / 360 status                       */}
       {/* ============================================================ */}
       <header
-        className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 sm:gap-3 px-4 sm:px-8 pt-[84px] md:pt-[98px] xl:pt-[120px] rbw-fade"
+        className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 sm:gap-3 px-4 sm:px-8 pt-[88px] md:pt-[104px] xl:pt-[124px] rbw-fade"
         style={delay(700)}
       >
-        <div className="hidden sm:flex w-9 shrink-0 pointer-events-auto">
-          <Link
-            href="/stores/rbw"
-            title="Exit Showroom"
-            aria-label="Exit Showroom"
-            className="rbw-glass-btn w-9 h-9 rounded-full group"
-          >
-            <ArrowLeft
-              className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-0.5"
-              strokeWidth={1.5}
-            />
-          </Link>
-        </div>
-
         {isInspecting ? (
           <div className="flex-1 flex justify-center">
             <div className="rbw-glass-btn !cursor-default px-4 py-2 rounded-full rbw-eyebrow !text-[10px]">
@@ -181,7 +167,7 @@ export function RbwCinematicUI({
         )}
 
         <div className="flex w-9 sm:w-auto shrink-0 justify-end pointer-events-auto">
-          {isInspecting ? (
+          {isInspecting && (
             <button
               type="button"
               onClick={onCloseInspect}
@@ -191,51 +177,9 @@ export function RbwCinematicUI({
               <X className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span className="hidden sm:inline">Close 360</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onToggleFilterDrawer}
-              aria-label="Open filters"
-              aria-pressed={isFilterOpen}
-              className="rbw-glass-btn relative h-9 w-9 sm:w-auto sm:px-3.5 rounded-full text-[10px] tracking-[0.22em] uppercase"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.5} />
-              <span className="hidden sm:inline">Filter</span>
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[15px] h-[15px] px-1 rounded-full bg-[#b9965a] text-[#0b0b0c] text-[9px] font-semibold leading-[15px] text-center">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
           )}
         </div>
       </header>
-
-      {/* ============================================================ */}
-      {/* SIDE PRODUCT TAGS — quiet names for receding products         */}
-      {/* ============================================================ */}
-      {sideTags.map(({ idx, side }) => {
-        const it = items[idx];
-        if (!it) return null;
-        return (
-          <button
-            key={`${side}-${it.id}`}
-            type="button"
-            onClick={() => onSelectIndex(idx)}
-            data-hot={hoveredIndex === idx}
-            aria-label={`View ${it.name}`}
-            className="rbw-side-tag pointer-events-auto hidden md:block bottom-[148px] rbw-fade"
-            style={{ left: side === "left" ? "16%" : "84%", ...(delay(900) || {}) }}
-          >
-            <span className="block rbw-eyebrow !text-[10px] !tracking-[0.3em] !text-[color:var(--rbw-ink)]">
-              {it.name}
-            </span>
-            <span className="block mt-1 text-[10px] tracking-[0.2em] text-[color:var(--rbw-ink-dim)]">
-              {it.price}
-            </span>
-          </button>
-        );
-      })}
 
       {/* ============================================================ */}
       {/* ARROWS / 360 ROTATE — integrated glass controls              */}
@@ -247,7 +191,7 @@ export function RbwCinematicUI({
               type="button"
               onClick={onRotateLeft}
               aria-label="Rotate Model Counter-Clockwise"
-              className="rbw-glass-btn group w-11 h-11 rounded-full"
+              className="rbw-glass-btn group w-11 h-11 rounded-full !text-[color:var(--rbw-ink)]"
             >
               <RotateCcw
                 className="w-[18px] h-[18px] transition-transform duration-500 group-hover:-rotate-45"
@@ -261,7 +205,7 @@ export function RbwCinematicUI({
               type="button"
               onClick={onRotateRight}
               aria-label="Rotate Model Clockwise"
-              className="rbw-glass-btn group w-11 h-11 rounded-full"
+              className="rbw-glass-btn group w-11 h-11 rounded-full !text-[color:var(--rbw-ink)]"
             >
               <RotateCw
                 className="w-[18px] h-[18px] transition-transform duration-500 group-hover:rotate-45"
@@ -278,7 +222,7 @@ export function RbwCinematicUI({
             onClick={onPrev}
             aria-label="Previous Garment"
             style={delay(900)}
-            className="rbw-glass-btn rbw-fade group absolute pointer-events-auto w-11 h-11 rounded-full bottom-[45px] left-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-8"
+            className="rbw-glass-btn rbw-fade group absolute pointer-events-auto w-11 h-11 rounded-full !text-[color:var(--rbw-ink)] bottom-[45px] left-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-8"
           >
             <ChevronLeft
               className="w-[18px] h-[18px] transition-transform duration-300 group-hover:-translate-x-0.5"
@@ -290,7 +234,7 @@ export function RbwCinematicUI({
             onClick={onNext}
             aria-label="Next Garment"
             style={delay(900)}
-            className="rbw-glass-btn rbw-fade group absolute pointer-events-auto w-11 h-11 rounded-full bottom-[45px] right-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-8"
+            className="rbw-glass-btn rbw-fade group absolute pointer-events-auto w-11 h-11 rounded-full !text-[color:var(--rbw-ink)] bottom-[45px] right-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-8"
           >
             <ChevronRight
               className="w-[18px] h-[18px] transition-transform duration-300 group-hover:translate-x-0.5"
@@ -305,44 +249,27 @@ export function RbwCinematicUI({
       {/* ============================================================ */}
       <footer className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center px-16 md:px-8 pb-[34px] md:pb-7">
         <div key={activeItem?.id} className="flex flex-col items-center" aria-live="polite">
-          {/* eyebrow: brand line */}
-          {!isInspecting && (
-            <p
-              className="rbw-eyebrow rbw-in mb-2.5 sm:mb-3 max-w-[78vw] truncate"
-              style={delay(500)}
-            >
-              {activeItem?.tagline}
-            </p>
-          )}
-
           {/* title */}
-          <h2
-            className="rbw-title rbw-in"
-            style={{ fontSize: titleSize(activeItem?.name || ""), ...(delay(550) || {}) }}
-          >
-            {activeItem?.name}
-          </h2>
+          {(() => {
+            const isPhrase = (activeItem?.name || "").includes(" ") || (activeItem?.name || "").length > 8;
+            return (
+              <h2
+                className={`rbw-title rbw-in ${isPhrase ? "rbw-title--phrase" : ""}`}
+                style={{ fontSize: titleSize(activeItem?.name || ""), ...(delay(550) || {}) }}
+              >
+                {activeItem?.name}
+              </h2>
+            );
+          })()}
 
-          {/* descriptor + price / offer — quiet, one line */}
+          {/* Price only — bold and bigger */}
           <div
-            className="rbw-in mt-3 sm:mt-3.5 flex items-center justify-center flex-wrap gap-x-3 gap-y-1"
+            className="rbw-in mt-2.5 sm:mt-3 flex items-center justify-center"
             style={delay(700)}
           >
-            <span className="rbw-descriptor text-[17px] sm:text-[19px]">{activeItem?.sublabel}</span>
-            <span className="w-px h-3 bg-[color:var(--rbw-line)]" />
-            <span className="text-[12px] sm:text-[13px] tracking-[0.14em] text-[color:var(--rbw-ink)]">
+            <span className="text-[19px] sm:text-[21px] md:text-[23px] font-bold tracking-[0.12em] text-[color:var(--rbw-ink)]">
               {activeItem?.price}
             </span>
-            {activeItem?.originalPrice && (
-              <span className="text-[11px] tracking-[0.1em] text-[color:var(--rbw-ink-faint)] line-through">
-                {activeItem.originalPrice}
-              </span>
-            )}
-            {!!activeItem?.discountPct && activeItem.discountPct > 0 && (
-              <span className="text-[9px] tracking-[0.22em] uppercase text-[color:var(--rbw-gold)] border border-[color:var(--rbw-gold)]/40 px-1.5 py-[3px]">
-                {activeItem.discountPct}% off
-              </span>
-            )}
           </div>
 
           {/* CTA */}
@@ -371,7 +298,7 @@ export function RbwCinematicUI({
       </footer>
 
       {/* ============================================================ */}
-      {/* CORNER META — counter + progress (left), cue + autoplay (right) */}
+      {/* CORNER META — counter + progress (left), autoplay (right)    */}
       {/* ============================================================ */}
       {!isInspecting && itemCount > 1 && (
         <div
@@ -380,9 +307,8 @@ export function RbwCinematicUI({
         >
           <span className="hidden md:block text-[10px] tracking-[0.28em] text-[color:var(--rbw-ink-dim)] tabular-nums">
             {pad2(normalizedIndex + 1)}
-            <span className="text-[color:var(--rbw-ink-faint)]"> / {pad2(itemCount)}</span>
           </span>
-          <div className="flex items-center gap-1.5 w-[132px] md:w-[104px]">
+          <div className="flex items-center gap-1.5 w-[132px] md:w-[120px]">
             {items.map((it, i) => (
               <button
                 key={it.id}
@@ -403,30 +329,20 @@ export function RbwCinematicUI({
           className="absolute right-8 bottom-7 hidden md:flex items-center gap-4 pointer-events-auto rbw-fade"
           style={delay(1000)}
         >
-          <p className="text-[9px] tracking-[0.26em] uppercase text-[color:var(--rbw-ink-faint)]">
-            Drag to browse · Click product to inspect 360°
-          </p>
           <button
             type="button"
             onClick={onToggleAutoRotate}
             aria-label={autoRotate ? "Pause auto-rotation" : "Resume auto-rotation"}
             aria-pressed={autoRotate}
-            className="rbw-glass-btn w-8 h-8 rounded-full"
+            className="rbw-glass-btn w-10 h-10 rounded-full !border-[color:var(--rbw-gold)]"
           >
             {autoRotate ? (
-              <Pause className="w-3 h-3" strokeWidth={1.5} />
+              <Pause className="w-3.5 h-3.5 text-[color:var(--rbw-ink)]" strokeWidth={1.5} />
             ) : (
-              <Play className="w-3 h-3" strokeWidth={1.5} />
+              <Play className="w-3.5 h-3.5 text-[color:var(--rbw-ink)]" strokeWidth={1.5} />
             )}
           </button>
         </div>
-      )}
-
-      {/* mobile-only cue (the desktop cue sits bottom-right) */}
-      {!isInspecting && (
-        <p className="md:hidden absolute inset-x-0 bottom-[8px] text-center text-[8px] tracking-[0.24em] uppercase text-[color:var(--rbw-ink-faint)]">
-          Swipe · Tap product for 360°
-        </p>
       )}
     </div>
   );

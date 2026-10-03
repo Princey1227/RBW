@@ -302,7 +302,7 @@ export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
   const ghostWord = (activeItem?.name || "").split(" ")[0];
 
   return (
-    <div className="rbw-showroom relative w-full h-full overflow-hidden select-none bg-[#F5F3EF]">
+    <div className="rbw-showroom relative w-full h-full overflow-hidden select-none bg-[#07080a]">
       <link rel="preload" href="/rbwstore/raw.png" as="image" />
       <link rel="preload" href="/rbwstore/black.png" as="image" />
       <link rel="preload" href="/rbwstore/white.png" as="image" />

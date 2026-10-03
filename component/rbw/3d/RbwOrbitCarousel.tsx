@@ -331,7 +331,7 @@ if (typeof window !== "undefined") {
   CAROUSEL_NODES.forEach((node) => {
     try {
       useTexture.preload(node.imagePath);
-    } catch (_) {}
+    } catch (_) { }
   });
 }
 
@@ -529,11 +529,11 @@ export function RbwOrbitCarousel({
       );
 
       if (!isDraggingRef.current) {
-        // Smooth linear damp to target slide position (calibrated to ~700-900ms cinematic curve)
+        // Smooth linear damp to target slide position
         currentOffsetRef.current = THREE.MathUtils.damp(
           currentOffsetRef.current,
           targetOffsetRef.current,
-          cinematic ? (reducedMotion ? 14 : 4.4) : 7.5,
+          cinematic ? (reducedMotion ? 14 : 5.2) : 7.5,
           delta
         );
 

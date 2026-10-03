@@ -5,26 +5,23 @@
    ========================================================================== */
 
 .rbw-showroom {
-  --rbw-gold: #9A7740;
-  --rbw-gold-bright: #b89358;
-  --rbw-ink: #111111;
-  --rbw-ink-dim: #66615A;
-  --rbw-ink-faint: rgba(20, 20, 20, 0.40);
-  --rbw-line: rgba(20, 20, 20, 0.10);
-  --rbw-glass: rgba(250, 249, 246, 0.85);
-  --rbw-surface: #FAF9F6;
-  --rbw-bg: #F5F3EF;
-  --rbw-bg-secondary: #ECEAE5;
+  --rbw-gold: #a07f3c;
+  --rbw-gold-bright: #b9965a;
+  --rbw-ink: #16130f;
+  --rbw-ink-dim: #5a5249;
+  --rbw-ink-faint: #8b8276;
+  --rbw-line: rgba(22, 19, 15, 0.16);
+  --rbw-glass: rgba(255, 255, 255, 0.86);
   --rbw-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --rbw-wash-ms: 850ms;
+  --rbw-wash-ms: 1000ms;
 
-  background: #F5F3EF;
+  background: #ebe3d8;
   color: var(--rbw-ink);
   isolation: isolate;
 }
 
 /* --------------------------------------------------------------------------
-   BACKDROP (Studio cove layers behind the WebGL canvas)
+   BACKDROP (layers sit behind the WebGL canvas)
    -------------------------------------------------------------------------- */
 
 .rbw-showroom .rbw-bd {
@@ -40,22 +37,21 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(100% 70% at 50% 15%, #FAF9F6 0%, #F5F3EF 50%, #ECEAE5 100%);
+    radial-gradient(90% 60% at 50% 30%, rgba(255, 252, 247, 0.75) 0%, transparent 70%),
+    linear-gradient(180deg, #e4dbcf 0%, #ede6dc 38%, #e9e1d5 66%, #f0eae1 100%);
 }
 
-/* Parent of the 3 wash layers: one-off "lights come up" on page load */
 .rbw-showroom .rbw-bd__lights {
   position: absolute;
   inset: 0;
   animation: rbwFadeIn 520ms cubic-bezier(0.22, 0.8, 0.2, 1) 200ms backwards;
 }
 
-/* Each wash owns a full lighting recipe; cross-fades smoothly over ~850ms */
 .rbw-showroom .rbw-bd__wash {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity var(--rbw-wash-ms) cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity var(--rbw-wash-ms) cubic-bezier(0.22, 0.8, 0.2, 1);
   will-change: opacity;
 }
 
@@ -63,196 +59,82 @@
   opacity: 1;
 }
 
-/* RAW — bright fashion studio cove with soft indigo ambience */
+/* Each wash tints the same cream room very slightly */
 .rbw-showroom .rbw-bd__wash[data-wash="raw"] {
   background:
-    /* soft overhead studio light pool */
-    radial-gradient(48% 54% at 50% 28%, rgba(255, 255, 255, 0.80) 0%, rgba(250, 248, 244, 0.40) 42%, transparent 75%),
-    /* very subtle indigo studio cove aura behind raw denim */
-    radial-gradient(60% 60% at 50% 42%, rgba(42, 68, 120, 0.07) 0%, rgba(28, 48, 88, 0.03) 48%, transparent 85%),
-    /* bronze floor bounce */
-    radial-gradient(55% 18% at 50% 86%, rgba(154, 119, 64, 0.08) 0%, transparent 72%),
-    /* gentle floor cove falloff */
-    linear-gradient(180deg, transparent 40%, rgba(220, 216, 208, 0.45) 100%);
+    radial-gradient(50% 58% at 50% 44%, rgba(255, 250, 240, 0.55) 0%, rgba(255, 250, 240, 0.2) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 55%, rgba(120, 138, 172, 0.13) 100%);
 }
 
-/* BLACK — clean architectural studio cove for high-contrast obsidian denim */
 .rbw-showroom .rbw-bd__wash[data-wash="black"] {
   background:
-    /* focused soft overhead spotlight pool */
-    radial-gradient(44% 52% at 50% 28%, rgba(255, 255, 255, 0.90) 0%, rgba(250, 248, 244, 0.45) 40%, transparent 72%),
-    /* subtle cool neutral gallery depth */
-    radial-gradient(56% 58% at 50% 43%, rgba(30, 30, 35, 0.05) 0%, rgba(20, 20, 24, 0.02) 46%, transparent 80%),
-    /* soft warm-stone floor bounce */
-    radial-gradient(50% 16% at 50% 86%, rgba(140, 130, 120, 0.07) 0%, transparent 70%),
-    /* gentle floor cove falloff */
-    linear-gradient(180deg, transparent 40%, rgba(215, 210, 202, 0.50) 100%);
+    radial-gradient(50% 58% at 50% 44%, rgba(255, 248, 238, 0.5) 0%, rgba(255, 248, 238, 0.18) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 50%, rgba(104, 80, 70, 0.17) 100%);
 }
 
-/* WHITE — warm ivory studio atmosphere with distinct background separation */
 .rbw-showroom .rbw-bd__wash[data-wash="white"] {
   background:
-    /* warm architectural light halo */
-    radial-gradient(48% 56% at 50% 36%, rgba(255, 255, 255, 0.95) 0%, rgba(248, 244, 236, 0.50) 40%, transparent 78%),
-    /* subtle champagne/stone studio aura so ecru denim has clean separation */
-    radial-gradient(64% 66% at 50% 44%, rgba(195, 185, 170, 0.16) 0%, rgba(185, 175, 160, 0.08) 48%, transparent 80%),
-    /* warm ivory floor bounce */
-    radial-gradient(56% 18% at 50% 86%, rgba(154, 119, 64, 0.09) 0%, transparent 70%),
-    /* gentle floor cove falloff */
-    linear-gradient(180deg, transparent 40%, rgba(222, 218, 210, 0.50) 100%);
+    radial-gradient(52% 62% at 50% 44%, rgba(255, 252, 244, 0.8) 0%, rgba(255, 250, 240, 0.3) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 58%, rgba(150, 126, 96, 0.1) 100%);
 }
 
-/* Soft seamless cyclorama studio paper cove */
+/* Polished floor: brightens and softens toward the viewer, no horizon line */
 .rbw-showroom .rbw-bd__floor {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 42%;
-  background: linear-gradient(180deg,
-      transparent 0%,
-      rgba(236, 234, 229, 0.35) 30%,
-      rgba(224, 220, 212, 0.65) 75%,
-      rgba(216, 211, 202, 0.85) 100%);
+  height: 46%;
+  background:
+    radial-gradient(60% 40% at 50% 38%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.16) 45%, rgba(240, 233, 223, 0.5) 100%);
 }
 
-/* Fabric: faint twill diagonal + fine grain. Static, never animated. */
 .rbw-showroom .rbw-bd__fabric {
   position: absolute;
   inset: 0;
-  opacity: 0.025;
-  background-image:
-    repeating-linear-gradient(115deg, rgba(20, 20, 20, 0.35) 0 1px, transparent 1px 3px),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  background-size: auto, 220px 220px;
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  background-image: repeating-linear-gradient(115deg, rgba(60, 45, 30, 0.7) 0 1px, transparent 1px 3px);
 }
 
-/* Atmospheric daylight drift */
 .rbw-showroom .rbw-bd__haze {
-  position: absolute;
-  left: -20%;
-  top: 8%;
-  width: 140%;
-  height: 62%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.35), transparent);
-  animation: rbwHaze 42s ease-in-out infinite alternate;
-  will-change: transform;
+  display: none;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   GHOST WORD — Cormorant Garamond Light 300, real DOM text, no images.
-   Sits directly behind the 3-D product.  The composite mask achieves:
-     • upper portion: subtle but legible warm taupe
-     • middle:        softening toward transparency
-     • lower portion: almost fully dissolved into the floor
-   The horizontal axis softens both edges so the word never clips hard.
-   ───────────────────────────────────────────────────────────────────────── */
+/* Oversized serif ghost word: warm taupe that fades out toward the floor */
 .rbw-showroom .rbw-bd__ghost {
-  /* ── Layout: vertically centered in the product zone ── */
   position: absolute;
   left: 0;
   right: 0;
-  top: 8%;
-  bottom: 10%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;
-  pointer-events: none;
-
-  /* ── Typography ── */
-  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif;
-  font-weight: 300;
-  font-style: normal;
-  font-size: inherit;   /* driven by inline style from RbwShowroomBackdrop */
+  top: 26%;
+  text-align: center;
+  font-family: var(--font-serif), "Playfair Display", Didot, Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1;
   white-space: nowrap;
-
-  /* ── Warm taupe fill — intentionally low opacity ── */
-  color: rgba(148, 134, 116, 1);
-
-  /* ── Composite mask: vertical fade (top→bottom) AND horizontal soft edges ── */
-  mask-image:
-    linear-gradient(180deg,
-      rgba(0,0,0,0.82)  0%,
-      rgba(0,0,0,0.62) 28%,
-      rgba(0,0,0,0.30) 56%,
-      rgba(0,0,0,0.08) 76%,
-      rgba(0,0,0,0.00) 92%
-    ),
-    linear-gradient(90deg,
-      transparent         0%,
-      rgba(0,0,0,1)      10%,
-      rgba(0,0,0,1)      90%,
-      transparent       100%
-    );
-  mask-composite: intersect;
-
-  -webkit-mask-image:
-    linear-gradient(180deg,
-      rgba(0,0,0,0.82)  0%,
-      rgba(0,0,0,0.62) 28%,
-      rgba(0,0,0,0.30) 56%,
-      rgba(0,0,0,0.08) 76%,
-      rgba(0,0,0,0.00) 92%
-    ),
-    linear-gradient(90deg,
-      transparent         0%,
-      rgba(0,0,0,1)      10%,
-      rgba(0,0,0,1)      90%,
-      transparent       100%
-    );
-  -webkit-mask-composite: destination-in;  /* WebKit equivalent of intersect */
-
-  /* ── No glow, no stroke, no shadow ── */
-  -webkit-text-stroke: 0px transparent;
-  text-shadow: none;
-  filter: none;
-
-  /* ── Entry animation ── */
-  animation: rbwGhostIn 1200ms var(--rbw-ease) 300ms backwards;
+  animation: rbwGhostIn 900ms var(--rbw-ease) 350ms backwards;
 }
 
-/* 3-column grid centers the middle letter (A for RAW, A for BLACK, I for WHITE)
-   at exactly 50% of the viewport, directly behind the central pant.             */
-.rbw-showroom .rbw-bd__ghost-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  width: 100%;
-  animation: rbwGhostSwap 700ms var(--rbw-ease) backwards;
+.rbw-showroom .rbw-bd__ghost>span {
+  display: inline-block;
+  padding: 0 0.05em;
+  background: linear-gradient(180deg, rgba(122, 100, 74, 0.82) 0%, rgba(150, 128, 100, 0.5) 45%, rgba(190, 172, 148, 0) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: rbwGhostSwap 900ms var(--rbw-ease) backwards;
 }
 
-.rbw-showroom .rbw-bd__ghost-left {
-  text-align: right;
-  letter-spacing: 0.14em;
-  white-space: nowrap;
-}
-
-.rbw-showroom .rbw-bd__ghost-center {
-  text-align: center;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.rbw-showroom .rbw-bd__ghost-right {
-  text-align: left;
-  letter-spacing: 0.14em;
-  margin-left: 0.14em;
-  white-space: nowrap;
-}
-
-/* Gentle photographic studio lens falloff */
 .rbw-showroom .rbw-bd__vignette {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  background: radial-gradient(116% 92% at 50% 46%,
-      transparent 55%,
-      rgba(150, 140, 130, 0.08) 80%,
-      rgba(130, 120, 110, 0.18) 100%);
+  background: radial-gradient(125% 100% at 50% 46%,
+      transparent 58%,
+      rgba(110, 88, 64, 0.08) 82%,
+      rgba(90, 70, 50, 0.2) 100%);
 }
 
 /* --------------------------------------------------------------------------
@@ -267,7 +149,7 @@
 
 .rbw-showroom .rbw-stage[data-switching="true"] {
   opacity: 0;
-  transform: scale(0.992);
+  transform: scale(0.985);
   transition-duration: 240ms, 240ms;
 }
 
@@ -284,15 +166,13 @@
 }
 
 .rbw-showroom .rbw-title {
-  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif;
-  font-weight: 300;
+  font-family: var(--font-serif), "Playfair Display", Didot, Georgia, serif;
+  font-weight: 500;
   text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: 0.35em;
-  /* trailing tracking would push the word off-centre; pull it back */
-  margin-right: -0.35em;
+  line-height: 0.95;
+  letter-spacing: 0.36em;
+  margin-right: -0.36em;
   color: var(--rbw-ink);
-  text-shadow: none;
 }
 
 .rbw-showroom .rbw-eyebrow {
@@ -304,12 +184,11 @@
 }
 
 .rbw-showroom .rbw-descriptor {
-  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-serif), Georgia, serif;
   font-style: italic;
-  font-weight: 300;
-  font-size: 18px;
+  font-weight: 400;
   color: var(--rbw-ink-dim);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 
 /* --------------------------------------------------------------------------
@@ -387,9 +266,9 @@
   color: var(--rbw-ink-dim);
   background: var(--rbw-glass);
   border: 1px solid var(--rbw-line);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(60, 44, 24, 0.14);
   transition:
     color 300ms var(--rbw-ease),
     border-color 300ms var(--rbw-ease),
@@ -400,8 +279,8 @@
 
 .rbw-showroom .rbw-glass-btn:hover {
   color: var(--rbw-ink);
-  border-color: rgba(20, 20, 20, 0.25);
-  background: #FAF9F6;
+  border-color: rgba(160, 127, 60, 0.6);
+  background: #ffffff;
 }
 
 .rbw-showroom .rbw-glass-btn:active {
@@ -413,32 +292,27 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 28px;
+  padding: 15px 36px;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: #FAF9F6;
-  background: #111111;
-  border: 1px solid #111111;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  color: #f6f2ea;
+  background: #211f1c;
+  border: 1px solid rgba(185, 150, 90, 0.55);
+  box-shadow: 0 10px 26px rgba(30, 22, 12, 0.28);
   transition:
     background-color 450ms var(--rbw-ease),
     color 450ms var(--rbw-ease),
     border-color 450ms var(--rbw-ease),
-    transform 300ms var(--rbw-ease),
-    box-shadow 300ms var(--rbw-ease);
+    transform 300ms var(--rbw-ease);
   cursor: pointer;
 }
 
 .rbw-showroom .rbw-cta:hover {
-  background: var(--rbw-gold);
-  border-color: var(--rbw-gold);
-  color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(154, 119, 64, 0.25);
+  background: #0f0e0c;
+  border-color: var(--rbw-gold-bright);
 }
 
 .rbw-showroom .rbw-cta:active {
@@ -486,8 +360,8 @@
 /* Progress segments */
 .rbw-showroom .rbw-seg {
   position: relative;
-  height: 1.5px;
-  background: rgba(20, 20, 20, 0.14);
+  height: 1px;
+  background: rgba(241, 237, 230, 0.2);
   transition: background-color 500ms var(--rbw-ease);
 }
 
@@ -600,12 +474,12 @@
   }
 
   .rbw-showroom .rbw-title {
-    letter-spacing: 0.22em;
-    margin-right: -0.22em;
+    letter-spacing: 0.26em;
+    margin-right: -0.26em;
   }
 
   .rbw-showroom .rbw-cta {
-    padding: 14px 30px;
+    padding: 14px 32px;
   }
 }
 

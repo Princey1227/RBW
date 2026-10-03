@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
@@ -10,71 +10,42 @@ type RbwAtmosphereKey = "raw" | "black" | "white";
 
 interface LightPreset {
   ambient: number;
-  ambientColor: string;
-  spot: number;
-  spotColor: string;
   key: number;
   keyColor: string;
   fill: number;
   fillColor: string;
   rim: number;
   rimColor: string;
-  bounce: number;
-  bounceColor: string;
+  accent: number;
+  accentColor: string;
 }
 
-// High-end daylight fashion photography studio lighting per wash.
-// RAW: crisp natural daylight with subtle indigo bounce
-// BLACK: high dynamic-range studio key light to carve deep obsidian denim
-// WHITE: calibrated soft ivory daylight so ecru denim texture is beautifully sculpted without clipping
+// Showroom lighting per wash. WHITE gets a slightly warmer, calmer key (so the
+// denim keeps its weave instead of clipping) and a brighter cool rim for silhouette.
 const LIGHT_PRESETS: Record<RbwAtmosphereKey, LightPreset> = {
   raw: {
-    ambient: 1.08,
-    ambientColor: "#f5f3ef",
-    spot: 2.2,
-    spotColor: "#ffffff",
-    key: 2.2,
-    keyColor: "#fffaf4",
-    fill: 0.95,
-    fillColor: "#e6eaf4",
-    rim: 2.0,
-    rimColor: "#ffffff",
-    bounce: 0.7,
-    bounceColor: "#ede7dd",
+    ambient: 0.9, key: 2.8, keyColor: "#ffffff",
+    fill: 1.2, fillColor: "#bfdbfe",
+    rim: 3.8, rimColor: "#ffffff",
+    accent: 1.6, accentColor: "#d9bd8a",
   },
   black: {
-    ambient: 1.05,
-    ambientColor: "#f5f3ef",
-    spot: 2.5,
-    spotColor: "#ffffff",
-    key: 2.3,
-    keyColor: "#ffffff",
-    fill: 0.90,
-    fillColor: "#e4e1dc",
-    rim: 2.2,
-    rimColor: "#ffffff",
-    bounce: 0.65,
-    bounceColor: "#e6e2da",
+    ambient: 0.85, key: 3.1, keyColor: "#fff6ee",
+    fill: 1.0, fillColor: "#e8cfd4",
+    rim: 3.8, rimColor: "#ffffff",
+    accent: 1.6, accentColor: "#c9a48f",
   },
   white: {
-    ambient: 1.0,
-    ambientColor: "#f5f3ef",
-    spot: 1.9,
-    spotColor: "#fffbf5",
-    key: 1.85,
-    keyColor: "#fff9f0",
-    fill: 0.9,
-    fillColor: "#e8e5df",
-    rim: 2.2,
-    rimColor: "#fffdfa",
-    bounce: 0.65,
-    bounceColor: "#ede8df",
+    ambient: 0.8, key: 2.45, keyColor: "#fff4e2",
+    fill: 1.0, fillColor: "#c4d6f2",
+    rim: 3.4, rimColor: "#ffffff",
+    accent: 1.2, accentColor: "#fff1d8",
   },
 };
 
 /**
- * Dark fashion photography studio lighting.
- * Animates smoothly over ~800ms when wash atmosphere changes.
+ * Lights that glide toward the active wash's preset (~1s), so switching
+ * RAW → BLACK → WHITE re-lights the room instead of snapping.
  */
 function CinematicLights({
   atmosphere,
@@ -84,46 +55,29 @@ function CinematicLights({
   reducedMotion: boolean;
 }) {
   const ambientRef = useRef<THREE.AmbientLight>(null);
-  const spotRef = useRef<THREE.SpotLight>(null);
-  const spotTargetRef = useRef<THREE.Object3D>(null);
   const keyRef = useRef<THREE.DirectionalLight>(null);
   const fillRef = useRef<THREE.DirectionalLight>(null);
   const rimRef = useRef<THREE.DirectionalLight>(null);
-  const bounceRef = useRef<THREE.PointLight>(null);
+  const accentRef = useRef<THREE.PointLight>(null);
 
   const target = useMemo(() => {
     const p = LIGHT_PRESETS[atmosphere];
     return {
       p,
-      ambient: new THREE.Color(p.ambientColor),
-      spot: new THREE.Color(p.spotColor),
       key: new THREE.Color(p.keyColor),
       fill: new THREE.Color(p.fillColor),
       rim: new THREE.Color(p.rimColor),
-      bounce: new THREE.Color(p.bounceColor),
+      accent: new THREE.Color(p.accentColor),
     };
   }, [atmosphere]);
 
-  useEffect(() => {
-    if (spotRef.current && spotTargetRef.current) {
-      spotRef.current.target = spotTargetRef.current;
-    }
-  }, []);
-
   useFrame((_, delta) => {
-    const rate = reducedMotion ? 20 : 3.6;
+    const rate = reducedMotion ? 20 : 3.2;
     const a = 1 - Math.exp(-rate * delta);
     const { p } = target;
     const damp = (cur: number, to: number) => THREE.MathUtils.lerp(cur, to, a);
 
-    if (ambientRef.current) {
-      ambientRef.current.intensity = damp(ambientRef.current.intensity, p.ambient);
-      ambientRef.current.color.lerp(target.ambient, a);
-    }
-    if (spotRef.current) {
-      spotRef.current.intensity = damp(spotRef.current.intensity, p.spot);
-      spotRef.current.color.lerp(target.spot, a);
-    }
+    if (ambientRef.current) ambientRef.current.intensity = damp(ambientRef.current.intensity, p.ambient);
     if (keyRef.current) {
       keyRef.current.intensity = damp(keyRef.current.intensity, p.key);
       keyRef.current.color.lerp(target.key, a);
@@ -136,65 +90,23 @@ function CinematicLights({
       rimRef.current.intensity = damp(rimRef.current.intensity, p.rim);
       rimRef.current.color.lerp(target.rim, a);
     }
-    if (bounceRef.current) {
-      bounceRef.current.intensity = damp(bounceRef.current.intensity, p.bounce);
-      bounceRef.current.color.lerp(target.bounce, a);
+    if (accentRef.current) {
+      accentRef.current.intensity = damp(accentRef.current.intensity, p.accent);
+      accentRef.current.color.lerp(target.accent, a);
     }
   });
 
   const start = LIGHT_PRESETS.raw;
   return (
     <>
-      {/* Target for overhead spotlight */}
-      <object3D ref={spotTargetRef} position={[0, 0.35, 0.12]} />
-
-      {/* Atmospheric ambient room tone */}
-      <ambientLight ref={ambientRef} intensity={start.ambient} color={start.ambientColor} />
-
-      {/* Soft overhead fashion studio spotlight with gentle penumbra falloff */}
-      <spotLight
-        ref={spotRef}
-        position={[0, 5.2, 1.4]}
-        intensity={start.spot}
-        color={start.spotColor}
-        angle={Math.PI / 4.8}
-        penumbra={0.88}
-        distance={10}
-        decay={1.1}
-      />
-
-      {/* Key: front/above camera-right for dimensional fabric modeling */}
-      <directionalLight
-        ref={keyRef}
-        position={[2.2, 4.2, 3.6]}
-        intensity={start.key}
-        color={start.keyColor}
-      />
-
-      {/* Fill: soft, cool camera-left */}
-      <directionalLight
-        ref={fillRef}
-        position={[-3.2, 2.2, 2.6]}
-        intensity={start.fill}
-        color={start.fillColor}
-      />
-
-      {/* Subtle warm rim light from behind/above to sculpt fabric silhouette */}
-      <directionalLight
-        ref={rimRef}
-        position={[0, 4.4, -3.2]}
-        intensity={start.rim}
-        color={start.rimColor}
-      />
-
-      {/* Subtle denim-colored ambient bounce from the showroom floor */}
-      <pointLight
-        ref={bounceRef}
-        position={[0, -1.8, 0.6]}
-        intensity={start.bounce}
-        color={start.bounceColor}
-        distance={6}
-      />
+      <ambientLight ref={ambientRef} intensity={start.ambient} />
+      {/* key: front/above, slightly camera-right */}
+      <directionalLight ref={keyRef} position={[2.5, 4.5, 3.8]} intensity={start.key} color={start.keyColor} />
+      {/* fill: soft, cool, camera-left */}
+      <directionalLight ref={fillRef} position={[-3, 2.5, 2.5]} intensity={start.fill} color={start.fillColor} />
+      {/* rim: from behind/above to carve the silhouette */}
+      <directionalLight ref={rimRef} position={[0, 4.2, -3.0]} intensity={start.rim} color={start.rimColor} />
+      <pointLight ref={accentRef} position={[0, 0.6, 2.2]} intensity={start.accent} color={start.accentColor} distance={6} />
     </>
   );
 }
@@ -248,29 +160,28 @@ export default function RbwCanvas({
         }}
         dpr={[1, 1.5]}
       >
-        {/* Subtle HDR Environment Reflections for Light Fashion Studio */}
+        {/* Subtle HDR Environment Reflections */}
         <Environment resolution={256} frames={1}>
           <Lightformer
             form="rect"
-            intensity={cinematic ? 0.7 : 1.0}
+            intensity={cinematic ? 0.9 : 1.0}
             position={[0, 5, 0]}
-            scale={[4, 4, 1]}
+            scale={[3, 3, 1]}
             target={[0, 0, 0]}
-            color="#ffffff"
           />
           <Lightformer
             form="rect"
-            intensity={cinematic ? 0.6 : 1.2}
+            intensity={cinematic ? 1.2 : 1.5}
             position={[-4, 2, -2]}
             scale={[1, 6, 1]}
-            color="#f5f3ef"
+            color="#93c5fd"
           />
           <Lightformer
             form="rect"
-            intensity={cinematic ? 0.6 : 1.2}
+            intensity={cinematic ? 1.2 : 1.8}
             position={[4, 2, -2]}
             scale={[1, 6, 1]}
-            color={cinematic ? LIGHT_PRESETS[atmosphere].bounceColor : "#edeae4"}
+            color={cinematic ? LIGHT_PRESETS[atmosphere].accentColor : accentColor}
           />
         </Environment>
 

@@ -47,7 +47,7 @@ export const TEMPLATE_SHOWROOM_ITEMS: CarouselItemData[] = [
     originalPrice: "₹2,450",
     name: "BLACK",
     sublabel: "Sulfur Dyed Obsidian",
-    tagline: "BOLD YOU NEVER KNEW",
+    tagline: "Black you never knew",
     imagePath: "/rbwstore/black.png",
     price: "₹1,950",
     accentHex: "#8B0015",

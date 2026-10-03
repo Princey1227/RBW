@@ -814,7 +814,7 @@ export default function RBWStorefrontPage() {
   return (
     <main
       ref={mainContainerRef}
-      className="w-full h-screen bg-[#F5F3EF] overflow-hidden relative pt-[75px] md:pt-[85px] xl:pt-[103px] box-border"
+      className="w-full h-screen bg-[var(--background)] overflow-hidden relative pt-[75px] md:pt-[85px] xl:pt-[103px] box-border"
     >
       <div className="w-full h-full relative">
         {/* Slide 1: Wash Selection (3D Preview) */}

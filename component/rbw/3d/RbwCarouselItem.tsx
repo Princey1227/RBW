@@ -23,7 +23,7 @@ if (typeof window !== "undefined") {
     useTexture.preload("/raw_denim_shorts.png");
     useTexture.preload("/black_denim_shorts.png");
     useTexture.preload("/white_denim_shorts.png");
-  } catch (_) {}
+  } catch (_) { }
 }
 
 /**
@@ -101,47 +101,26 @@ interface ItemDims {
   bottom: number; // plane bottom edge, local to the slot group
 }
 
-// Tunables for the cinematic studio presentation
-const FLOAT_PX = 7; // very slow 5-8px floating movement
-const FLOAT_PERIOD_S = 6.4; // 6.4s slow, calm breathing cycle (no bouncing, no exaggerated motion)
-const SHADOW_GAP = 0.008; // gap between hem and realistic studio contact shadow
-const REFLECTION_OPACITY = 0.05; // extremely subtle floor reflection (polished studio floor)
+// Tunables for the cinematic presentation (world units unless noted)
+const FLOAT_PX = 8; // peak hover height of the product, in screen pixels
+const FLOAT_PERIOD_S = 5; // 0 → up → 0 over 5s
+const SHADOW_GAP = 0.015; // gap between hem and the contact shadow
+const REFLECTION_OPACITY = 0.2;
 
 let _shadowTex: THREE.CanvasTexture | null = null;
 function getShadowTexture(): THREE.CanvasTexture | null {
   if (_shadowTex) return _shadowTex;
   if (typeof document === "undefined") return null;
   const c = document.createElement("canvas");
-  c.width = 256;
-  c.height = 128;
+  c.width = c.height = 128;
   const g = c.getContext("2d");
   if (!g) return null;
-  g.clearRect(0, 0, 256, 128);
-
-  // 1. Soft studio penumbra shadow spreading outwards
-  const grdOuter = g.createRadialGradient(128, 64, 0, 128, 64, 115);
-  grdOuter.addColorStop(0, "rgba(25, 22, 18, 0.40)");
-  grdOuter.addColorStop(0.35, "rgba(25, 22, 18, 0.20)");
-  grdOuter.addColorStop(0.70, "rgba(25, 22, 18, 0.06)");
-  grdOuter.addColorStop(1, "rgba(25, 22, 18, 0)");
-  g.save();
-  g.scale(1, 0.44);
-  g.fillStyle = grdOuter;
-  g.fillRect(0, 0, 256, 290);
-  g.restore();
-
-  // 2. High-density core occlusion shadow directly beneath the denim hem
-  const grdCore = g.createRadialGradient(128, 64, 0, 128, 64, 52);
-  grdCore.addColorStop(0, "rgba(20, 18, 15, 0.75)");
-  grdCore.addColorStop(0.40, "rgba(20, 18, 15, 0.45)");
-  grdCore.addColorStop(0.80, "rgba(20, 18, 15, 0.15)");
-  grdCore.addColorStop(1, "rgba(20, 18, 15, 0)");
-  g.save();
-  g.scale(1, 0.34);
-  g.fillStyle = grdCore;
-  g.fillRect(0, 0, 256, 376);
-  g.restore();
-
+  const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, "rgba(0,0,0,0.9)");
+  grd.addColorStop(0.42, "rgba(0,0,0,0.4)");
+  grd.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 128, 128);
   _shadowTex = new THREE.CanvasTexture(c);
   return _shadowTex;
 }
@@ -151,18 +130,17 @@ function getReflectionFadeTexture(): THREE.CanvasTexture | null {
   if (_fadeTex) return _fadeTex;
   if (typeof document === "undefined") return null;
   const c = document.createElement("canvas");
-  c.width = 16;
+  c.width = 8;
   c.height = 128;
   const g = c.getContext("2d");
   if (!g) return null;
-  // Canvas Y=128 is closest to the hem (floor contact), Y=0 is further away
+  // canvas bottom = uv.v 0 = the hem edge (closest to the floor) → brightest
   const grd = g.createLinearGradient(0, 0, 0, 128);
   grd.addColorStop(0, "#000000");
-  grd.addColorStop(0.68, "#000000");
-  grd.addColorStop(0.88, "#555555");
+  grd.addColorStop(0.45, "#000000");
   grd.addColorStop(1, "#ffffff");
   g.fillStyle = grd;
-  g.fillRect(0, 0, 16, 128);
+  g.fillRect(0, 0, 8, 128);
   _fadeTex = new THREE.CanvasTexture(c);
   return _fadeTex;
 }
@@ -210,7 +188,7 @@ function RbwFloatingMeshItem({
     dimsRef.current.bottom = baseY - planeHeight / 2;
   }
 
-  // ~7 screen pixels expressed in world units at the product depth
+  // ~8 screen pixels expressed in world units at the product depth
   const fov = (camera as THREE.PerspectiveCamera).fov || 46;
   const floatUnits =
     (FLOAT_PX * (2 * 4.08 * Math.tan((fov * Math.PI) / 360))) / Math.max(1, size.height);
@@ -233,57 +211,31 @@ function RbwFloatingMeshItem({
       if (!fx || !meshGroupRef.current) return;
       const { focus, enter, hover } = fx;
 
-      // Very slow 5–10px floating movement & subtle breathing scale (6.4s sinusoidal wave, zero bouncing)
-      const phase = (time / FLOAT_PERIOD_S) * Math.PI * 2;
-      const breathe = reducedMotion ? 0 : Math.sin(phase);
-      const lift = breathe * floatUnits * 0.5 * focus;
-      const breatheScale = reducedMotion ? 1 : 1 + 0.007 * breathe * focus;
-      const microZ = reducedMotion ? 0 : 0.015 * breathe * focus;
+      // Slow breathing: rest → +8px at 2.5s → rest at 5s. Only the hero breathes.
+      const breathe = reducedMotion
+        ? 0
+        : 0.5 * (1 - Math.cos((time / FLOAT_PERIOD_S) * Math.PI * 2));
+      const lift = breathe * floatUnits * focus;
 
-      // Natural, calm fabric micro-sway in the studio
-      const microYaw = reducedMotion ? 0 : Math.sin(time * 0.42) * 0.012 * focus;
-      const microPitch = reducedMotion ? 0 : Math.cos(time * 0.38) * 0.006 * focus;
+      meshGroupRef.current.position.y = baseY + lift + hover * 0.02;
+      meshGroupRef.current.rotation.y = reducedMotion ? 0 : Math.sin(time * 0.6) * 0.03 * focus;
+      meshGroupRef.current.rotation.x = reducedMotion ? 0 : Math.cos(time * 0.5) * 0.01 * focus;
 
-      meshGroupRef.current.position.set(0, baseY + lift + hover * 0.02, microZ);
-      meshGroupRef.current.scale.set(breatheScale, breatheScale, breatheScale);
-      meshGroupRef.current.rotation.set(microPitch, microYaw, 0);
-
-      // Depth hierarchy: center hero has full brilliance and specular depth;
-      // side products recede one layer deeper through gentle opacity and softer focus on the light backdrop.
-      const sideBrightness = 0.90;
-      const heroBrightness = 1.0;
-      const brightness = Math.min(
-        1,
-        THREE.MathUtils.lerp(sideBrightness, heroBrightness, Math.pow(focus, 1.25)) + hover * 0.10
-      );
-
-      const sideOpacity = 0.50;
-      const heroOpacity = 1.0;
-      const targetOpacity = Math.min(
-        1,
-        THREE.MathUtils.lerp(sideOpacity, heroOpacity, focus) + hover * 0.28
-      );
-
+      // Depth cue: receding products are dimmer and more transparent
+      const brightness = Math.min(1, THREE.MathUtils.lerp(0.8, 1, focus) + hover * 0.12);
       if (matRef.current) {
-        matRef.current.opacity = enter * targetOpacity;
+        matRef.current.opacity = enter * THREE.MathUtils.lerp(0.92, 1, focus);
         matRef.current.color.setScalar(brightness);
-        matRef.current.roughness = THREE.MathUtils.lerp(0.86, 0.65, focus);
-        matRef.current.envMapIntensity = THREE.MathUtils.lerp(0.35, 0.90, focus);
       }
 
-      // Realistic contact shadow beneath the jeans:
-      // Tightens + deepens when closer to floor, gently diffuses when product floats up
+      // Contact shadow: tightens + darkens as the product settles, loosens as it lifts
       const liftNorm = floatUnits > 0 ? lift / floatUnits : 0;
       if (shadowMatRef.current) {
         shadowMatRef.current.opacity =
-          enter *
-          THREE.MathUtils.lerp(0.0, 0.65, Math.pow(focus, 1.8)) *
-          (1 - 0.16 * liftNorm);
+          enter * THREE.MathUtils.lerp(0.14, 0.42, focus) * (1 - 0.22 * liftNorm);
       }
-
-      // Extremely subtle floor reflection: visible ONLY for the central hero product
       if (reflMatRef.current) {
-        reflMatRef.current.opacity = enter * REFLECTION_OPACITY * Math.pow(focus, 2.8);
+        reflMatRef.current.opacity = enter * REFLECTION_OPACITY * focus;
       }
       return;
     }
@@ -302,14 +254,14 @@ function RbwFloatingMeshItem({
 
   return (
     <group>
-      {/* Realistic contact shadow beneath the jeans on the studio floor */}
+      {/* Soft contact shadow on the (invisible) showroom floor */}
       {cinematic && shadowTex && (
         <mesh
           rotation={[-Math.PI / 2, 0, 0]}
           position={[0, baseY - planeHeight / 2 - SHADOW_GAP, 0]}
           renderOrder={-2}
         >
-          <planeGeometry args={[planeWidth * 1.25, 0.85]} />
+          <planeGeometry args={[planeWidth * 1.2, 1.0]} />
           <meshBasicMaterial
             ref={shadowMatRef}
             map={shadowTex}
@@ -350,7 +302,7 @@ function RbwFloatingMeshItem({
               ref={reflMatRef}
               map={texture}
               alphaMap={fadeTex}
-              color="#9a9a9a"
+              color="#d8d8d8"
               transparent
               opacity={0}
               depthWrite={false}
@@ -514,15 +466,14 @@ export function RbwCarouselItem({
         }
       } else {
         groupRef.current.visible = absRel <= maxVisibleOffset;
-        // Non-linear depth curve: side products sit distinctly deeper into the studio
-        const f = Math.pow(cinematicFocus, 1.3);
-        targetZ = THREE.MathUtils.lerp(-0.85, 0.14, f);
-        targetScale = heroScaleC * THREE.MathUtils.lerp(0.70, 1.0, f);
-        // Compensate perspective so side products sit on architectural gallery lines
+        const f = cinematicFocus;
+        targetZ = THREE.MathUtils.lerp(-0.62, 0.12, f);
+        targetScale = heroScaleC * THREE.MathUtils.lerp(0.74, 1, f);
+        // compensate perspective so side products still sit on the pillar lines
         const xComp = (pCam.position.z - targetZ) / d;
         targetX = rel * activeSpacing * xComp;
-        targetY = feetY - dims.bottom * targetScale + (1 - f) * 0.08;
-        targetRotY = isMobile ? 0 : rel * -0.16;
+        targetY = feetY - dims.bottom * targetScale + (1 - f) * 0.09;
+        targetRotY = isMobile ? 0 : rel * -0.2;
       }
     } else if (isInspecting) {
       if (isActive) {
@@ -582,8 +533,8 @@ export function RbwCarouselItem({
         yawGroupRef.current.rotation.y = targetRotY;
       }
     } else {
-      // Smooth physics damping (cinematic: 700-900ms deliberate luxury settle)
-      const lambda = cinematic && !reducedMotion ? 4.4 : cinematic ? 14 : 7.5;
+      // Smooth physics damping (cinematic: slower, more deliberate ~0.7-0.9s settle)
+      const lambda = cinematic && !reducedMotion ? 5.0 : cinematic ? 14 : 7.5;
       currentPosRef.current.x = THREE.MathUtils.damp(currentPosRef.current.x, targetX, lambda, delta);
       currentPosRef.current.y = THREE.MathUtils.damp(currentPosRef.current.y, targetY, lambda, delta);
       currentPosRef.current.z = THREE.MathUtils.damp(currentPosRef.current.z, targetZ, lambda, delta);

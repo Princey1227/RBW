@@ -661,6 +661,7 @@ export default function Navbar() {
   const isExperienceCentrePage = pathname === "/experience-center" || pathname === "/experience-center/";
   const isMainHomePage = !isStorePage;
   const isRbwStorePage = isStorePage;
+  const isRbwShowroom = pathname === "/stores/rbw" || pathname === "/stores/rbw/";
 
   return (
     <>
@@ -712,7 +713,10 @@ export default function Navbar() {
         style={{
           transform: "translate3d(0, 0, 0)",
         }}
-        className={`w-full px-3 sm:px-8 md:px-12 lg:px-14 transition-all duration-500 ease-in-out font-sans pointer-events-auto ${isExperienceCentrePage
+        className={`w-full px-3 sm:px-8 md:px-12 lg:px-14 transition-all duration-500 ease-in-out font-sans pointer-events-auto ${isRbwShowroom
+          ? `fixed left-0 z-[100] bg-[#F5F3EF] border-b border-[#241F1D]/12 shadow-none text-[#18181B] ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[35px] h-[68px]"
+          }`
+          : isExperienceCentrePage
             ? `${isScrolled
               ? "fixed top-0 left-0 z-[100] h-[48px] sm:h-[58px] max-xl:hidden xl:bg-[#FAF8F5]/92 backdrop-blur-md border-b border-[#241F1D]/10 shadow-sm xl:text-[#17140F]"
               : "absolute top-0 left-0 z-[100] h-[54px] sm:h-[64px] max-xl:hidden xl:bg-transparent xl:text-[#17140F]"
@@ -734,13 +738,14 @@ export default function Navbar() {
           <div className="flex xl:hidden z-10 pointer-events-auto">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="focus:outline-none transition-colors opacity-90 hover:opacity-100 max-xl:text-white text-[var(--foreground)]"
+              className={`focus:outline-none transition-colors opacity-90 hover:opacity-100 ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white text-[var(--foreground)]"
+                }`}
               aria-label="Toggle menu"
             >
               {isOpen ? (
-                <X className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                <X className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? "text-[#18181B]" : "text-white"}`} />
               ) : (
-                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                <Menu className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? "text-[#18181B]" : "text-white"}`} />
               )}
             </button>
           </div>
@@ -749,8 +754,8 @@ export default function Navbar() {
           {isMainHomePage ? (
             <div
               className={`hidden xl:flex items-center gap-3.5 2xl:gap-7 tracking-[0.14em] xl:tracking-[0.18em] 2xl:tracking-[0.24em] z-30 ${isExperienceCentrePage
-                  ? "text-[10px] xl:text-[10.5px] 2xl:text-[11.5px] font-bold text-[#0D0B0A]"
-                  : "text-[9.5px] xl:text-[10px] 2xl:text-[11px] font-medium text-[#241F1D]/85"
+                ? "text-[10px] xl:text-[10.5px] 2xl:text-[11.5px] font-bold text-[#0D0B0A]"
+                : "text-[9.5px] xl:text-[10px] 2xl:text-[11px] font-medium text-[#241F1D]/85"
                 }`}
             >
 
@@ -764,17 +769,17 @@ export default function Navbar() {
                     setIsBrandsDropdownOpen((prev) => !prev);
                   }}
                   className={`flex items-center gap-1.5 transition-colors duration-300 uppercase focus:outline-none cursor-pointer ${isExperienceCentrePage
-                      ? "text-[#0D0B0A] hover:text-black font-bold"
-                      : "hover:text-[#241F1D]"
+                    ? "text-[#0D0B0A] hover:text-black font-bold"
+                    : "hover:text-[#241F1D]"
                     }`}
                 >
                   BRANDS
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-300 ${isBrandsDropdownOpen
-                        ? "rotate-180 text-[#1C1917]"
-                        : isExperienceCentrePage
-                          ? "text-[#0D0B0A] stroke-[2.2]"
-                          : "text-[#78716C]"
+                      ? "rotate-180 text-[#1C1917]"
+                      : isExperienceCentrePage
+                        ? "text-[#0D0B0A] stroke-[2.2]"
+                        : "text-[#78716C]"
                       }`}
                   />
                 </button>
@@ -841,8 +846,8 @@ export default function Navbar() {
                 href="/about"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 ABOUT US
@@ -851,8 +856,8 @@ export default function Navbar() {
                 href="/blog"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 BLOG
@@ -861,8 +866,8 @@ export default function Navbar() {
                 href="/experience-center"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 EXPERIENCE CENTER
@@ -874,8 +879,8 @@ export default function Navbar() {
                 href="/"
                 prefetch={false}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] xl:text-[10.5px] font-bold tracking-wider uppercase transition-all duration-300 group shadow-2xs whitespace-nowrap shrink-0 ${pathname?.startsWith("/stores/rbw") || pathname?.startsWith("/stores/template")
-                    ? "border border-zinc-300 hover:border-zinc-700 text-zinc-800 bg-white/80 hover:bg-white"
-                    : "border border-foreground/20 hover:border-foreground/60 text-foreground/80 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
+                  ? "border border-zinc-300 hover:border-zinc-700 text-zinc-800 bg-white/80 hover:bg-white"
+                  : "border border-foreground/20 hover:border-foreground/60 text-foreground/80 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
                   }`}
                 title="Return to ONLY DENIMS Homepage"
               >
@@ -901,26 +906,33 @@ export default function Navbar() {
           )}
 
           {/* Right icons: Shown on store pages (desktop) and ALWAYS on mobile/tablet */}
-          <div className={`flex items-center gap-0.5 sm:gap-4 transition-colors duration-300 z-20 pointer-events-auto shrink-0 max-xl:text-white ${isMainHomePage ? "xl:hidden" : ""}`}>
+          <div className={`flex items-center gap-0.5 sm:gap-4 transition-colors duration-300 z-20 pointer-events-auto shrink-0 ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+            } ${isMainHomePage ? "xl:hidden" : ""}`}>
             {/* Search */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="relative transition-colors duration-300 p-1.5 sm:p-2 rounded-full cursor-pointer flex items-center justify-center shrink-0 max-xl:text-white hover:text-[var(--foreground)]"
+              className={`relative transition-colors duration-300 p-1.5 sm:p-2 rounded-full cursor-pointer flex items-center justify-center shrink-0 ${isRbwShowroom ? "text-[#18181B] hover:text-black" : "max-xl:text-white hover:text-[var(--foreground)]"
+                }`}
               aria-label="Search Products"
             >
-              <Search className="h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] max-xl:text-white" />
+              <Search className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+                }`} />
             </button>
 
             {/* Cart */}
             <button
               id="header-cart-button"
               onClick={() => setCartOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-3 p-1.5 sm:px-4.5 sm:py-2.5 rounded-full border border-transparent xl:border-[#E8E3DA] bg-transparent xl:bg-[#FAF8F5]/80 hover:bg-foreground/5 xl:hover:bg-[#FAF8F5] transition-all duration-300 shadow-none xl:shadow-3xs cursor-pointer select-none max-xl:text-white xl:text-foreground shrink-0"
+              className={`flex items-center gap-1.5 sm:gap-3 p-1.5 sm:px-4.5 sm:py-2.5 rounded-full border ${isRbwShowroom
+                ? "border-[#241F1D]/15 bg-white/50 hover:bg-white/80 text-[#18181B]"
+                : "border-transparent xl:border-[#E8E3DA] bg-transparent xl:bg-[#FAF8F5]/80 hover:bg-foreground/5 xl:hover:bg-[#FAF8F5] max-xl:text-white xl:text-foreground"
+                } transition-all duration-300 shadow-none xl:shadow-3xs cursor-pointer select-none shrink-0`}
               aria-label="Shopping Cart"
             >
               {/* Bag Icon with Badge */}
               <div className="relative flex items-center justify-center pr-0 sm:pr-1.5">
-                <ShoppingBag className="h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] max-xl:text-white" />
+                <ShoppingBag className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+                  }`} />
                 {totalCartItems > 0 && (
                   <span
                     className="absolute -top-1.5 -right-1.5 font-sans flex items-center justify-center rounded-full bg-[#B9965A] text-white"
@@ -958,16 +970,16 @@ export default function Navbar() {
           {isMainHomePage && (
             <div
               className={`hidden xl:flex items-center justify-end gap-3 2xl:gap-6 tracking-[0.14em] xl:tracking-[0.18em] 2xl:tracking-[0.24em] z-20 ${isExperienceCentrePage
-                  ? "text-[10px] xl:text-[10.5px] 2xl:text-[11.5px] font-bold text-[#0D0B0A]"
-                  : "text-[9.5px] xl:text-[10px] 2xl:text-[11px] font-medium text-[#241F1D]/85"
+                ? "text-[10px] xl:text-[10.5px] 2xl:text-[11.5px] font-bold text-[#0D0B0A]"
+                : "text-[9.5px] xl:text-[10px] 2xl:text-[11px] font-medium text-[#241F1D]/85"
                 }`}
             >
               <Link
                 href="/journey"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 OUR JOURNEY
@@ -976,8 +988,8 @@ export default function Navbar() {
                 href="/contact"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 CONTACT
@@ -986,8 +998,8 @@ export default function Navbar() {
                 href="/returns"
                 prefetch={false}
                 className={`transition-colors duration-300 uppercase whitespace-nowrap ${isExperienceCentrePage
-                    ? "text-[#0D0B0A] hover:text-black font-bold"
-                    : "hover:text-[#241F1D]"
+                  ? "text-[#0D0B0A] hover:text-black font-bold"
+                  : "hover:text-[#241F1D]"
                   }`}
               >
                 RETURNS
@@ -1069,7 +1081,8 @@ export default function Navbar() {
                   fill
                   priority
                   unoptimized
-                  className="object-contain max-xl:brightness-0 max-xl:invert xl:theme-logo-invert select-none"
+                  className={`object-contain select-none ${isRbwShowroom ? "brightness-0" : "max-xl:brightness-0 max-xl:invert xl:theme-logo-invert"
+                    }`}
                 />
               </div>
             </Link>

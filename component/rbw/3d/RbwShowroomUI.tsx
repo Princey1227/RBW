@@ -382,11 +382,10 @@ export function RbwShowroomUI({
                     aria-label={`Jump to ${item.name}`}
                   >
                     <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        isCurrent
+                      className={`h-1.5 rounded-full transition-all duration-300 ${isCurrent
                           ? "bg-[#5B5BFF] shadow-sm"
                           : "bg-[#B0B0B8]/60 group-hover:bg-[#8E8E98]"
-                      }`}
+                        }`}
                     />
                   </button>
                 );
