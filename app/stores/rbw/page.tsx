@@ -16,7 +16,7 @@ import { useCart } from "../../../context/CartContext";
 import { Truck, Check, ShoppingBag, ZoomIn, X, Move, ArrowUpRight, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RbwWashSelection3D } from "../../../component/rbw/3d/RbwWashSelection3D";
-import { RbwJourneyShell, RbwJourneyBar, RbwJourneyPath } from "../../../component/rbw/RbwJourneyShell";
+import { RbwJourneyShell, RbwJourneyBar } from "../../../component/rbw/RbwJourneyShell";
 import { RbwSizeChartModal } from "../../../component/rbw/RbwSizeChartModal";
 
 interface FlyingItemData {
@@ -42,11 +42,6 @@ const TapeIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   </svg>
 );
 
-
-const Interactive3DViewer = dynamic(
-  () => import("../../../component/home/Interactive3DViewer"),
-  { ssr: false }
-);
 
 interface SizingSpec {
   size: string;
@@ -210,6 +205,39 @@ export default function RBWStorefrontPage() {
     setHadWash(!!selectedWash);
     if (selectedWash) setFitEntries((n) => n + 1);
   }
+
+  const [rbwTheme, setRbwTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rbw_theme") as "dark" | "light" | null;
+      if (saved === "dark" || saved === "light") {
+        setRbwTheme(saved);
+      }
+      const handleThemeExternal = (e: any) => {
+        if (e.detail === "dark" || e.detail === "light") {
+          setRbwTheme(e.detail);
+        }
+      };
+      window.addEventListener("RBW_THEME_SET", handleThemeExternal);
+      window.addEventListener("RBW_THEME_CHANGED", handleThemeExternal);
+      return () => {
+        window.removeEventListener("RBW_THEME_SET", handleThemeExternal);
+        window.removeEventListener("RBW_THEME_CHANGED", handleThemeExternal);
+      };
+    }
+  }, []);
+
+  const handleToggleTheme = () => {
+    setRbwTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      if (typeof window !== "undefined") {
+        localStorage.setItem("rbw_theme", next);
+        window.dispatchEvent(new CustomEvent("RBW_THEME_CHANGED", { detail: next }));
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -648,19 +676,6 @@ export default function RBWStorefrontPage() {
     resetToStep1();
   };
 
-  const renderSelectionPath = (currentStep: 2 | 3) => (
-    <RbwJourneyPath
-      currentStep={currentStep}
-      wash={selectedWash}
-      fit={selectedFit}
-      category={selectedCategory}
-      size={selectedSize}
-      quantity={quantity}
-      onWash={handleBackClick}
-      onFit={handleBackToFits}
-    />
-  );
-
   const getSelectedVariantId = (prod: any, size: string) => {
     if (!prod || !prod.variants?.edges) return null;
     const matchingVariant = prod.variants.edges.find(({ node }: any) => {
@@ -785,12 +800,17 @@ export default function RBWStorefrontPage() {
   return (
     <main
       ref={mainContainerRef}
-      className="w-full h-screen bg-[var(--background)] overflow-hidden relative pt-[75px] md:pt-[85px] xl:pt-[103px] box-border"
+      data-theme={rbwTheme}
+      className={`w-full h-screen ${rbwTheme === "dark" ? "bg-[#07080a]" : "bg-[var(--background)]"} overflow-hidden relative pt-[75px] md:pt-[85px] xl:pt-[103px] box-border`}
     >
       <div className="w-full h-full relative">
         {/* Slide 1: Wash Selection (3D Preview) */}
         <div className={`absolute left-0 w-full h-[100dvh] top-[-75px] md:top-[-85px] xl:top-[-103px] shrink-0 overflow-hidden transition-all duration-500 ${selectedWash ? "scale-[0.98] brightness-75 filter blur-[0.5px]" : "scale-100 brightness-100"}`}>
-          <RbwWashSelection3D onWashSelect={handleWashClick} />
+          <RbwWashSelection3D
+            onWashSelect={handleWashClick}
+            theme={rbwTheme}
+            onToggleTheme={handleToggleTheme}
+          />
         </div>
 
         {/* Slide 2: FIT — same showroom room as Step 1 (backdrop, type, controls inherited) */}
@@ -801,11 +821,7 @@ export default function RBWStorefrontPage() {
           ghostText={roomWash.toUpperCase()}
           receded={!!selectedFit}
           scrollRef={fitsDrawerRef}
-          bar={
-            <RbwJourneyBar backLabel="Washes" onBack={handleBackClick}>
-              {renderSelectionPath(2)}
-            </RbwJourneyBar>
-          }
+          theme={rbwTheme}
         >
           <div className="flex-1 flex flex-col justify-center py-2 md:py-6">
             {/* keyed by entry so the staggered reveal replays every time the room is entered */}
@@ -829,13 +845,12 @@ export default function RBWStorefrontPage() {
           ghostText={(selectedCategory === "jeans" && roomFit ? roomFit : roomWash).toUpperCase()}
           ghost="soft"
           scrollRef={detailDrawerRef}
+          theme={rbwTheme}
           bar={
             <RbwJourneyBar
               backLabel={selectedCategory === "jeans" ? "Fits" : "Back"}
               onBack={selectedCategory === "jeans" ? handleBackToFits : handleShopAgain}
-            >
-              {renderSelectionPath(3)}
-            </RbwJourneyBar>
+            />
           }
         >
           {selectedFit && selectedWash && (() => {

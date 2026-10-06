@@ -614,7 +614,7 @@ export function RbwCarouselItem({
         hoveredRef.current = true;
         onHoverChange?.(true);
         if (typeof document !== "undefined") {
-          document.body.style.cursor = isInspecting ? "grab" : "pointer";
+          document.body.style.cursor = isActive ? "default" : "pointer";
         }
       }}
       onPointerOut={() => {

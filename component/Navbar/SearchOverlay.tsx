@@ -159,7 +159,7 @@ export default function SearchOverlay({
               ? "bg-white text-black"
               : "bg-black text-white"
           } ${
-            isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[35px] h-[68px]"
+            isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[34px] h-[68px]"
           }`}
         >
           <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between h-full relative">

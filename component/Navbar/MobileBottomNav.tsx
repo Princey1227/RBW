@@ -9,7 +9,7 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
 
   // Hide mobile bottom navigation on fullscreen 3D Atelier Showroom
-  if (pathname === "/stores/rbw" || pathname === "/stores/rbw/preview-3d") {
+  if (pathname === "/stores/rbw") {
     return null;
   }
 

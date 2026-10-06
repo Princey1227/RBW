@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Menu, X, ShoppingBag, Search, ChevronDown, ArrowLeft } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, ChevronDown, ArrowLeft, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -663,6 +663,34 @@ export default function Navbar() {
   const isRbwStorePage = isStorePage;
   const isRbwShowroom = pathname === "/stores/rbw" || pathname === "/stores/rbw/";
 
+  const [rbwTheme, setRbwTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rbw_theme") as "dark" | "light" | null;
+      if (saved === "dark" || saved === "light") {
+        setRbwTheme(saved);
+      }
+      const handleThemeChange = (e: any) => {
+        if (e.detail === "dark" || e.detail === "light") {
+          setRbwTheme(e.detail);
+        }
+      };
+      window.addEventListener("RBW_THEME_CHANGED", handleThemeChange);
+      return () => window.removeEventListener("RBW_THEME_CHANGED", handleThemeChange);
+    }
+  }, []);
+
+  const handleToggleRbwTheme = () => {
+    const next = rbwTheme === "dark" ? "light" : "dark";
+    setRbwTheme(next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("rbw_theme", next);
+      window.dispatchEvent(new CustomEvent("RBW_THEME_SET", { detail: next }));
+      window.dispatchEvent(new CustomEvent("RBW_THEME_CHANGED", { detail: next }));
+    }
+  };
+
   return (
     <>
       <Script id="kwikpass-init" strategy="afterInteractive">
@@ -714,8 +742,7 @@ export default function Navbar() {
           transform: "translate3d(0, 0, 0)",
         }}
         className={`w-full px-3 sm:px-8 md:px-12 lg:px-14 transition-all duration-500 ease-in-out font-sans pointer-events-auto ${isRbwShowroom
-          ? `fixed left-0 z-[100] bg-[#F5F3EF] border-b border-[#241F1D]/12 shadow-none text-[#18181B] ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[35px] h-[68px]"
-          }`
+          ? `fixed left-0 z-[100] ${rbwTheme === "dark" ? "bg-[#07080a] border-b border-white/10 text-white" : "bg-[#F5F3EF] border-b border-[#241F1D]/12 text-[#18181B]"} shadow-none ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[34px] h-[68px]"}`
           : isExperienceCentrePage
             ? `${isScrolled
               ? "fixed top-0 left-0 z-[100] h-[48px] sm:h-[58px] max-xl:hidden xl:bg-[#FAF8F5]/92 backdrop-blur-md border-b border-[#241F1D]/10 shadow-sm xl:text-[#17140F]"
@@ -729,7 +756,7 @@ export default function Navbar() {
               : `fixed left-0 z-[100] max-xl:bg-[#0D0B0A] max-xl:text-white max-xl:border-b max-xl:border-white/10 ${theme === "light"
                 ? "xl:bg-[var(--surface)] xl:border-b xl:border-[var(--border-color)] xl:text-[var(--foreground)]"
                 : "xl:bg-black xl:border-b xl:border-[var(--border-color)] xl:text-white"
-              } ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[35px] h-[68px]"}`
+              } ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[34px] h-[68px]"}`
           }`}
       >
         <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between h-full relative py-2">
@@ -738,14 +765,14 @@ export default function Navbar() {
           <div className="flex xl:hidden z-10 pointer-events-auto">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`focus:outline-none transition-colors opacity-90 hover:opacity-100 ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white text-[var(--foreground)]"
+              className={`focus:outline-none transition-colors opacity-90 hover:opacity-100 ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "max-xl:text-white text-[var(--foreground)]"
                 }`}
               aria-label="Toggle menu"
             >
               {isOpen ? (
-                <X className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? "text-[#18181B]" : "text-white"}`} />
+                <X className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "text-white"}`} />
               ) : (
-                <Menu className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? "text-[#18181B]" : "text-white"}`} />
+                <Menu className={`h-5 w-5 sm:h-6 sm:w-6 ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "text-white"}`} />
               )}
             </button>
           </div>
@@ -887,7 +914,7 @@ export default function Navbar() {
                 <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform text-[#B9965A]" />
                 <span>ONLY DENIMS</span>
               </Link>
-              {pathname === "/stores/rbw" || pathname === "/stores/rbw/preview-3d" ? (
+              {pathname === "/stores/rbw" ? (
                 <>
                   <div className="h-3.5 w-[1px] bg-zinc-300/80 mx-1 shrink-0" />
                   <RbwNavbarCategorySelector />
@@ -906,32 +933,55 @@ export default function Navbar() {
           )}
 
           {/* Right icons: Shown on store pages (desktop) and ALWAYS on mobile/tablet */}
-          <div className={`flex items-center gap-0.5 sm:gap-4 transition-colors duration-300 z-20 pointer-events-auto shrink-0 ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+          <div className={`flex items-center gap-0.5 sm:gap-4 transition-colors duration-300 z-20 pointer-events-auto shrink-0 ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "max-xl:text-white"
             } ${isMainHomePage ? "xl:hidden" : ""}`}>
             {/* Search */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className={`relative transition-colors duration-300 p-1.5 sm:p-2 rounded-full cursor-pointer flex items-center justify-center shrink-0 ${isRbwShowroom ? "text-[#18181B] hover:text-black" : "max-xl:text-white hover:text-[var(--foreground)]"
+              className={`relative transition-colors duration-300 p-1.5 sm:p-2 rounded-full cursor-pointer flex items-center justify-center shrink-0 ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white/80 hover:text-white" : "text-[#18181B] hover:text-black") : "max-xl:text-white hover:text-[var(--foreground)]"
                 }`}
               aria-label="Search Products"
             >
-              <Search className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+              <Search className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "max-xl:text-white"
                 }`} />
             </button>
+
+            {/* RBW Exclusive Black / Light mode toggle */}
+            {isRbwShowroom && (
+              <button
+                type="button"
+                onClick={handleToggleRbwTheme}
+                className={`relative transition-all duration-300 p-1.5 sm:p-2 rounded-full cursor-pointer flex items-center justify-center shrink-0 border ${
+                  rbwTheme === "dark"
+                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-[#B9965A]"
+                    : "border-[#241F1D]/15 bg-black/5 hover:bg-black/10 text-[#18181B]"
+                }`}
+                aria-label={rbwTheme === "dark" ? "Switch to Light Mode" : "Switch to Black Mode"}
+                title={rbwTheme === "dark" ? "Switch to Light Mode" : "Switch to Black Mode"}
+              >
+                {rbwTheme === "dark" ? (
+                  <Sun className="h-[18px] w-[18px] sm:h-[19px] sm:w-[19px] text-[#B9965A]" strokeWidth={1.8} />
+                ) : (
+                  <Moon className="h-[18px] w-[18px] sm:h-[19px] sm:w-[19px] text-[#18181B]" strokeWidth={1.8} />
+                )}
+              </button>
+            )}
 
             {/* Cart */}
             <button
               id="header-cart-button"
               onClick={() => setCartOpen(true)}
               className={`flex items-center gap-1.5 sm:gap-3 p-1.5 sm:px-4.5 sm:py-2.5 rounded-full border ${isRbwShowroom
-                ? "border-[#241F1D]/15 bg-white/50 hover:bg-white/80 text-[#18181B]"
+                ? (rbwTheme === "dark"
+                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-white"
+                    : "border-[#241F1D]/15 bg-white/50 hover:bg-white/80 text-[#18181B]")
                 : "border-transparent xl:border-[#E8E3DA] bg-transparent xl:bg-[#FAF8F5]/80 hover:bg-foreground/5 xl:hover:bg-[#FAF8F5] max-xl:text-white xl:text-foreground"
                 } transition-all duration-300 shadow-none xl:shadow-3xs cursor-pointer select-none shrink-0`}
               aria-label="Shopping Cart"
             >
               {/* Bag Icon with Badge */}
               <div className="relative flex items-center justify-center pr-0 sm:pr-1.5">
-                <ShoppingBag className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? "text-[#18181B]" : "max-xl:text-white"
+                <ShoppingBag className={`h-[19px] w-[19px] sm:h-[20px] sm:w-[20px] ${isRbwShowroom ? (rbwTheme === "dark" ? "text-white" : "text-[#18181B]") : "max-xl:text-white"
                   }`} />
                 {totalCartItems > 0 && (
                   <span
@@ -1081,7 +1131,7 @@ export default function Navbar() {
                   fill
                   priority
                   unoptimized
-                  className={`object-contain select-none ${isRbwShowroom ? "brightness-0" : "max-xl:brightness-0 max-xl:invert xl:theme-logo-invert"
+                  className={`object-contain select-none ${isRbwShowroom ? (rbwTheme === "dark" ? "brightness-0 invert" : "brightness-0") : "max-xl:brightness-0 max-xl:invert xl:theme-logo-invert"
                     }`}
                 />
               </div>

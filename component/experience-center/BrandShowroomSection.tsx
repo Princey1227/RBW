@@ -66,14 +66,8 @@ export default function BrandShowroomSection({
 }: BrandShowroomSectionProps) {
   const total = products.length;
 
-  // Build extended array (3 repeats) for seamless continuous infinite sliding track
-  const displayItems = useMemo(() => {
-    if (total <= 1) return products;
-    return [...products, ...products, ...products];
-  }, [products, total]);
-
-  // Start in the middle set of products
-  const [currentIndex, setCurrentIndex] = useState(total);
+  // Current sliding track index
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [withTransition, setWithTransition] = useState(true);
   const [dragOffset, setDragOffset] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -111,7 +105,7 @@ export default function BrandShowroomSection({
 
   // Sync index when products array changes (e.g. category filter applied)
   useEffect(() => {
-    setCurrentIndex(total);
+    setCurrentIndex(0);
     setWithTransition(false);
   }, [total]);
 
@@ -145,39 +139,31 @@ export default function BrandShowroomSection({
     setCurrentIndex((prev) => prev - 1);
   }, [total]);
 
-  // Infinite sliding loop handler: seamless position reset when crossing boundaries
-  const handleTransitionEnd = () => {
-    if (total <= 1) return;
-    if (currentIndex >= 2 * total) {
-      setWithTransition(false);
-      setCurrentIndex((prev) => prev - total);
-    } else if (currentIndex < total) {
-      setWithTransition(false);
-      setCurrentIndex((prev) => prev + total);
-    }
-  };
-
-  // Autoplay: slides gently every ~4.5s when not paused
+  // Autoplay: slides gently every ~4.5s when not paused and tab is visible
   useEffect(() => {
     if (total <= 1) return;
 
-    let intervalId: NodeJS.Timeout | null = null;
-    const timeoutId = setTimeout(() => {
-      if (!isPausedRef.current) {
+    const intervalId = setInterval(() => {
+      if (!isPausedRef.current && typeof document !== "undefined" && !document.hidden) {
         handleNext();
       }
-      intervalId = setInterval(() => {
-        if (!isPausedRef.current) {
-          handleNext();
-        }
-      }, 4500);
-    }, 3000);
+    }, 4500);
 
-    return () => {
-      clearTimeout(timeoutId);
-      if (intervalId) clearInterval(intervalId);
-    };
+    return () => clearInterval(intervalId);
   }, [total, handleNext]);
+
+  // Pause when browser tab is hidden to save resources and prevent background drift
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        setIsPaused(true);
+      } else {
+        setIsPaused(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -232,13 +218,20 @@ export default function BrandShowroomSection({
   const isMobile = windowWidth < 768;
   const isTablet = windowWidth >= 768 && windowWidth < 1024;
 
-  // Filter items to render only within visible/animating slot range [-3..+3]
-  const visibleItemsWithSlots = displayItems
-    .map((item, idx) => {
-      const slot = idx - currentIndex;
-      return { item, idx, slot };
-    })
-    .filter(({ slot }) => Math.abs(slot) <= 3);
+  // Robust circular slot projection: ALWAYS guarantees visible items in slots [-3..+3]
+  // This is completely immune to index drift, tab switching, or missed transitionend events!
+  const visibleItemsWithSlots = useMemo(() => {
+    if (total === 0) return [];
+    if (total === 1) {
+      return [{ item: products[0], idx: 0, slot: 0 }];
+    }
+    const slots = [-3, -2, -1, 0, 1, 2, 3];
+    return slots.map((slot) => {
+      const idx = currentIndex + slot;
+      const safeItemIdx = ((idx % total) + total) % total;
+      return { item: products[safeItemIdx], idx, slot };
+    });
+  }, [products, total, currentIndex]);
 
   return (
     <section
@@ -287,7 +280,6 @@ export default function BrandShowroomSection({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onTransitionEnd={handleTransitionEnd}
       >
         {visibleItemsWithSlots.map(({ item, idx, slot }) => {
           const isCenter = slot === 0;
@@ -299,7 +291,7 @@ export default function BrandShowroomSection({
               onClick={() => {
                 if (!isCenter) {
                   setWithTransition(true);
-                  setCurrentIndex(idx);
+                  setCurrentIndex((prev) => prev + slot);
                   triggerPauseAndResume();
                 }
               }}

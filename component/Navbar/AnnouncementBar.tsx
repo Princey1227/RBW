@@ -47,6 +47,24 @@ export default function AnnouncementBar({ isScrolled, isRbwStore: propIsRbwStore
     return () => clearInterval(timer);
   }, []);
 
+  const [rbwTheme, setRbwTheme] = React.useState<"dark" | "light">("dark");
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rbw_theme") as "dark" | "light" | null;
+      if (saved === "dark" || saved === "light") {
+        setRbwTheme(saved);
+      }
+      const handleTheme = (e: any) => {
+        if (e.detail === "dark" || e.detail === "light") {
+          setRbwTheme(e.detail);
+        }
+      };
+      window.addEventListener("RBW_THEME_CHANGED", handleTheme);
+      return () => window.removeEventListener("RBW_THEME_CHANGED", handleTheme);
+    }
+  }, []);
+
   if (isRbwStore) {
     const activeMsg = rbwMessages[currentMsgIdx];
     const Icon = activeMsg.icon;
@@ -54,7 +72,7 @@ export default function AnnouncementBar({ isScrolled, isRbwStore: propIsRbwStore
     return (
       <div
         className={`w-full ${pathname === "/stores/rbw" || pathname === "/stores/rbw/"
-            ? "bg-[#EFECE6] border-b border-[#E2DDD5]/60 text-[#18181B]"
+            ? (rbwTheme === "dark" ? "bg-[#0b0c0e] border-b border-white/10 text-white/90" : "bg-[#EFECE6] border-b border-[#E2DDD5]/60 text-[#18181B]")
             : "bg-[#E5E7EB] dark:bg-stone-900 text-[#18181B] dark:text-[#F5F1E8] border-b border-[#D1D5DB] dark:border-stone-800 shadow-2xs"
           } text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] h-[34px] flex items-center justify-center overflow-hidden fixed top-0 left-0 z-[101] select-none uppercase transition-all duration-300 ${isScrolled
             ? "-translate-y-full opacity-0 pointer-events-none invisible"

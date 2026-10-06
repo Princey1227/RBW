@@ -117,9 +117,6 @@ interface RbwCanvasProps {
   activeIndex: number;
   onSelectIndex: (index: number) => void;
   autoRotate: boolean;
-  isInspecting?: boolean;
-  setIsInspecting?: (inspecting: boolean) => void;
-  rotationStep?: number;
   /** Opt-in premium showroom presentation (used by /stores/rbw only) */
   cinematic?: boolean;
   atmosphere?: RbwAtmosphereKey;
@@ -133,9 +130,6 @@ export default function RbwCanvas({
   activeIndex,
   onSelectIndex,
   autoRotate,
-  isInspecting = false,
-  setIsInspecting,
-  rotationStep = 0,
   cinematic = false,
   atmosphere = "raw",
   reducedMotion = false,
@@ -144,13 +138,7 @@ export default function RbwCanvas({
   const accentColor = activeItem?.accentHex || "#C59B27";
 
   return (
-    <div
-      className={`relative w-full h-full select-none overflow-hidden bg-transparent ${
-        isInspecting
-          ? "cursor-grab active:cursor-grabbing"
-          : "cursor-default"
-      }`}
-    >
+    <div className="relative w-full h-full select-none overflow-hidden bg-transparent cursor-default">
       <Canvas
         camera={{ position: [0, 0.12, 4.2], fov: 46 }}
         gl={{
@@ -257,9 +245,6 @@ export default function RbwCanvas({
           activeIndex={activeIndex}
           onSelectIndex={onSelectIndex}
           autoRotate={autoRotate}
-          isInspecting={isInspecting}
-          setIsInspecting={setIsInspecting}
-          rotationStep={rotationStep}
           cinematic={cinematic}
           reducedMotion={reducedMotion}
           onHoverIndex={onHoverIndex}

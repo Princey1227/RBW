@@ -25,7 +25,8 @@ interface RbwJourneyShellProps {
   receded?: boolean;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   /** Back control + path, rendered at the top of the scrolling area */
-  bar: React.ReactNode;
+  bar?: React.ReactNode;
+  theme?: "dark" | "light";
   children: React.ReactNode;
 }
 
@@ -50,6 +51,7 @@ export function RbwJourneyShell({
   receded = false,
   scrollRef,
   bar,
+  theme = "dark",
   children,
 }: RbwJourneyShellProps) {
   return (
@@ -62,6 +64,7 @@ export function RbwJourneyShell({
             "translate-y-full opacity-0 pointer-events-none transition-[transform,translate,scale,filter,opacity]"
       } ${receded ? "scale-[0.985] brightness-[0.94]" : "scale-100 brightness-100"}`}
       data-ghost={ghost}
+      data-theme={theme}
       aria-hidden={!open || receded}
       inert={!open || receded}
     >
@@ -85,7 +88,7 @@ export function RbwJourneyShell({
 interface RbwJourneyBarProps {
   backLabel: string;
   onBack: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 /** Back control (left) + path (centre). The right column mirrors the left so the path is truly centred. */
@@ -101,7 +104,7 @@ export function RbwJourneyBar({ backLabel, onBack, children }: RbwJourneyBarProp
         <ChevronLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
         <span className="hidden sm:inline">{backLabel}</span>
       </button>
-      <div className="hidden md:block min-w-0 overflow-x-auto scrollbar-none">{children}</div>
+      {children && <div className="hidden md:block min-w-0 overflow-x-auto scrollbar-none">{children}</div>}
       <span aria-hidden="true" className="hidden md:block" />
     </div>
   );

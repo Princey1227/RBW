@@ -344,9 +344,6 @@ interface RbwOrbitCarouselProps {
   activeIndex: number;
   onSelectIndex: (index: number) => void;
   autoRotate: boolean;
-  isInspecting?: boolean;
-  setIsInspecting?: (inspecting: boolean) => void;
-  rotationStep?: number;
   /** Opt-in premium showroom presentation (used by /stores/rbw only) */
   cinematic?: boolean;
   reducedMotion?: boolean;
@@ -360,9 +357,6 @@ export function RbwOrbitCarousel({
   activeIndex,
   onSelectIndex,
   autoRotate,
-  isInspecting = false,
-  setIsInspecting,
-  rotationStep = 0,
   cinematic = false,
   reducedMotion = false,
   onHoverIndex,
@@ -374,18 +368,6 @@ export function RbwOrbitCarousel({
   const startOffsetRef = useRef<number>(0);
   const dragDistanceRef = useRef<number>(0);
   const autoSlideTimerRef = useRef<number>(0);
-
-  // 360 Inspection rotation state
-  const inspectRotationRef = useRef<number>(0);
-  const targetInspectRotationRef = useRef<number>(0);
-  const startInspectRotationRef = useRef<number>(0);
-  const prevRotationStepRef = useRef<number>(rotationStep);
-
-  // Vertical inspection pitch tracking (tilt up/down)
-  const inspectPitchRef = useRef<number>(0);
-  const targetInspectPitchRef = useRef<number>(0);
-  const startInspectPitchRef = useRef<number>(0);
-  const startPointerYRef = useRef<number>(0);
 
   const { gl } = useThree();
   const totalItems = items.length;
@@ -410,75 +392,35 @@ export function RbwOrbitCarousel({
     autoSlideTimerRef.current = 0;
   }, [activeIndex, totalItems]);
 
-  // Sync discrete button rotation steps (e.g. left/right icons clicked)
-  useEffect(() => {
-    if (rotationStep !== prevRotationStepRef.current) {
-      const deltaStep = rotationStep - prevRotationStepRef.current;
-      prevRotationStepRef.current = rotationStep;
-      // 45 degrees (Math.PI / 4) per click step
-      targetInspectRotationRef.current += deltaStep * (Math.PI / 4);
-    }
-  }, [rotationStep]);
-
-  // When exiting inspection mode, gently reset rotation and pitch back towards 0
-  useEffect(() => {
-    if (!isInspecting) {
-      targetInspectRotationRef.current = 0;
-      targetInspectPitchRef.current = 0;
-    }
-  }, [isInspecting]);
-
-  // Pointer drag listeners to slide models horizontally or spin 360 & tilt vertically in inspect mode
+  // Pointer drag listeners to slide models horizontally
   useEffect(() => {
     const canvasEl = gl.domElement;
 
     const handlePointerDown = (e: PointerEvent) => {
       isDraggingRef.current = true;
       startPointerXRef.current = e.clientX;
-      startPointerYRef.current = e.clientY;
       dragDistanceRef.current = 0;
       autoSlideTimerRef.current = 0;
-
-      if (isInspecting) {
-        startInspectRotationRef.current = targetInspectRotationRef.current;
-        startInspectPitchRef.current = targetInspectPitchRef.current;
-      } else {
-        startOffsetRef.current = currentOffsetRef.current;
-      }
+      startOffsetRef.current = currentOffsetRef.current;
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDraggingRef.current) return;
       const dx = e.clientX - startPointerXRef.current;
-      const dy = e.clientY - startPointerYRef.current;
-      dragDistanceRef.current = Math.hypot(dx, dy);
+      dragDistanceRef.current = Math.abs(dx);
 
-      if (isInspecting) {
-        // Dragging right rotates model right, dragging left rotates model left
-        targetInspectRotationRef.current = startInspectRotationRef.current + dx * 0.012;
-
-        // Dragging up tilts view to top, dragging down tilts view to bottom
-        // Clamped to [-Math.PI / 6, Math.PI / 6] (~30 degrees) to prevent upside-down flipping
-        const newPitch = startInspectPitchRef.current - dy * 0.008;
-        targetInspectPitchRef.current = THREE.MathUtils.clamp(
-          newPitch,
-          -Math.PI / 6,
-          Math.PI / 6
-        );
-      } else {
-        // Dragging left (dx < 0) advances forward, dragging right (dx > 0) goes back
-        const deltaOffset = -dx / 300;
-        targetOffsetRef.current = startOffsetRef.current + deltaOffset;
-        currentOffsetRef.current = startOffsetRef.current + deltaOffset;
-      }
+      // Dragging left advances forward, dragging right goes back
+      const deltaOffset = -dx / 300;
+      targetOffsetRef.current = startOffsetRef.current + deltaOffset;
+      currentOffsetRef.current = startOffsetRef.current + deltaOffset;
     };
 
     const handlePointerUp = () => {
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
 
-      // Snap to nearest item if in carousel mode and dragged sufficiently
-      if (!isInspecting && dragDistanceRef.current > 15) {
+      // Snap to nearest item if dragged sufficiently
+      if (dragDistanceRef.current > 15) {
         const snapped = Math.round(targetOffsetRef.current);
         targetOffsetRef.current = snapped;
         const normalizedIndex = ((snapped % totalItems) + totalItems) % totalItems;
@@ -495,61 +437,30 @@ export function RbwOrbitCarousel({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [gl, onSelectIndex, totalItems, isInspecting]);
+  }, [gl, onSelectIndex, totalItems]);
 
   useFrame((_, delta) => {
-    if (isInspecting) {
-      // Butter-smooth damping to inspect rotation angle & pitch tilt
-      inspectRotationRef.current = THREE.MathUtils.damp(
-        inspectRotationRef.current,
-        targetInspectRotationRef.current,
-        12.0,
-        delta
-      );
-      inspectPitchRef.current = THREE.MathUtils.damp(
-        inspectPitchRef.current,
-        targetInspectPitchRef.current,
-        12.0,
-        delta
-      );
-      autoSlideTimerRef.current = 0;
-    } else {
-      // Gently settle inspection rotation and pitch back to 0 when in carousel mode
-      inspectRotationRef.current = THREE.MathUtils.damp(
-        inspectRotationRef.current,
-        0,
-        8.0,
-        delta
-      );
-      inspectPitchRef.current = THREE.MathUtils.damp(
-        inspectPitchRef.current,
-        0,
-        8.0,
+    if (!isDraggingRef.current) {
+      // Smooth linear damp to target slide position
+      currentOffsetRef.current = THREE.MathUtils.damp(
+        currentOffsetRef.current,
+        targetOffsetRef.current,
+        cinematic ? (reducedMotion ? 14 : 5.2) : 7.5,
         delta
       );
 
-      if (!isDraggingRef.current) {
-        // Smooth linear damp to target slide position
-        currentOffsetRef.current = THREE.MathUtils.damp(
-          currentOffsetRef.current,
-          targetOffsetRef.current,
-          cinematic ? (reducedMotion ? 14 : 5.2) : 7.5,
-          delta
-        );
-
-        // Auto-slide to next denim after 5 seconds of inactivity if enabled
-        if (autoRotate) {
-          autoSlideTimerRef.current += delta;
-          if (autoSlideTimerRef.current >= 5.0) {
-            autoSlideTimerRef.current = 0;
-            onSelectIndex((activeIndex + 1) % totalItems);
-          }
-        } else {
+      // Auto-slide to next denim after 5 seconds of inactivity if enabled
+      if (autoRotate) {
+        autoSlideTimerRef.current += delta;
+        if (autoSlideTimerRef.current >= 5.0) {
           autoSlideTimerRef.current = 0;
+          onSelectIndex((activeIndex + 1) % totalItems);
         }
       } else {
         autoSlideTimerRef.current = 0;
       }
+    } else {
+      autoSlideTimerRef.current = 0;
     }
   });
 
@@ -573,9 +484,7 @@ export function RbwOrbitCarousel({
               currentOffsetRef={currentOffsetRef}
               spacing={SLIDE_SPACING}
               isActive={isActive}
-              isInspecting={isInspecting}
-              inspectRotationRef={inspectRotationRef}
-              inspectPitchRef={inspectPitchRef}
+              isInspecting={false}
               cinematic={cinematic}
               reducedMotion={reducedMotion}
               onHoverChange={
@@ -583,9 +492,7 @@ export function RbwOrbitCarousel({
               }
               onClick={() => {
                 if (dragDistanceRef.current < 10) {
-                  if (isActive) {
-                    setIsInspecting?.(true);
-                  } else if (!isInspecting) {
+                  if (!isActive) {
                     onSelectIndex(i);
                   }
                 }

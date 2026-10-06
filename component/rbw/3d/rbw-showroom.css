@@ -4,7 +4,25 @@
    the global navbar/footer or any other route.
    ========================================================================== */
 
-.rbw-showroom {
+.rbw-showroom,
+.rbw-showroom[data-theme="dark"] {
+  --rbw-gold: #c5a059;
+  --rbw-gold-bright: #dfbc77;
+  --rbw-ink: #f5f5f7;
+  --rbw-ink-dim: #a1a1aa;
+  --rbw-ink-faint: #71717a;
+  --rbw-line: rgba(255, 255, 255, 0.12);
+  --rbw-glass: rgba(18, 18, 22, 0.78);
+  --rbw-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --rbw-wash-ms: 1000ms;
+
+  background: #07080a;
+  color: var(--rbw-ink);
+  isolation: isolate;
+}
+
+/* Light mode override when toggled to light */
+.rbw-showroom[data-theme="light"] {
   --rbw-gold: #c29d55;
   --rbw-gold-bright: #d8b570;
   --rbw-ink: #1a1713;
@@ -12,12 +30,9 @@
   --rbw-ink-faint: #8e826e;
   --rbw-line: rgba(194, 157, 85, 0.22);
   --rbw-glass: rgba(252, 248, 238, 0.92);
-  --rbw-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --rbw-wash-ms: 1000ms;
 
-  background: #f3d485;
+  background: #ebe3d8;
   color: var(--rbw-ink);
-  isolation: isolate;
 }
 
 /* --------------------------------------------------------------------------
@@ -33,9 +48,17 @@
   animation: rbwFadeIn 300ms ease-out backwards;
 }
 
-.rbw-showroom .rbw-bd__base {
+/* Default / Dark Studio Base */
+.rbw-showroom .rbw-bd__base,
+.rbw-showroom[data-theme="dark"] .rbw-bd__base {
   position: absolute;
   inset: 0;
+  background:
+    radial-gradient(85% 55% at 50% 30%, rgba(35, 38, 48, 0.5) 0%, transparent 80%),
+    linear-gradient(180deg, #101218 0%, #0c0d12 40%, #07080b 80%, #040507 100%);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-bd__base {
   background:
     radial-gradient(90% 60% at 50% 30%, rgba(255, 252, 240, 0.95) 0%, transparent 72%),
     linear-gradient(180deg, #F2EAD8 0%, #F8F3E6 38%, #F0E6D2 66%, #FAF5EA 100%);
@@ -59,27 +82,61 @@
   opacity: 1;
 }
 
-/* Each wash tints the same cream room very slightly */
-.rbw-showroom .rbw-bd__wash[data-wash="raw"] {
+/* ================= DARK MODE WASH LIGHTING RECIPES ================= */
+.rbw-showroom .rbw-bd__wash[data-wash="raw"],
+.rbw-showroom[data-theme="dark"] .rbw-bd__wash[data-wash="raw"] {
+  background:
+    radial-gradient(55% 62% at 50% 44%, rgba(22, 38, 68, 0.95) 0%, rgba(14, 24, 44, 0.48) 55%, transparent 90%),
+    radial-gradient(110% 95% at 50% 50%, transparent 45%, rgba(6, 9, 18, 0.95) 100%);
+}
+
+.rbw-showroom .rbw-bd__wash[data-wash="black"],
+.rbw-showroom[data-theme="dark"] .rbw-bd__wash[data-wash="black"] {
+  background:
+    radial-gradient(55% 62% at 50% 44%, rgba(44, 24, 32, 0.95) 0%, rgba(28, 15, 21, 0.48) 55%, transparent 90%),
+    radial-gradient(110% 95% at 50% 50%, transparent 45%, rgba(10, 6, 8, 0.95) 100%);
+}
+
+.rbw-showroom .rbw-bd__wash[data-wash="white"],
+.rbw-showroom[data-theme="dark"] .rbw-bd__wash[data-wash="white"] {
+  background:
+    radial-gradient(55% 62% at 50% 44%, rgba(42, 44, 50, 0.95) 0%, rgba(26, 27, 32, 0.48) 55%, transparent 90%),
+    radial-gradient(110% 95% at 50% 50%, transparent 45%, rgba(8, 8, 10, 0.95) 100%);
+}
+
+/* ================= LIGHT MODE WASH LIGHTING RECIPES ================= */
+.rbw-showroom[data-theme="light"] .rbw-bd__wash[data-wash="raw"] {
   background:
     radial-gradient(50% 58% at 50% 44%, rgb(228, 225, 220) 0%, rgba(255, 248, 232, 0.25) 55%, transparent 100%),
     radial-gradient(110% 90% at 50% 50%, transparent 55%, rgba(135, 125, 95, 0.14) 100%);
 }
 
-.rbw-showroom .rbw-bd__wash[data-wash="black"] {
+.rbw-showroom[data-theme="light"] .rbw-bd__wash[data-wash="black"] {
   background:
     radial-gradient(50% 58% at 50% 44%, rgba(255, 248, 236, 0.55) 0%, rgba(255, 246, 230, 0.22) 55%, transparent 100%),
     radial-gradient(110% 90% at 50% 50%, transparent 50%, rgba(120, 95, 75, 0.17) 100%);
 }
 
-.rbw-showroom .rbw-bd__wash[data-wash="white"] {
+.rbw-showroom[data-theme="light"] .rbw-bd__wash[data-wash="white"] {
   background:
     radial-gradient(52% 62% at 50% 44%, rgba(255, 252, 242, 0.85) 0%, rgba(255, 250, 236, 0.35) 55%, transparent 100%),
     radial-gradient(110% 90% at 50% 50%, transparent 58%, rgba(160, 135, 95, 0.12) 100%);
 }
 
-/* Polished floor: brightens and softens toward the viewer, no horizon line */
-.rbw-showroom .rbw-bd__floor {
+/* Studio floor */
+.rbw-showroom .rbw-bd__floor,
+.rbw-showroom[data-theme="dark"] .rbw-bd__floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48%;
+  background:
+    radial-gradient(65% 35% at 50% 36%, rgba(255, 255, 255, 0.08) 0%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 40%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-bd__floor {
   position: absolute;
   left: 0;
   right: 0;
@@ -90,7 +147,17 @@
     linear-gradient(180deg, transparent 0%, rgba(255, 250, 235, 0.28) 45%, rgba(246, 238, 222, 0.78) 100%);
 }
 
-.rbw-showroom .rbw-bd__fabric {
+/* Fabric grain */
+.rbw-showroom .rbw-bd__fabric,
+.rbw-showroom[data-theme="dark"] .rbw-bd__fabric {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.4) 0 1px, transparent 1px 3px);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-bd__fabric {
   position: absolute;
   inset: 0;
   opacity: 0.035;
@@ -102,7 +169,7 @@
   display: none;
 }
 
-/* Oversized serif ghost word: dusty warm gold that fades out toward the floor */
+/* Oversized serif ghost word */
 .rbw-showroom .rbw-bd__ghost {
   position: absolute;
   left: 0;
@@ -111,13 +178,25 @@
   text-align: center;
   font-family: var(--font-serif), "Playfair Display", Didot, Georgia, serif;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   line-height: 1;
   white-space: nowrap;
   animation: rbwGhostIn 900ms var(--rbw-ease) 350ms backwards;
 }
 
-.rbw-showroom .rbw-bd__ghost>span {
+.rbw-showroom .rbw-bd__ghost > span,
+.rbw-showroom[data-theme="dark"] .rbw-bd__ghost > span {
+  display: inline-block;
+  padding: 0 0.08em;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.07) 50%, rgba(255, 255, 255, 0) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: rbwGhostSwap 900ms var(--rbw-ease) backwards;
+}
+
+.rbw-showroom[data-theme="light"] .rbw-bd__ghost > span {
   display: inline-block;
   padding: 0 0.05em;
   background: linear-gradient(180deg, rgba(185, 150, 85, 0.85) 0%, rgba(210, 175, 105, 0.5) 45%, rgba(235, 215, 165, 0) 92%);
@@ -128,7 +207,15 @@
   animation: rbwGhostSwap 900ms var(--rbw-ease) backwards;
 }
 
-.rbw-showroom .rbw-bd__vignette {
+/* Studio Vignette */
+.rbw-showroom .rbw-bd__vignette,
+.rbw-showroom[data-theme="dark"] .rbw-bd__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 110% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.95) 100%);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-bd__vignette {
   position: absolute;
   inset: 0;
   background: radial-gradient(125% 100% at 50% 46%,
@@ -175,6 +262,10 @@
   color: var(--rbw-ink);
 }
 
+.rbw-showroom[data-theme="dark"] .rbw-title {
+  color: #ffffff;
+}
+
 .rbw-showroom .rbw-eyebrow {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 10px;
@@ -191,65 +282,8 @@
   letter-spacing: 0.04em;
 }
 
-/* --------------------------------------------------------------------------
-   CATEGORY NAV — thin borders, animated underline
-   -------------------------------------------------------------------------- */
-
-.rbw-showroom .rbw-catbar {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--rbw-line);
-  background: var(--rbw-glass);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.rbw-showroom .rbw-cat {
-  position: relative;
-  padding: 10px 16px 11px;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--rbw-ink-faint);
-  transition: color 400ms var(--rbw-ease);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.rbw-showroom .rbw-cat+.rbw-cat {
-  border-left: 1px solid var(--rbw-line);
-}
-
-.rbw-showroom .rbw-cat::after {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 6px;
-  height: 1px;
-  background: var(--rbw-gold);
-  transform: scaleX(0);
-  transform-origin: 50% 50%;
-  transition: transform 520ms var(--rbw-ease);
-}
-
-.rbw-showroom .rbw-cat:hover {
-  color: var(--rbw-ink);
-}
-
-.rbw-showroom .rbw-cat[aria-current="true"] {
-  color: var(--rbw-ink);
-}
-
-.rbw-showroom .rbw-cat[aria-current="true"]::after {
-  transform: scaleX(1);
-}
-
-.rbw-showroom .rbw-cat:focus-visible,
 .rbw-showroom .rbw-glass-btn:focus-visible,
-.rbw-showroom .rbw-cta:focus-visible,
-.rbw-showroom .rbw-side-tag:focus-visible {
+.rbw-showroom .rbw-cta:focus-visible {
   outline: 1px solid var(--rbw-gold);
   outline-offset: 3px;
 }
@@ -258,17 +292,18 @@
    GLASS CONTROLS + CTA
    -------------------------------------------------------------------------- */
 
-.rbw-showroom .rbw-glass-btn {
+.rbw-showroom .rbw-glass-btn,
+.rbw-showroom[data-theme="dark"] .rbw-glass-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: var(--rbw-ink-dim);
-  background: var(--rbw-glass);
-  border: 1px solid var(--rbw-line);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 18px rgba(60, 44, 24, 0.14);
+  color: #f5f5f7;
+  background: rgba(22, 22, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   transition:
     color 300ms var(--rbw-ease),
     border-color 300ms var(--rbw-ease),
@@ -277,7 +312,21 @@
   cursor: pointer;
 }
 
-.rbw-showroom .rbw-glass-btn:hover {
+.rbw-showroom .rbw-glass-btn:hover,
+.rbw-showroom[data-theme="dark"] .rbw-glass-btn:hover {
+  color: #ffffff;
+  border-color: rgba(197, 160, 89, 0.6);
+  background: rgba(35, 35, 42, 0.9);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-glass-btn {
+  color: var(--rbw-ink-dim);
+  background: var(--rbw-glass);
+  border: 1px solid var(--rbw-line);
+  box-shadow: 0 4px 18px rgba(60, 44, 24, 0.14);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-glass-btn:hover {
   color: var(--rbw-ink);
   border-color: rgba(194, 157, 85, 0.65);
   background: #FCF8EE;
@@ -287,7 +336,8 @@
   transform: scale(0.94);
 }
 
-.rbw-showroom .rbw-cta {
+.rbw-showroom .rbw-cta,
+.rbw-showroom[data-theme="dark"] .rbw-cta {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -298,10 +348,12 @@
   font-weight: 500;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: #f6f2ea;
-  background: #211f1c;
-  border: 1px solid rgba(185, 150, 90, 0.55);
-  box-shadow: 0 10px 26px rgba(30, 22, 12, 0.28);
+  color: #ffffff;
+  background: rgba(16, 16, 20, 0.85);
+  border: 1px solid rgba(197, 160, 89, 0.55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
   transition:
     background-color 450ms var(--rbw-ease),
     color 450ms var(--rbw-ease),
@@ -310,7 +362,20 @@
   cursor: pointer;
 }
 
-.rbw-showroom .rbw-cta:hover {
+.rbw-showroom .rbw-cta:hover,
+.rbw-showroom[data-theme="dark"] .rbw-cta:hover {
+  background: #000000;
+  border-color: var(--rbw-gold-bright);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-cta {
+  color: #f6f2ea;
+  background: #211f1c;
+  border: 1px solid rgba(185, 150, 90, 0.55);
+  box-shadow: 0 10px 26px rgba(30, 22, 12, 0.28);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-cta:hover {
   background: #0f0e0c;
   border-color: var(--rbw-gold-bright);
 }
@@ -327,24 +392,7 @@
   transform: translate(2px, -2px);
 }
 
-/* --------------------------------------------------------------------------
-   SIDE PRODUCT TAGS (name + price under the receding products)
-   -------------------------------------------------------------------------- */
 
-.rbw-showroom .rbw-side-tag {
-  position: absolute;
-  transform: translateX(-50%);
-  text-align: center;
-  cursor: pointer;
-  opacity: 0.42;
-  transition: opacity 500ms var(--rbw-ease), transform 500ms var(--rbw-ease);
-}
-
-.rbw-showroom .rbw-side-tag[data-hot="true"],
-.rbw-showroom .rbw-side-tag:hover {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-3px);
-}
 
 /* Selection confirmation: a hairline that draws once under the CTA block */
 .rbw-showroom .rbw-confirm {

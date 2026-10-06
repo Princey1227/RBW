@@ -14,8 +14,25 @@ const CATEGORIES: { id: CategoryId; label: string }[] = [
 
 export default function RbwNavbarCategorySelector() {
   const [selectedCategories, setSelectedCategories] = useState<CategoryId[]>(["jeans"]);
+  const [rbwTheme, setRbwTheme] = useState<"dark" | "light">("dark");
 
-  // Listen to state updates from preview-3d page
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("rbw_theme") as "dark" | "light" | null;
+      if (saved === "dark" || saved === "light") {
+        setRbwTheme(saved);
+      }
+      const handleTheme = (e: any) => {
+        if (e.detail === "dark" || e.detail === "light") {
+          setRbwTheme(e.detail);
+        }
+      };
+      window.addEventListener("RBW_THEME_CHANGED", handleTheme);
+      return () => window.removeEventListener("RBW_THEME_CHANGED", handleTheme);
+    }
+  }, []);
+
+  // Listen to category state updates from 3D showroom
   useEffect(() => {
     const handleStateUpdate = (e: any) => {
       if (e.detail?.selectedCategories) {
@@ -43,17 +60,6 @@ export default function RbwNavbarCategorySelector() {
 
   return (
     <div className="flex items-center gap-1.5 xl:gap-2 select-none pointer-events-auto">
-      {/* SHOP BY Button with dropdown chevron */}
-      <button
-        type="button"
-        onClick={handleToggleFilter}
-        className="flex items-center gap-1 px-3 py-1 rounded-full text-[10px] xl:text-[10.5px] font-bold tracking-wider uppercase border border-zinc-300 hover:border-zinc-700 text-zinc-800 bg-white/80 hover:bg-white transition-all cursor-pointer shadow-2xs"
-        title="Open filter panel"
-      >
-        <span>SHOP BY</span>
-        <ChevronDown className="w-3 h-3 text-zinc-600" />
-      </button>
-
       {/* Category Pills */}
       {CATEGORIES.map((cat) => {
         const isSelected = selectedCategories.includes(cat.id);
@@ -63,14 +69,19 @@ export default function RbwNavbarCategorySelector() {
             key={cat.id}
             type="button"
             onClick={() => handleToggle(cat.id)}
-            className={`flex items-center gap-1 px-3 xl:px-3.5 py-1 rounded-full text-[10px] xl:text-[10.5px] font-bold tracking-wider uppercase transition-all cursor-pointer shadow-2xs ${isSelected
-                ? "bg-[#18181B] text-white border border-[#18181B]"
-                : "bg-white/80 border border-zinc-300 hover:border-zinc-700 text-zinc-800 hover:bg-white"
-              }`}
+            className={`flex items-center gap-1 px-3 xl:px-3.5 py-1 rounded-full text-[10px] xl:text-[10.5px] font-bold tracking-wider uppercase transition-all cursor-pointer shadow-2xs ${
+              isSelected
+                ? rbwTheme === "dark"
+                  ? "bg-[#B9965A] text-[#07080a] border border-[#B9965A]"
+                  : "bg-[#18181B] text-white border border-[#18181B]"
+                : rbwTheme === "dark"
+                  ? "bg-white/5 border border-white/20 hover:border-white/50 text-white/80 hover:bg-white/10"
+                  : "bg-white/80 border border-zinc-300 hover:border-zinc-700 text-zinc-800 hover:bg-white"
+            }`}
           >
             <span>{cat.label}</span>
             {isSelected && (
-              <X className="w-3 h-3 stroke-[2.5] text-zinc-300 hover:text-white transition-colors" />
+              <X className={`w-3 h-3 stroke-[2.5] ${rbwTheme === "dark" ? "text-[#07080a]" : "text-zinc-300 hover:text-white"} transition-colors`} />
             )}
           </button>
         );

@@ -333,3 +333,24 @@
   border-color: #D8B570 !important;
   box-shadow: 0 6px 20px -2px rgba(194, 157, 85, 0.4) !important;
 }
+
+/* Scoped dark mode when rendered inside the RBW Showroom */
+.rbw-showroom:not([data-theme="light"]) .rbw-fit__heading,
+.rbw-showroom[data-theme="dark"] .rbw-fit__heading {
+  color: #f5f5f7;
+}
+
+.rbw-showroom:not([data-theme="light"]) .rbw-fit__name,
+.rbw-showroom[data-theme="dark"] .rbw-fit__name {
+  color: #f5f5f7;
+}
+
+.rbw-showroom:not([data-theme="light"]) .rbw-fit__name:hover,
+.rbw-showroom[data-theme="dark"] .rbw-fit__name:hover {
+  color: #dfbc77;
+}
+
+.rbw-showroom:not([data-theme="light"]) .rbw-fit__watermark span,
+.rbw-showroom[data-theme="dark"] .rbw-fit__watermark span {
+  color: rgba(255, 255, 255, 0.08);
+}

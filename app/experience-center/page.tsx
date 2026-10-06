@@ -374,7 +374,7 @@ const ADDITIONAL_PRODUCTS: ExperienceProduct[] = [
     subtitle: "Built for warm climate operations.",
     wash: "Military Khaki",
     price: 1799,
-    image: "/black_denim_shorts_hanger.png",
+    image: "/black_denim_shorts.png",
     handle: "sa-combat-utility-shorts-khaki",
     description: "Reinforced seat and double-needle field construction on classic utility shorts.",
     fitBadge: "UTILITY SHORT",

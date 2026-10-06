@@ -253,7 +253,7 @@ export default function ChatBotWidget() {
   const isRbwStore = Boolean(pathname?.startsWith("/stores/rbw"));
 
   // Hide AI chatbot on fullscreen 3D Atelier Showroom and Experience Center so it doesn't obstruct controls
-  if (pathname === "/stores/rbw" || pathname === "/stores/rbw/preview-3d" || pathname === "/experience-center") {
+  if (pathname === "/stores/rbw" || pathname === "/experience-center") {
     return null;
   }
 

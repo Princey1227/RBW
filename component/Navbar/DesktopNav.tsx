@@ -20,7 +20,7 @@ export default function DesktopNav({
   textClass = "text-foreground",
 }: DesktopNavProps) {
   const pathname = usePathname();
-  const isPreview3D = pathname === "/stores/rbw" || pathname === "/stores/rbw/preview-3d";
+  const isPreview3D = pathname === "/stores/rbw";
 
   // When inside the 3D Preview Showroom, remove category buttons from navbar (handled via left Filter Panel)
   if (isPreview3D) {

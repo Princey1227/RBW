@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 const getRouteRank = (path: string): number => {
   if (!path || path === "/") return 0;
   if (path.startsWith("/product")) return 3;
-  if (path.includes("preview-3d") || path === "/stores/rbw") return 3;
+  if (path === "/stores/rbw") return 3;
   if (
     path.startsWith("/stores") ||
     path.startsWith("/shop") ||

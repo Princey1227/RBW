@@ -141,7 +141,7 @@ export default function ZipperScrollbar() {
   // Update overall page background class when fabric theme or page route changes,
   // and dynamically set background CSS variables on html root to keep everything (header, main, footer) in sync
   useEffect(() => {
-    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/" || pathname === "/stores/rbw/preview-3d") return;
+    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/") return;
 
     const mainEl = document.querySelector("main");
     if (mainEl) {
@@ -182,7 +182,7 @@ export default function ZipperScrollbar() {
   // Scroll and dimensions listener
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/" || pathname === "/stores/rbw/preview-3d") return;
+    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/") return;
 
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -234,7 +234,7 @@ export default function ZipperScrollbar() {
   // Custom silky-smooth LERP easing for scroll transitions
   const [smoothProgress, setSmoothProgress] = useState(0);
   useEffect(() => {
-    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/" || pathname === "/stores/rbw/preview-3d") return;
+    if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/") return;
 
     let frameId: number;
     const step = () => {
@@ -251,7 +251,7 @@ export default function ZipperScrollbar() {
   }, [scrollProgress, pathname]);
 
   // Only render zipper scrollbar UI for scrollable RBW pages (/stores/rbw/jackets, /stores/rbw/shorts), NOT for 3D showroom or main ONLY DENIMS pages
-  if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/" || pathname === "/stores/rbw/preview-3d") {
+  if (!pathname || !pathname.startsWith("/stores/rbw") || pathname === "/stores/rbw" || pathname === "/stores/rbw/") {
     return null;
   }
 

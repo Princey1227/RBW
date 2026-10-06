@@ -9,7 +9,7 @@ import {
   useRbwReducedMotion,
 } from "@/component/rbw/3d/RbwShowroomBackdrop";
 import { ALL_SHOWROOM_ITEMS, CarouselItemData } from "@/component/rbw/3d/RbwOrbitCarousel";
-import { RbwFilterPanel, CategoryId } from "@/component/rbw/3d/RbwFilterPanel";
+import { CategoryId } from "@/component/rbw/3d/RbwFilterPanel";
 import "@/component/rbw/3d/rbw-showroom.css";
 
 const RbwCanvas = dynamic(
@@ -22,13 +22,17 @@ const RbwCanvas = dynamic(
 
 interface RbwWashSelection3DProps {
   onWashSelect: (washKey: "raw" | "black" | "white" | string, category?: string, defaultFit?: string) => void;
+  theme?: "dark" | "light";
+  onToggleTheme?: () => void;
 }
 
-export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
+export function RbwWashSelection3D({
+  onWashSelect,
+  theme = "dark",
+  onToggleTheme,
+}: RbwWashSelection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
-  const [isInspecting, setIsInspecting] = useState(false);
-  const [rotationStep, setRotationStep] = useState(0);
 
   const [selectedCategories, setSelectedCategories] = useState<CategoryId[]>(["jeans"]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -143,26 +147,6 @@ export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
 
   const handleSelectIndex = (idx: number) => {
     setActiveIndex(idx);
-  };
-
-  const handleRotateLeft = () => {
-    setRotationStep((prev) => prev - 1);
-  };
-
-  const handleRotateRight = () => {
-    setRotationStep((prev) => prev + 1);
-  };
-
-  const handleToggleInspect = () => {
-    setIsInspecting((prev) => {
-      const next = !prev;
-      if (next) setIsFilterOpen(false);
-      return next;
-    });
-  };
-
-  const handleCloseInspect = () => {
-    setIsInspecting(false);
   };
 
   const handleToggleCategory = (catId: CategoryId) => {
@@ -302,7 +286,10 @@ export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
   const ghostWord = (activeItem?.name || "").split(" ")[0];
 
   return (
-    <div className="rbw-showroom relative w-full h-full overflow-hidden select-none bg-[#07080a]">
+    <div
+      className="rbw-showroom relative w-full h-full overflow-hidden select-none"
+      data-theme={theme}
+    >
       <link rel="preload" href="/rbwstore/raw.png" as="image" />
       <link rel="preload" href="/rbwstore/black.png" as="image" />
       <link rel="preload" href="/rbwstore/white.png" as="image" />
@@ -318,9 +305,6 @@ export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
             activeIndex={activeIndex}
             onSelectIndex={setActiveIndex}
             autoRotate={autoRotate}
-            isInspecting={isInspecting}
-            setIsInspecting={setIsInspecting}
-            rotationStep={rotationStep}
             cinematic
             atmosphere={atmosphere}
             reducedMotion={reducedMotion}
@@ -344,36 +328,11 @@ export function RbwWashSelection3D({ onWashSelect }: RbwWashSelection3DProps) {
           isFilterOpen={isFilterOpen}
           activeFilterCount={activeFilterCount}
           hoveredIndex={hoveredIndex}
-          isInspecting={isInspecting}
-          onCloseInspect={handleCloseInspect}
-          onRotateLeft={handleRotateLeft}
-          onRotateRight={handleRotateRight}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
           onShopItem={(item) => {
             onWashSelect(item.washKey, item.category, item.fitType);
           }}
-        />
-
-        <RbwFilterPanel
-          isOpen={isFilterOpen}
-          onToggleOpen={() => setIsFilterOpen((prev) => !prev)}
-          selectedCategories={selectedCategories}
-          activeCategory={selectedCategories[0]}
-          onToggleCategory={handleToggleCategory}
-          onSelectCategory={handleSelectCategory}
-          selectedColors={selectedColors}
-          onToggleColor={handleToggleColor}
-          selectedSizes={selectedSizes}
-          onToggleSize={handleToggleSize}
-          selectedFits={selectedFits}
-          onToggleFit={handleToggleFit}
-          priceRange={priceRange}
-          onChangePrice={setPriceRange}
-          selectedDiscount={selectedDiscount}
-          onSelectDiscount={handleSelectDiscount}
-          onResetFilters={handleResetFilters}
-          onApplyFilters={() => setIsFilterOpen(false)}
-          activeFilterCount={activeFilterCount}
-          isInspecting={isInspecting}
         />
       </div>
     </div>

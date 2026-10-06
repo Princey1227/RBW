@@ -26,11 +26,23 @@
   --rbw-ghost-strength: 0.36;
 }
 
-.rbw-showroom.rbw-j-shell {
+.rbw-showroom.rbw-j-shell,
+.rbw-showroom[data-theme="dark"].rbw-j-shell {
+  background: #07080a !important;
+}
+
+.rbw-showroom[data-theme="light"].rbw-j-shell {
   background: #F4EFE6 !important;
 }
 
-.rbw-showroom.rbw-j-shell .rbw-bd__base {
+.rbw-showroom[data-theme="dark"].rbw-j-shell .rbw-bd__base,
+.rbw-showroom:not([data-theme="light"]).rbw-j-shell .rbw-bd__base {
+  background:
+    radial-gradient(85% 55% at 50% 30%, rgba(35, 38, 48, 0.5) 0%, transparent 80%),
+    linear-gradient(180deg, #101218 0%, #0c0d12 40%, #07080b 80%, #040507 100%) !important;
+}
+
+.rbw-showroom[data-theme="light"].rbw-j-shell .rbw-bd__base {
   background:
     radial-gradient(
       ellipse at 50% 38%,
@@ -41,7 +53,12 @@
     linear-gradient(180deg, #F0E9DF 0%, #FAF5EC 30%, #F3EDE2 60%, #EFE8DC 100%) !important;
 }
 
-.rbw-showroom.rbw-j-shell .rbw-bd__vignette {
+.rbw-showroom[data-theme="dark"].rbw-j-shell .rbw-bd__vignette,
+.rbw-showroom:not([data-theme="light"]).rbw-j-shell .rbw-bd__vignette {
+  background: radial-gradient(130% 110% at 50% 48%, transparent 52%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.95) 100%) !important;
+}
+
+.rbw-showroom[data-theme="light"].rbw-j-shell .rbw-bd__vignette {
   background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(160, 135, 105, 0.12) 85%, rgba(130, 105, 75, 0.22) 100%) !important;
 }
 
@@ -62,9 +79,9 @@
   padding-top: 96px; /* clears the announcement + navbar on mobile */
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .rbw-showroom .rbw-j-scroll {
-    padding-top: 0;
+    padding-top: 104px; /* clears announcement (34px) + desktop navbar (68px) */
   }
 }
 
