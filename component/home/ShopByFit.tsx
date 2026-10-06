@@ -3,11 +3,15 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Ruler, X, ArrowRight, Check } from "lucide-react";
+import { RbwFitSelector } from "@/component/rbw/RbwFitSelector";
 
 interface ShopByFitProps {
   selectedWash: "raw" | "black" | "white" | "vintage" | null;
+  selectedFit?: string | null;
   isInsideViewport: boolean;
   onFitClick?: (fitName: string) => void;
+  /** Opt-in showroom styling (used by /stores/rbw). Default keeps the original look. */
+  variant?: "default" | "showroom";
 }
 
 interface SizingSpec {
@@ -149,12 +153,53 @@ const getProductUrlForWashAndFit = (wash: "raw" | "black" | "white" | "vintage",
   return `/shop?wash=${wash}&fit=${normFit}`;
 };
 
-const getFitImage = (fitName: string, wash: "raw" | "black" | "white" | "vintage" | null) => {
-  const lowerName = fitName.toLowerCase();
-  return `/RBW-${lowerName}.png`;
+export const getFitImage = (
+  fitName: string,
+  wash?: "raw" | "black" | "white" | "vintage" | string | null
+): string => {
+  const normFit = (fitName || "").toLowerCase().trim();
+  const normWash = (wash || "raw").toLowerCase().trim();
+
+  if (normWash === "black") {
+    return `/fits/black/b${normFit}.png`;
+  }
+  if (normWash === "white" || normWash === "vintage") {
+    return `/fits/white/w${normFit}.png`;
+  }
+  // Default to raw:
+  return `/fits/${normFit}.png`;
 };
 
-export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }: ShopByFitProps) {
+/**
+ * `variant="showroom"` (used by /stores/rbw) is rendered by RbwFitSelector, which
+ * shares Step 1's visual system. Every other caller keeps the original layout below.
+ */
+export default function ShopByFit(props: ShopByFitProps) {
+  if (props.variant === "showroom") {
+    return (
+      <RbwFitSelector
+        id={props.isInsideViewport ? "shop-by-fit-viewport" : "shop-by-fit-scroll"}
+        selectedWash={props.selectedWash}
+        selectedFit={props.selectedFit}
+        fits={fitItems}
+        sizing={JEANS_SIZING_DATA}
+        onFitClick={props.onFitClick}
+        hrefFor={(fitName) =>
+          props.selectedWash
+            ? getProductUrlForWashAndFit(props.selectedWash, fitName)
+            : `/shop?fit=${fitName.toLowerCase()}`
+        }
+      />
+    );
+  }
+  return <ShopByFitClassic {...props} />;
+}
+
+function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick }: ShopByFitProps) {
+  const sv = false; // the showroom variant is delegated to RbwFitSelector above
+  const ghostWord = (selectedWash || "").toUpperCase();
+  const ghostSize =
+    ghostWord.length <= 5 ? "min(20vw, 34vh)" : "min(14vw, 24vh)";
   const [modalFit, setModalFit] = useState<string | null>(null);
   const [unit, setUnit] = useState<"in" | "cm">("in");
 
@@ -200,21 +245,41 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
   return (
     <div
       id={isInsideViewport ? "shop-by-fit-viewport" : "shop-by-fit-scroll"}
-      className={`w-full flex flex-col items-start px-6 sm:px-12 md:px-16 lg:px-20 select-none z-20 transition-colors duration-500 ease-in-out bg-transparent text-[var(--foreground)] ${isInsideViewport
+      className={`${sv ? "rbw-fit " : ""}w-full flex flex-col items-start px-6 sm:px-12 md:px-16 lg:px-20 select-none z-20 transition-colors duration-500 ease-in-out bg-transparent text-[var(--foreground)] ${isInsideViewport
         ? "opacity-100 h-auto py-2 sm:py-4 pointer-events-auto"
         : "pt-2 pb-6 sm:pt-4 sm:pb-6 md:pt-5 md:pb-8 border-b border-foreground/5"
         }`}
     >
+      {sv && (
+        <div className="rbw-fit__bd" aria-hidden="true">
+          <div className="rbw-fit__floor" />
+          {ghostWord && (
+            <div className="rbw-fit__ghost" style={{ fontSize: ghostSize }}>
+              <span>{ghostWord}</span>
+            </div>
+          )}
+          <div className="rbw-fit__fabric" />
+          <div className="rbw-fit__vignette" />
+        </div>
+      )}
+
       {/* Centered Select Your Fit Heading */}
-      <div className="w-full flex flex-col items-center justify-center mb-8 select-none">
-        <h2 className="font-serif font-normal text-[24px] sm:text-[30px] md:text-[36px] uppercase tracking-wide leading-none text-[var(--foreground)]">
+      <div className={`w-full flex flex-col items-center justify-center mb-8 select-none ${sv ? "relative z-10 mt-4 sm:mt-6 mb-6 sm:mb-10" : ""}`}>
+        <h2
+          className={
+            sv
+              ? "rbw-fit__title text-[22px] sm:text-[30px] md:text-[38px]"
+              : "font-serif font-normal text-[24px] sm:text-[30px] md:text-[36px] uppercase tracking-wide leading-none text-[var(--foreground)]"
+          }
+        >
           SELECT YOUR FIT
         </h2>
+        {sv && <span className="rbw-fit__rule" />}
       </div>
 
       {/* Horizontal grid of fits */}
-      <div className="w-full grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-2.5 sm:gap-4 md:gap-6 mt-0 max-w-[1600px] mx-auto pb-12 md:pb-4">
-        {fitItems.map((item) => {
+      <div className={`w-full grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-2.5 sm:gap-4 md:gap-6 mt-0 max-w-[1600px] mx-auto pb-12 md:pb-4 ${sv ? "relative z-10" : ""}`}>
+        {fitItems.map((item, idx) => {
           const fitHref = selectedWash
             ? getProductUrlForWashAndFit(selectedWash, item.name)
             : `/shop?fit=${item.name.toLowerCase()}`;
@@ -234,20 +299,35 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
           };
 
           const content = (
-            <div className="relative w-full flex flex-col items-center justify-start">
+            <div
+              className={`relative w-full flex flex-col items-center justify-start ${sv ? "rbw-fit__card" : ""}`}
+              style={sv ? ({ ["--i" as any]: idx } as React.CSSProperties) : undefined}
+            >
               {/* Image Container */}
               <div className="relative w-full h-[125px] min-[375px]:h-[140px] min-[410px]:h-[155px] sm:h-[260px] md:h-[300px] lg:h-[340px] xl:h-[360px] flex items-start justify-center overflow-visible">
+                {sv && <span className="rbw-fit__shadow" aria-hidden="true" />}
                 <img
                   src={fitImage}
                   alt={`${item.name} Fit`}
-                  className="h-full w-auto max-w-none object-contain object-top mix-blend-multiply filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.03)] transition-transform duration-300 group-hover:scale-[1.02]"
+                  className={
+                    sv
+                      ? "rbw-fit__img h-full w-auto max-w-none object-contain object-top mix-blend-multiply"
+                      : "h-full w-auto max-w-none object-contain object-top mix-blend-multiply filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.03)] transition-transform duration-300 group-hover:scale-[1.02]"
+                  }
                 />
               </div>
 
               {/* Details Container */}
               <div className="w-full flex flex-col items-center text-center mt-1.5 sm:mt-4">
                 {/* Fit Name */}
-                <span className="text-[10.5px] sm:text-[13px] font-black tracking-[0.18em] sm:tracking-[0.25em] uppercase font-sans text-[var(--foreground)] opacity-95 mb-1 sm:mb-2.5">
+                {sv && <span className="rbw-fit__idx font-sans">{String(idx + 1).padStart(2, "0")}</span>}
+                <span
+                  className={
+                    sv
+                      ? "rbw-fit__name text-[10.5px] sm:text-[12px] uppercase mb-1 sm:mb-2"
+                      : "text-[10.5px] sm:text-[13px] font-black tracking-[0.18em] sm:tracking-[0.25em] uppercase font-sans text-[var(--foreground)] opacity-95 mb-1 sm:mb-2.5"
+                  }
+                >
                   {item.name}
                 </span>
 
@@ -255,7 +335,7 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
                 <button
                   type="button"
                   onClick={handleMeasurementsClick}
-                  className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] font-black tracking-[0.2em] uppercase text-stone-500 group-hover:text-stone-900 hover:!text-[#8C6B2F] transition-colors duration-300 select-none group/btn cursor-pointer"
+                  className={`${sv ? "rbw-fit__measure " : ""}flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] font-black tracking-[0.2em] uppercase text-stone-500 group-hover:text-stone-900 hover:!text-[#8C6B2F] transition-colors duration-300 select-none group/btn cursor-pointer`}
                   title={`View detailed measurements for ${item.name} Jeans`}
                 >
                   <Ruler className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#B9965A] group-hover/btn:scale-110 transition-transform" />
@@ -309,21 +389,21 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+          className={`${sv ? "rbw-fit-modal " : ""}fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200`}
           onClick={() => setModalFit(null)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[620px] bg-[#FAF8F5] dark:bg-[#12100E] text-[#1C1917] dark:text-[#F5F1E8] border border-[#E8E3DA] dark:border-[#2A2418] rounded-2xl shadow-2xl p-5 sm:p-7 flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto"
+            className={`${sv ? "rbw-fit-panel " : ""}relative w-full max-w-[620px] bg-[#FAF8F5] dark:bg-[#12100E] text-[#1C1917] dark:text-[#F5F1E8] border border-[#E8E3DA] dark:border-[#2A2418] rounded-2xl shadow-2xl p-5 sm:p-7 flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto`}
           >
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-[#E8E3DA] dark:border-[#2A2418] pb-4 mb-4">
+            <div className={`${sv ? "rbw-fit-head " : ""}flex items-start justify-between border-b border-[#E8E3DA] dark:border-[#2A2418] pb-4 mb-4`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#D4B16A]/15 flex items-center justify-center">
+                <div className={`${sv ? "rbw-fit-badge " : ""}w-8 h-8 rounded-full bg-[#D4B16A]/15 flex items-center justify-center`}>
                   <Ruler className="w-4 h-4 text-[#B9965A]" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-base sm:text-xl font-bold tracking-wide uppercase">
+                  <h3 className={`${sv ? "rbw-fit-title " : ""}font-serif text-base sm:text-xl font-bold tracking-wide uppercase`}>
                     {modalFit} Fit Measurements
                   </h3>
                   <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
@@ -336,7 +416,7 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
               <button
                 type="button"
                 onClick={() => setModalFit(null)}
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-stone-200/70 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 flex items-center justify-center transition-colors cursor-pointer active:scale-95 shrink-0 ml-2"
+                className={`${sv ? "rbw-fit-glass " : ""}w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-stone-200/70 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 flex items-center justify-center transition-colors cursor-pointer active:scale-95 shrink-0 ml-2`}
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />
@@ -350,26 +430,26 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
               </span>
 
               {/* Unit Toggle */}
-              <div className="flex items-center rounded-lg border border-[#E8E3DA] dark:border-[#2A2418] bg-white dark:bg-stone-900 p-0.5 text-[9.5px] font-bold">
+              <div className={`${sv ? "rbw-fit-toggle " : ""}flex items-center rounded-lg border border-[#E8E3DA] dark:border-[#2A2418] bg-white dark:bg-stone-900 p-0.5 text-[9.5px] font-bold`}>
                 <button
                   type="button"
                   onClick={() => setUnit("in")}
-                  className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                    unit === "in"
-                      ? "bg-[#1C1917] text-white dark:bg-white dark:text-black shadow-2xs"
-                      : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
-                  }`}
+                  data-on={unit === "in"}
+                  className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${unit === "in"
+                    ? "bg-[#1C1917] text-white dark:bg-white dark:text-black shadow-2xs"
+                    : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                    }`}
                 >
                   INCHES (")
                 </button>
                 <button
                   type="button"
                   onClick={() => setUnit("cm")}
-                  className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                    unit === "cm"
-                      ? "bg-[#1C1917] text-white dark:bg-white dark:text-black shadow-2xs"
-                      : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
-                  }`}
+                  data-on={unit === "cm"}
+                  className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${unit === "cm"
+                    ? "bg-[#1C1917] text-white dark:bg-white dark:text-black shadow-2xs"
+                    : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                    }`}
                 >
                   CM
                 </button>
@@ -377,7 +457,7 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
             </div>
 
             {/* Measurements Table */}
-            <div className="w-full overflow-x-auto rounded-xl border border-[#E8E3DA] dark:border-[#2A2418] bg-white dark:bg-stone-950/60 shadow-xs mb-4">
+            <div className={`${sv ? "rbw-fit-table " : ""}w-full overflow-x-auto rounded-xl border border-[#E8E3DA] dark:border-[#2A2418] bg-white dark:bg-stone-950/60 shadow-xs mb-4`}>
               <table className="w-full text-center text-[11px] sm:text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-[#E8E3DA] dark:border-[#2A2418] bg-stone-100/60 dark:bg-stone-900/60">
@@ -441,7 +521,7 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
               <button
                 type="button"
                 onClick={() => setModalFit(null)}
-                className="w-1/3 py-3 rounded-xl border border-[#E8E3DA] dark:border-[#2A2418] hover:bg-stone-100 dark:hover:bg-stone-900 text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                className={`${sv ? "rbw-fit-btn-ghost " : ""}w-1/3 py-3 rounded-xl border border-[#E8E3DA] dark:border-[#2A2418] hover:bg-stone-100 dark:hover:bg-stone-900 text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer`}
               >
                 Close
               </button>
@@ -454,7 +534,7 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
                     setModalFit(null);
                     onFitClick(fitName);
                   }}
-                  className="w-2/3 py-3 rounded-xl bg-[#1C1917] hover:bg-black dark:bg-[#D4B16A] dark:hover:bg-[#B9965A] text-white dark:text-black text-xs font-black tracking-[0.2em] uppercase transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                  className={`${sv ? "rbw-fit-btn-cta " : ""}w-2/3 py-3 rounded-xl bg-[#1C1917] hover:bg-black dark:bg-[#D4B16A] dark:hover:bg-[#B9965A] text-white dark:text-black text-xs font-black tracking-[0.2em] uppercase transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2`}
                 >
                   <span>Select {modalFit} Fit</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -467,4 +547,3 @@ export default function ShopByFit({ selectedWash, isInsideViewport, onFitClick }
     </div>
   );
 }
-

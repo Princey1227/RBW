@@ -42,38 +42,38 @@
 
 :root.light,
 .light {
-  --background: #F7F5F1;
-  --foreground: #17140F;
-  --surface: #FFFFFF;
-  --text-secondary: #6B655C;
-  --border-color: #E4E0D8;
-  --accent-gold: #9C7A3F;
-  --accent-gold-hover: #7C5F30;
+  --background: #F8F3E6;
+  --foreground: #1A1713;
+  --surface: #FCF8EE;
+  --text-secondary: #746A5B;
+  --border-color: #E8DECC;
+  --accent-gold: #C29D55;
+  --accent-gold-hover: #D8B570;
 
   /* Typography scale colors overrides */
-  --text-h2: #1C1C1C;
-  --text-product: #252525;
-  --text-price: #3D3D3D;
+  --text-h2: #1E1A14;
+  --text-product: #242018;
+  --text-price: #383124;
 
   /* Theme Background bases */
-  --bg-indigo-base: #F7F5F1;
-  --bg-charcoal-base: #E4E0D8;
-  --bg-matte-base: #FFFFFF;
+  --bg-indigo-base: #F8F3E6;
+  --bg-charcoal-base: #EFE6D4;
+  --bg-matte-base: #FCF8EE;
   --page-bg: var(--bg-indigo-base);
 
   /* Denim Twill Texture variables */
-  --twill-color: rgba(0, 0, 0, 0.015);
-  --vignette-color: rgba(247, 245, 241, 0.85);
+  --twill-color: rgba(75, 55, 25, 0.018);
+  --vignette-color: rgba(240, 232, 218, 0.85);
 
   /* Diamond / Divider elements */
-  --divider-color: #E4E0D8;
-  --diamond-color: rgba(23, 20, 15, 0.3);
+  --divider-color: #E8DECC;
+  --diamond-color: rgba(194, 157, 85, 0.35);
 
   /* WHITE Card Variables */
-  --card-white-bg: #FFFFFF;
-  --card-white-grid: rgba(23, 20, 15, 0.02);
-  --card-white-text: #17140F;
-  --card-white-border: #E4E0D8;
+  --card-white-bg: #FCF8EE;
+  --card-white-grid: rgba(194, 157, 85, 0.025);
+  --card-white-text: #1A1713;
+  --card-white-border: #E8DECC;
 
   /* Logo filter */
   --logo-filter: invert(1) hue-rotate(180deg);

@@ -186,10 +186,10 @@ export function RbwFilterPanel({
           }`}
       >
         {/* Main Panel Content Container */}
-        <div className="relative flex-1 flex flex-col h-full bg-[#FAF9F5] border-r border-[#E6E1D7] shadow-[24px_0_60px_rgba(0,0,0,0.18)] text-zinc-900 overflow-hidden pointer-events-auto">
+        <div className="relative flex-1 flex flex-col h-full bg-[#F8F3E6] border-r border-[#E8DECC] shadow-[24px_0_60px_rgba(0,0,0,0.18)] text-zinc-900 overflow-hidden pointer-events-auto">
 
           {/* Header */}
-          <div className="px-6 sm:px-7 pt-7 pb-4 border-b border-[#ECE7DE] bg-[#FAF9F5]">
+          <div className="px-6 sm:px-7 pt-7 pb-4 border-b border-[#E8DECC] bg-[#F8F3E6]">
             <div className="flex items-center justify-between">
               <h2 className="font-serif text-2xl sm:text-[28px] font-normal tracking-[0.14em] text-zinc-950 uppercase leading-none">
                 FILTERS
@@ -210,7 +210,7 @@ export function RbwFilterPanel({
               <button
                 type="button"
                 onClick={onResetFilters}
-                className="text-xs tracking-wider text-[#8F6F18] hover:text-[#6E5511] font-medium underline underline-offset-4 cursor-pointer transition-colors"
+                className="text-xs tracking-wider text-[#C29D55] hover:text-[#A68342] font-medium underline underline-offset-4 cursor-pointer transition-colors"
               >
                 Clear All
               </button>
@@ -248,7 +248,7 @@ export function RbwFilterPanel({
                         onClick={() => onToggleCategory(cat.id)}
                         className={`group relative rounded-xl px-2.5 py-2.5 sm:px-3 sm:py-3 text-left flex items-center gap-2 transition-all duration-150 cursor-pointer border ${isSelected
                             ? "bg-[#18181B] text-white border-[#18181B] shadow-xs"
-                            : "bg-white text-zinc-900 border-[#E8E3D8] hover:border-zinc-400 hover:shadow-xs"
+                            : "bg-[#FCF8EE] text-zinc-900 border-[#E8DECC] hover:border-zinc-400 hover:shadow-xs"
                           }`}
                       >
                         <div className="relative w-7 h-9 sm:w-8 sm:h-10 shrink-0 flex items-center justify-center overflow-hidden">
@@ -472,9 +472,9 @@ export function RbwFilterPanel({
                 <div className="space-y-3 pt-1 pb-1">
                   <div className="relative flex items-center w-full px-1">
                     {/* Dual visual track */}
-                    <div className="relative w-full h-1.5 bg-[#E8E3D8] rounded-full overflow-hidden">
+                    <div className="relative w-full h-1.5 bg-[#E8DECC] rounded-full overflow-hidden">
                       <div
-                        className="absolute top-0 bottom-0 bg-[#C59B27] rounded-full"
+                        className="absolute top-0 bottom-0 bg-[#C29D55] rounded-full"
                         style={{
                           left: `${(priceRange[0] / 5000) * 100}%`,
                           right: `${100 - (priceRange[1] / 5000) * 100}%`,
@@ -495,7 +495,7 @@ export function RbwFilterPanel({
                     />
                     {/* Custom visual thumb */}
                     <div
-                      className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-zinc-950 border-2 border-[#FAF9F5] shadow-xs pointer-events-none transition-all"
+                      className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-zinc-950 border-2 border-[#FCF8EE] shadow-xs pointer-events-none transition-all"
                       style={{
                         left: `calc(${Math.min(100, Math.max(0, (priceRange[1] / 5000) * 100))}% - 8px)`,
                       }}
@@ -512,7 +512,7 @@ export function RbwFilterPanel({
           </div>
 
           {/* Footer Action: APPLY FILTERS (N) → */}
-          <div className="px-6 sm:px-7 py-5 border-t border-[#ECE7DE] bg-[#FAF9F5]">
+          <div className="px-6 sm:px-7 py-5 border-t border-[#E8DECC] bg-[#F8F3E6]">
             <button
               type="button"
               onClick={() => {
@@ -527,48 +527,48 @@ export function RbwFilterPanel({
           </div>
         </div>
 
-        {/* Outer Door Handle / Vertical Luxury Filter Tab docked to Stage (Positioned above left arrow) */}
+        {/* Outer Door Handle / Vertical Luxury Filter Tab docked to Stage (Slim & positioned at top-[38%] beside calf) */}
         <button
           type="button"
           onClick={onToggleOpen}
           aria-label="Open category filters"
-          className={`absolute top-[28%] -translate-y-1/2 left-full flex items-center focus:outline-none z-[260] transition-all duration-300 ${isOpen || isInspecting
+          className={`absolute top-[38%] -translate-y-1/2 left-full flex items-center focus:outline-none z-[260] transition-all duration-300 ${isOpen || isInspecting
               ? "opacity-0 pointer-events-none scale-95 invisible"
               : "opacity-100 pointer-events-auto cursor-pointer group scale-100 visible"
             }`}
         >
           <div
-            className="relative flex flex-col items-center justify-center py-4 px-2.5 rounded-r-2xl border border-l-0 shadow-[6px_0_24px_rgba(0,0,0,0.12)] transition-all duration-300 backdrop-blur-md select-none group-hover:translate-x-1 bg-[#FAF9F5]/95 hover:bg-white border-[#E6E1D7] hover:border-[#B9965A] text-zinc-800 hover:text-zinc-950 shadow-md hover:shadow-xl"
+            className="relative flex flex-col items-center justify-center py-2.5 px-1.5 rounded-r-lg border border-l-0 shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 backdrop-blur-md select-none group-hover:translate-x-0.5 bg-white hover:bg-zinc-50 border-[#E8DECC] hover:border-[#C29D55] text-zinc-800 hover:text-zinc-950"
           >
             {/* Subtle Selvedge Gold Accent Line along docked edge */}
             <span
-              className="absolute left-0 top-3 bottom-3 w-[2.5px] rounded-r transition-colors duration-200 bg-[#B9965A]/70 group-hover:bg-[#B9965A]"
+              className="absolute left-0 top-2 bottom-2 w-[2px] rounded-r transition-colors duration-200 bg-[#C29D55]/80 group-hover:bg-[#C29D55]"
             />
 
             {/* Filter Slider Icon */}
-            <div className="relative p-1 rounded-md transition-colors group-hover:bg-zinc-100/80">
+            <div className="relative p-0.5 rounded transition-colors group-hover:bg-zinc-100/80">
               <SlidersHorizontal
-                className="w-3.5 h-3.5 transition-transform duration-200 text-zinc-800 group-hover:text-zinc-950 group-hover:scale-110"
+                className="w-3 h-3 transition-transform duration-200 text-zinc-800 group-hover:text-zinc-950"
               />
             </div>
 
             {/* Active Filter Count Badge */}
             {displayCount > 0 && (
-              <span className="my-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 rounded-full bg-[#B9965A] text-white text-[9px] font-sans font-bold leading-none shadow-xs">
+              <span className="my-0.5 flex items-center justify-center min-w-[14px] h-[14px] px-0.5 rounded-full bg-[#C29D55] text-white text-[8px] font-sans font-bold leading-none shadow-xs">
                 {displayCount}
               </span>
             )}
 
             {/* Vertical Luxury Text Label (Clean Sans-Serif, Natural Top-to-Bottom Flow) */}
             <div
-              className="relative z-10 my-2.5 text-[10px] tracking-[0.28em] font-sans uppercase font-bold text-zinc-800 group-hover:text-zinc-950 select-none [writing-mode:vertical-rl]"
+              className="relative z-10 my-1.5 text-[8.5px] tracking-[0.24em] font-sans uppercase font-bold text-zinc-800 group-hover:text-zinc-950 select-none [writing-mode:vertical-rl]"
             >
               FILTERS
             </div>
 
             {/* Direction Arrow */}
             <div className="relative p-0.5 transition-transform duration-200">
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-zinc-950 transition-transform group-hover:translate-x-0.5" />
+              <ChevronUp className="w-3 h-3 text-zinc-600 group-hover:text-zinc-950 transition-transform group-hover:-translate-y-0.5" />
             </div>
           </div>
         </button>

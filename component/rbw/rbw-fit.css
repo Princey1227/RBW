@@ -1,0 +1,335 @@
+/* ==========================================================================
+   RBW FIT SELECTOR — Step 2
+   --------------------------------------------------------------------------
+   Pixel-precise Mobile Editorial Denim Showroom matching reference.
+   ========================================================================== */
+
+.rbw-fit {
+  position: relative;
+  color: var(--rbw-ink);
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   EDITORIAL HEADING & ACCENT
+   -------------------------------------------------------------------------- */
+
+.rbw-fit__heading {
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(32px, 8.5vw, 36px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1A1713;
+  margin: 0;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.rbw-fit__heading-accent {
+  display: block;
+  width: 45px;
+  height: 1.5px;
+  background: #B58A43;
+  margin-top: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   GIANT DYNAMIC EDITORIAL WATERMARK (e.g. "BLACK")
+   Sits in the background directly behind Row 1 of jeans
+   -------------------------------------------------------------------------- */
+
+.rbw-fit__watermark {
+  position: absolute;
+  top: clamp(65px, 12vh, 120px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.rbw-fit__watermark span {
+  display: inline-block;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-weight: 300;
+  font-size: clamp(150px, 42vw, 175px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 0.9;
+  white-space: nowrap;
+  
+  color: rgba(150, 128, 94, 0.14);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.80) 45%, rgba(0,0,0,0.25) 75%, transparent 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.80) 45%, rgba(0,0,0,0.25) 75%, transparent 100%);
+  
+  animation: rbwFadeIn 800ms var(--rbw-ease) backwards;
+}
+
+@media (min-width: 1024px) {
+  .rbw-fit__watermark {
+    display: none; /* Desktop uses the backdrop ghost */
+  }
+}
+
+/* --------------------------------------------------------------------------
+   GRID — 3 columns mobile, 6 columns desktop
+   -------------------------------------------------------------------------- */
+
+.rbw-fit__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px clamp(4px, 1.5vw, 12px);
+  padding-top: 10px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .rbw-fit__grid {
+    gap: 55px 28px;
+    padding-top: 35px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rbw-fit__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0 clamp(20px, 3.2vw, 64px);
+  }
+}
+
+.rbw-fit__item {
+  display: block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0 clamp(6px, 1.8vw, 12px);
+}
+
+.rbw-fit__item:focus-visible {
+  outline: 1px solid var(--rbw-gold);
+  outline-offset: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   CARD & STAGE
+   -------------------------------------------------------------------------- */
+
+.rbw-fit__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 500ms var(--rbw-ease), transform 500ms var(--rbw-ease);
+}
+
+.rbw-fit__stage {
+  position: relative;
+  width: 100%;
+  height: clamp(165px, 26vh, 210px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .rbw-fit__stage {
+    height: 310px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rbw-fit__stage {
+    height: clamp(320px, 48vh, 460px);
+  }
+}
+
+.rbw-fit__img {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: top center;
+  filter: drop-shadow(0 4px 10px rgba(23, 21, 18, 0.08));
+  transition:
+    transform 700ms var(--rbw-ease),
+    filter 700ms var(--rbw-ease);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .rbw-fit__item:hover .rbw-fit__img {
+    transform: translateY(-4px) scale(1.02);
+    filter: drop-shadow(0 14px 20px rgba(23, 21, 18, 0.14));
+  }
+}
+
+/* Soft contact floor shadow under each silhouette */
+.rbw-fit__shadow {
+  position: absolute;
+  z-index: 0;
+  bottom: -2px;
+  left: 12%;
+  right: 12%;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(30, 24, 18, 0.3) 0%, rgba(30, 24, 18, 0) 72%);
+  filter: blur(3.5px);
+  opacity: 0.75;
+  transition: opacity 600ms var(--rbw-ease), transform 600ms var(--rbw-ease);
+}
+
+@media (hover: hover) {
+  .rbw-fit__item:hover .rbw-fit__shadow {
+    opacity: 0.95;
+    transform: scale(0.92);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   META — number, name, measurements
+   -------------------------------------------------------------------------- */
+
+.rbw-fit__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.rbw-fit__idx {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: #B58A43;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.rbw-fit__name {
+  margin-top: 6px;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(18px, 4.5vw, 20px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: #1A1713;
+  transition: color 300ms var(--rbw-ease);
+}
+
+@media (min-width: 640px) {
+  .rbw-fit__name {
+    font-size: 22px;
+  }
+}
+
+.rbw-fit__item:hover .rbw-fit__name {
+  color: #B58A43;
+}
+
+/* subtle accent line */
+.rbw-fit__line {
+  display: none;
+}
+
+.rbw-fit__measure {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  margin-top: 8px;
+  padding: 2px 0 3px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8F8678;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 300ms var(--rbw-ease);
+}
+
+.rbw-fit__measure:hover {
+  color: #1A1713;
+}
+
+/* --------------------------------------------------------------------------
+   REDUCED MOTION
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rbw-fit__card,
+  .rbw-fit__img,
+  .rbw-fit__shadow,
+  .rbw-fit__line {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   FIT MODAL DIALOG — Warm cream & dusty gold
+   -------------------------------------------------------------------------- */
+
+.rbw-fit-modal {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.rbw-fit-panel {
+  background: #FCF8EE !important;
+  border: 1px solid rgba(194, 157, 85, 0.35) !important;
+  box-shadow: 0 24px 60px -12px rgba(28, 22, 12, 0.35) !important;
+}
+
+.dark .rbw-fit-panel {
+  background: #141210 !important;
+  border-color: rgba(194, 157, 85, 0.3) !important;
+}
+
+.rbw-fit-badge {
+  background: rgba(194, 157, 85, 0.16) !important;
+  border: 1px solid rgba(194, 157, 85, 0.35);
+}
+
+.rbw-fit-badge svg {
+  color: #C29D55 !important;
+}
+
+.rbw-fit-toggle {
+  border-color: rgba(194, 157, 85, 0.3) !important;
+  background: #F4ECE0 !important;
+}
+
+.rbw-fit-toggle button[data-on="true"] {
+  background: #1A1713 !important;
+  color: #FCF8EE !important;
+}
+
+.dark .rbw-fit-toggle button[data-on="true"] {
+  background: #C29D55 !important;
+  color: #141210 !important;
+}
+
+.rbw-fit-btn-cta {
+  background: #1A1713 !important;
+  border: 1px solid rgba(194, 157, 85, 0.65) !important;
+  color: #FCF8EE !important;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.rbw-fit-btn-cta:hover {
+  background: #000000 !important;
+  border-color: #D8B570 !important;
+  box-shadow: 0 6px 20px -2px rgba(194, 157, 85, 0.4) !important;
+}

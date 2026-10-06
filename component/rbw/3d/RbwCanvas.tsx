@@ -24,22 +24,22 @@ interface LightPreset {
 // denim keeps its weave instead of clipping) and a brighter cool rim for silhouette.
 const LIGHT_PRESETS: Record<RbwAtmosphereKey, LightPreset> = {
   raw: {
-    ambient: 0.9, key: 2.8, keyColor: "#ffffff",
-    fill: 1.2, fillColor: "#bfdbfe",
-    rim: 3.8, rimColor: "#ffffff",
-    accent: 1.6, accentColor: "#d9bd8a",
+    ambient: 0.95, key: 2.8, keyColor: "#fffefa",
+    fill: 1.15, fillColor: "#e2ebf7",
+    rim: 3.6, rimColor: "#fffef8",
+    accent: 1.6, accentColor: "#dfc488",
   },
   black: {
-    ambient: 0.85, key: 3.1, keyColor: "#fff6ee",
-    fill: 1.0, fillColor: "#e8cfd4",
-    rim: 3.8, rimColor: "#ffffff",
-    accent: 1.6, accentColor: "#c9a48f",
+    ambient: 0.9, key: 3.0, keyColor: "#fffbf2",
+    fill: 1.0, fillColor: "#ebd9dc",
+    rim: 3.6, rimColor: "#fffdf6",
+    accent: 1.6, accentColor: "#d4b082",
   },
   white: {
-    ambient: 0.8, key: 2.45, keyColor: "#fff4e2",
-    fill: 1.0, fillColor: "#c4d6f2",
-    rim: 3.4, rimColor: "#ffffff",
-    accent: 1.2, accentColor: "#fff1d8",
+    ambient: 0.85, key: 2.5, keyColor: "#fff8eb",
+    fill: 1.0, fillColor: "#d8e3f4",
+    rim: 3.4, rimColor: "#fffef8",
+    accent: 1.3, accentColor: "#f4e2b8",
   },
 };
 
@@ -190,29 +190,30 @@ export default function RbwCanvas({
         ) : (
           <>
         {/* Studio Lighting */}
-        <ambientLight intensity={0.9} />
+        <ambientLight intensity={0.95} />
 
         <directionalLight
           position={[2.5, 4.5, 3.8]}
           intensity={2.8}
+          color="#fffdfa"
         />
 
         <directionalLight
           position={[-3, 2.5, 2.5]}
           intensity={1.2}
-          color="#bfdbfe"
+          color="#e2ebf7"
         />
 
         <directionalLight
           position={[0, 4.2, -3.0]}
           intensity={3.8}
-          color="#ffffff"
+          color="#fffefb"
         />
 
         <pointLight
           position={[0, 0.3, 2.4]}
           intensity={1.8}
-          color="#ffffff"
+          color="#fffdfa"
         />
 
         <pointLight
@@ -227,11 +228,11 @@ export default function RbwCanvas({
         <group position={[0, 0.92, 0.12]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[1.05, 0.026, 16, 64]} />
-            <meshBasicMaterial color="#ffffff" toneMapped={false} />
+            <meshBasicMaterial color="#fffefb" toneMapped={false} />
           </mesh>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[1.05, 0.055, 16, 48]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.35} toneMapped={false} />
+            <meshBasicMaterial color="#fffefb" transparent opacity={0.35} toneMapped={false} />
           </mesh>
         </group>
 
@@ -239,11 +240,11 @@ export default function RbwCanvas({
         <group position={[0, -0.98, 0.12]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[1.08, 0.026, 16, 64]} />
-            <meshBasicMaterial color="#ffffff" toneMapped={false} />
+            <meshBasicMaterial color="#fffefb" toneMapped={false} />
           </mesh>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[1.08, 0.06, 16, 48]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.4} toneMapped={false} />
+            <meshBasicMaterial color="#fffefb" transparent opacity={0.4} toneMapped={false} />
           </mesh>
         </group>
 

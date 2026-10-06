@@ -13,9 +13,11 @@ import dynamic from "next/dynamic";
 import ShopByFit from "../../../component/home/ShopByFit";
 import Footer from "../../../component/Footer";
 import { useCart } from "../../../context/CartContext";
-import { ShieldCheck, Truck, Award, Check, Droplet, ShoppingBag, Maximize2, ZoomIn, X, Move, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { Truck, Check, ShoppingBag, ZoomIn, X, Move, ArrowUpRight, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RbwWashSelection3D } from "../../../component/rbw/3d/RbwWashSelection3D";
+import { RbwJourneyShell, RbwJourneyBar, RbwJourneyPath } from "../../../component/rbw/RbwJourneyShell";
+import { RbwSizeChartModal } from "../../../component/rbw/RbwSizeChartModal";
 
 interface FlyingItemData {
   id: number;
@@ -192,6 +194,22 @@ export default function RBWStorefrontPage() {
   const [zoomScale, setZoomScale] = useState<number>(1.5);
   const [flyingItem, setFlyingItem] = useState<FlyingItemData | null>(null);
   const [mounted, setMounted] = useState<boolean>(false);
+
+  // The "room" remembers the last wash/fit so lighting and ghost lettering never
+  // blink out while a drawer is sliding away (derived during render, no effect).
+  const [roomWash, setRoomWash] = useState<"raw" | "black" | "white" | "vintage">("raw");
+  const [roomFit, setRoomFit] = useState<string>("");
+  if (selectedWash && selectedWash !== roomWash) setRoomWash(selectedWash);
+  if (selectedFit && selectedFit !== roomFit) setRoomFit(selectedFit);
+
+  // Counts how many times the FIT room has been entered, so its staggered reveal
+  // replays on every entry but never re-fires while the drawer is sliding out.
+  const [fitEntries, setFitEntries] = useState<number>(0);
+  const [hadWash, setHadWash] = useState<boolean>(false);
+  if (!!selectedWash !== hadWash) {
+    setHadWash(!!selectedWash);
+    if (selectedWash) setFitEntries((n) => n + 1);
+  }
 
   useEffect(() => {
     setMounted(true);
@@ -630,65 +648,18 @@ export default function RBWStorefrontPage() {
     resetToStep1();
   };
 
-  const renderSelectionPath = (currentStep: 1 | 2 | 3) => {
-    const washLabel = selectedWash ? selectedWash.toUpperCase() : null;
-    const fitLabel = selectedFit ? selectedFit.toUpperCase() : null;
-
-    return (
-      <nav aria-label="Selection Path" className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-mono font-bold tracking-wider uppercase whitespace-nowrap select-none">
-        {/* Step 1: WASH (Shown once wash is selected or when on step 1) */}
-        {currentStep === 1 ? (
-          <span className="text-stone-950 font-black bg-stone-200/90 px-2.5 py-1 rounded-full border border-stone-300/60 shadow-2xs">
-            {washLabel ? `WASH: ${washLabel}` : "SELECT WASH"}
-          </span>
-        ) : (
-          <button
-            onClick={handleBackClick}
-            className="text-stone-600 hover:text-stone-950 bg-stone-100 hover:bg-stone-200/80 px-2.5 py-1 rounded-full border border-stone-300/50 transition-all cursor-pointer active:scale-95 flex items-center gap-1"
-            title="Change Wash"
-          >
-            <span className="text-stone-400 font-semibold">WASH:</span>
-            <span className="font-extrabold text-stone-900">{washLabel || "SELECT"}</span>
-          </button>
-        )}
-
-        {/* Step 2: FIT (Only shown after user chooses a fit on step 2 and moves to step 3) */}
-        {currentStep >= 3 && fitLabel && selectedCategory === "jeans" && (
-          <>
-            <span className="text-stone-400 font-black select-none text-[11px] sm:text-xs">&rarr;</span>
-            <button
-              onClick={handleBackToFits}
-              className="text-stone-600 hover:text-stone-950 bg-stone-100 hover:bg-stone-200/80 px-2.5 py-1 rounded-full border border-stone-300/50 transition-all cursor-pointer active:scale-95 flex items-center gap-1"
-              title="Change Fit"
-            >
-              <span className="text-stone-400 font-semibold">FIT:</span>
-              <span className="font-extrabold text-stone-900">{fitLabel}</span>
-            </button>
-          </>
-        )}
-
-        {/* Step 3: SIZE (Only shown in Step 3 when size is selected) */}
-        {currentStep >= 3 && selectedSize && (
-          <>
-            <span className="text-stone-400 font-black select-none text-[11px] sm:text-xs">&rarr;</span>
-            <span className="text-stone-950 font-black bg-stone-200/90 px-2.5 py-1 rounded-full border border-stone-300/60 shadow-2xs">
-              SIZE: {selectedSize}
-            </span>
-          </>
-        )}
-
-        {/* Step 4: QUANTITY (Only shown in Step 3) */}
-        {currentStep >= 3 && (
-          <>
-            <span className="text-stone-400 font-black select-none text-[11px] sm:text-xs">&rarr;</span>
-            <span className="text-stone-950 font-black bg-stone-200/90 px-2.5 py-1 rounded-full border border-stone-300/60 shadow-2xs">
-              QTY: {quantity}
-            </span>
-          </>
-        )}
-      </nav>
-    );
-  };
+  const renderSelectionPath = (currentStep: 2 | 3) => (
+    <RbwJourneyPath
+      currentStep={currentStep}
+      wash={selectedWash}
+      fit={selectedFit}
+      category={selectedCategory}
+      size={selectedSize}
+      quantity={quantity}
+      onWash={handleBackClick}
+      onFit={handleBackToFits}
+    />
+  );
 
   const getSelectedVariantId = (prod: any, size: string) => {
     if (!prod || !prod.variants?.edges) return null;
@@ -822,105 +793,78 @@ export default function RBWStorefrontPage() {
           <RbwWashSelection3D onWashSelect={handleWashClick} />
         </div>
 
-        {/* Slide 2: Shop By Fit - OVERLAY DRAWER ON TOP OF STEP 1 */}
-        <div
-          ref={fitsDrawerRef}
-          className={`absolute inset-0 z-50 bg-[#FAF8F5] flex flex-col pt-[48px] sm:pt-[54px] xl:pt-0 overflow-y-auto pb-28 sm:pb-36 transform-gpu will-change-transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${selectedWash
-            ? "translate-y-0 opacity-100 pointer-events-auto"
-            : "translate-y-full opacity-0 pointer-events-none"
-            } ${selectedFit ? "scale-[0.98] brightness-75 filter blur-[0.5px]" : "scale-100 brightness-100"}`}
-        >
-          {/* Header Bar */}
-          <div className="w-full bg-[#FAF8F5]/90 border-b border-stone-200/60 px-3 sm:px-6 md:px-12 py-2.5 flex items-center justify-between gap-2 shadow-xs shrink-0 z-50">
-            {selectedWash ? (
-              <button
-                onClick={handleBackClick}
-                className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-black tracking-wider text-white bg-stone-900 hover:bg-black px-2.5 sm:px-3 py-1.5 rounded-full transition-all active:scale-95 uppercase cursor-pointer shrink-0 shadow-xs"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 text-white" />
-                <span className="hidden sm:inline">WASHES</span>
-              </button>
-            ) : (
-              <div />
-            )}
-
-            <div className="flex-1 flex items-center justify-center overflow-x-auto scrollbar-none min-w-0">
+        {/* Slide 2: FIT — same showroom room as Step 1 (backdrop, type, controls inherited) */}
+        <RbwJourneyShell
+          open={!!selectedWash}
+          layerClass="z-50"
+          washKey={roomWash}
+          ghostText={roomWash.toUpperCase()}
+          receded={!!selectedFit}
+          scrollRef={fitsDrawerRef}
+          bar={
+            <RbwJourneyBar backLabel="Washes" onBack={handleBackClick}>
               {renderSelectionPath(2)}
-            </div>
-
-            <div className="w-[34px] sm:w-[68px] shrink-0 invisible" />
-          </div>
-
+            </RbwJourneyBar>
+          }
+        >
           <div className="flex-1 flex flex-col justify-center py-2 md:py-6">
+            {/* keyed by entry so the staggered reveal replays every time the room is entered */}
             <ShopByFit
-              selectedWash={selectedWash}
+              key={fitEntries}
+              variant="showroom"
+              selectedWash={roomWash}
+              selectedFit={roomFit}
               isInsideViewport={false}
               onFitClick={handleFitClick}
             />
             <Footer />
           </div>
-        </div>
+        </RbwJourneyShell>
 
-        {/* Slide 3: Product Detail View - OVERLAY DRAWER ON TOP OF STEP 2 & STEP 1 */}
-        <div
-          ref={detailDrawerRef}
-          className={`absolute inset-0 z-55 bg-[#FAF8F5] text-[#1C1917] flex flex-col transform-gpu will-change-transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pt-[48px] sm:pt-[54px] xl:pt-0 overflow-y-auto pb-28 sm:pb-36 ${
-            selectedFit && selectedWash
-              ? "translate-y-0 opacity-100 pointer-events-auto"
-              : "translate-y-full opacity-0 pointer-events-none"
-          }`}
-        >
-          {/* Header Bar */}
-          <div className="w-full bg-[#FAF8F5] border-b border-stone-200/60 px-3 sm:px-6 md:px-12 py-2 flex items-center justify-between gap-2 shadow-xs z-30 shrink-0">
-            {selectedCategory === "jeans" ? (
-              <button
-                onClick={handleBackToFits}
-                className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-black tracking-wider text-white bg-stone-900 hover:bg-black px-2.5 sm:px-3 py-1.5 rounded-full transition-all active:scale-95 uppercase cursor-pointer shrink-0 shadow-xs"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 text-white" />
-                <span className="hidden sm:inline">FITS</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleShopAgain}
-                className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-black tracking-wider text-white bg-stone-900 hover:bg-black px-2.5 sm:px-3 py-1.5 rounded-full transition-all active:scale-95 uppercase cursor-pointer shrink-0 shadow-xs"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 text-white" />
-                <span className="hidden sm:inline">BACK</span>
-              </button>
-            )}
-
-            <div className="flex-1 flex items-center justify-center overflow-x-auto scrollbar-none min-w-0">
+        {/* Slide 3: PRODUCT — the same room, one step further in */}
+        <RbwJourneyShell
+          open={!!(selectedFit && selectedWash)}
+          layerClass="z-55"
+          washKey={roomWash}
+          ghostText={(selectedCategory === "jeans" && roomFit ? roomFit : roomWash).toUpperCase()}
+          ghost="soft"
+          scrollRef={detailDrawerRef}
+          bar={
+            <RbwJourneyBar
+              backLabel={selectedCategory === "jeans" ? "Fits" : "Back"}
+              onBack={selectedCategory === "jeans" ? handleBackToFits : handleShopAgain}
+            >
               {renderSelectionPath(3)}
-            </div>
-
-            <div className="w-[34px] sm:w-[68px] shrink-0 invisible" />
-          </div>
-
+            </RbwJourneyBar>
+          }
+        >
           {selectedFit && selectedWash && (() => {
             const productHandle = getProductHandleForWashAndFit(selectedWash, selectedFit, selectedCategory);
             const product = shopifyProducts.find((p) => p.handle === productHandle);
+            const reveal = (ms: number): React.CSSProperties => ({ ["--rbw-delay" as any]: `${ms}ms` }) as React.CSSProperties;
 
             if (shopifyLoading) {
               return (
-                <div className="py-20 text-center text-xs tracking-widest text-neutral-500 uppercase animate-pulse">
-                  Loading Jeans Details...
+                <div className="py-24 text-center">
+                  <p className="rbw-eyebrow animate-pulse" style={{ color: "var(--rbw-ink-faint)" }}>
+                    Loading
+                  </p>
                 </div>
               );
             }
 
             if (!product) {
               return (
-                <div className="py-20 text-center border border-dashed border-[#EBE6DC] m-6 text-neutral-500 text-sm">
-                  Jeans model not found or currently unavailable.
-                  <div className="mt-4 flex flex-col items-center">
-                    <button
-                      onClick={handleShopAgain}
-                      className="px-6 py-2.5 bg-black text-white text-[11px] font-black tracking-widest uppercase cursor-pointer"
-                    >
-                      SHOP AGAIN
-                    </button>
-                  </div>
+                <div className="py-20 px-6 flex flex-col items-center text-center rbw-fade">
+                  <p className="rbw-eyebrow">Unavailable</p>
+                  <p className="rbw-descriptor mt-3 text-[18px] max-w-[30ch]">
+                    This model couldn&rsquo;t be found or is currently unavailable.
+                  </p>
+                  <span className="rbw-j-rule rbw-j-rule--gold mt-6" />
+                  <button type="button" onClick={handleShopAgain} className="rbw-cta mt-8">
+                    <span>Shop again</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
                 </div>
               );
             }
@@ -981,543 +925,345 @@ export default function RBWStorefrontPage() {
             })();
 
             return (
-              <div className="max-w-[1240px] mx-auto w-full flex flex-col md:flex-row px-6 sm:px-10 md:px-14 pt-3 sm:pt-4 md:pt-6 pb-6 sm:pb-8 gap-6 md:gap-8 lg:gap-10 items-start justify-center">
-                {/* Left: Product Image & Thumbnails */}
-                <div className="w-full md:w-1/2 flex items-start justify-center md:justify-end gap-3.5">
-                  {imageUrls.length > 1 && (
-                    <div className="flex flex-col gap-3 shrink-0">
-                      {imageUrls.slice(0, 4).map((url: string, idx: number) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveImageIndex(idx)}
-                          className={`relative w-14 h-18 rounded-md overflow-hidden border-2 transition-all cursor-pointer ${activeImageIndex === idx ? "border-[#D4B16A] scale-105 shadow-md" : "border-stone-200 opacity-65 hover:opacity-100"
-                            }`}
-                        >
-                          <img src={url} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+              <>
+                <div className="max-w-[1240px] mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start px-6 sm:px-10 md:px-14 pt-6 sm:pt-8 md:pt-10 pb-8">
+                  {/* Left: the plate */}
+                  <div className="rbw-in w-full md:sticky md:top-6 flex flex-col items-center md:items-end" style={reveal(80)}>
+                    <div className="w-full flex items-start justify-center md:justify-end gap-3.5">
+                      {imageUrls.length > 1 && (
+                        <div className="rbw-j-thumbs">
+                          {imageUrls.slice(0, 4).map((url: string, idx: number) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setActiveImageIndex(idx)}
+                              aria-label={`View image ${idx + 1}`}
+                              data-on={activeImageIndex === idx}
+                              className="rbw-j-thumb"
+                            >
+                              <img src={url} alt="" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
-                  <div
-                    ref={zoomContainerRef}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    className="relative w-full max-w-[460px] aspect-[3/4] bg-neutral-900 overflow-hidden border border-[#E8E3DA] shadow-lg rounded-[14px] group select-none cursor-grab active:cursor-grabbing"
-                  >
-                    <img
-                      id="jeans-main-image"
-                      src={activeStep3Img}
-                      alt={product.title}
-                      style={{
-                        transform: isInlineZoomActive
-                          ? `translate(${panPosition.x}px, ${panPosition.y}px) scale(${inlineZoomScale})`
-                          : "none",
-                        transformOrigin: "center center",
-                        transition: isDragging ? "none" : "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
-                        cursor: isInlineZoomActive ? (isDragging ? "grabbing" : "grab") : "default"
-                      }}
-                      className="w-full h-full object-cover object-center pointer-events-none"
-                    />
-
-                    {isInlineZoomActive && inlineZoomScale > 1 && (
-                      <div className="absolute top-3 right-3 z-30 bg-black/80 text-white text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1.5 shadow-md pointer-events-none border border-white/10 animate-fadeIn">
-                        <Move className="w-3 h-3 text-[#D4B16A]" />
-                        <span>DRAG TO MOVE TOP/BOTTOM</span>
-                      </div>
-                    )}
-
-                    {!isInlineZoomActive ? (
-                      <button
-                        onClick={() => {
-                          setIsInlineZoomActive(true);
-                          setInlineZoomScale(1.5);
-                          setPanPosition({ x: 0, y: 0 });
-                        }}
-                        title="Zoom Image"
-                        className="absolute bottom-3 left-3 w-9.5 h-9.5 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-all duration-300 hover:scale-110 shadow-lg cursor-pointer z-20"
+                      <div
+                        ref={zoomContainerRef}
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                        className="rbw-j-frame"
                       >
-                        <ZoomIn className="w-4 h-4 text-white stroke-[2.5]" />
-                      </button>
-                    ) : (
-                      <div className="absolute bottom-3 left-3 z-30 flex items-center gap-2 bg-black/85 border border-white/20 px-3 py-1.5 rounded-full shadow-2xl backdrop-blur-md animate-fadeIn select-none">
-                        <button
-                          onClick={() => {
-                            const newScale = Math.max(1, inlineZoomScale - 0.5);
-                            setInlineZoomScale(newScale);
-                            if (newScale === 1) setPanPosition({ x: 0, y: 0 });
+                        <img
+                          key={activeStep3Img}
+                          id="jeans-main-image"
+                          src={activeStep3Img}
+                          alt={product.title}
+                          style={{
+                            transform: isInlineZoomActive
+                              ? `translate(${panPosition.x}px, ${panPosition.y}px) scale(${inlineZoomScale})`
+                              : "none",
+                            transformOrigin: "center center",
+                            transition: isDragging ? "none" : "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
+                            cursor: isInlineZoomActive ? (isDragging ? "grabbing" : "grab") : "default"
                           }}
-                          disabled={inlineZoomScale <= 1}
-                          title="Zoom Out (-)"
-                          className="w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-sm text-white hover:bg-white/20 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                          &minus;
-                        </button>
-                        <span className="text-[10px] font-mono font-bold text-stone-200 min-w-[36px] text-center">
-                          {Math.round(inlineZoomScale * 100)}%
-                        </span>
-                        <button
-                          onClick={() => setInlineZoomScale((prev) => Math.min(3.5, prev + 0.5))}
-                          disabled={inlineZoomScale >= 3.5}
-                          title="Zoom In (+)"
-                          className="w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-sm text-white hover:bg-white/20 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                          +
-                        </button>
-                        <div className="w-[1px] h-3.5 bg-white/20 my-auto mx-0.5" />
-                        <button
-                          onClick={() => {
-                            setIsInlineZoomActive(false);
-                            setInlineZoomScale(1);
-                            setPanPosition({ x: 0, y: 0 });
-                          }}
-                          title="Close Zoom"
-                          className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
+                          className="rbw-fade w-full h-full object-cover object-center pointer-events-none"
+                        />
+
+                        {isInlineZoomActive && inlineZoomScale > 1 && (
+                          <div className="rbw-j-chip rbw-fade absolute top-3 right-3 z-30 pointer-events-none">
+                            <Move className="w-3 h-3" strokeWidth={1.5} />
+                            <span>Drag to move</span>
+                          </div>
+                        )}
+
+                        {!isInlineZoomActive ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsInlineZoomActive(true);
+                              setInlineZoomScale(1.5);
+                              setPanPosition({ x: 0, y: 0 });
+                            }}
+                            title="Zoom image"
+                            aria-label="Zoom image"
+                            className="rbw-glass-btn absolute bottom-3 left-3 z-20 w-10 h-10 rounded-full !text-[color:var(--rbw-ink)]"
+                          >
+                            <ZoomIn className="w-4 h-4" strokeWidth={1.5} />
+                          </button>
+                        ) : (
+                          <div className="rbw-j-chip rbw-fade absolute bottom-3 left-3 z-30 !px-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newScale = Math.max(1, inlineZoomScale - 0.5);
+                                setInlineZoomScale(newScale);
+                                if (newScale === 1) setPanPosition({ x: 0, y: 0 });
+                              }}
+                              disabled={inlineZoomScale <= 1}
+                              title="Zoom out"
+                              aria-label="Zoom out"
+                            >
+                              &minus;
+                            </button>
+                            <span className="min-w-[34px] text-center tabular-nums">{Math.round(inlineZoomScale * 100)}%</span>
+                            <button
+                              type="button"
+                              onClick={() => setInlineZoomScale((prev) => Math.min(3.5, prev + 0.5))}
+                              disabled={inlineZoomScale >= 3.5}
+                              title="Zoom in"
+                              aria-label="Zoom in"
+                            >
+                              +
+                            </button>
+                            <span className="w-px h-3.5 bg-[color:var(--rbw-line)]" aria-hidden="true" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsInlineZoomActive(false);
+                                setInlineZoomScale(1);
+                                setPanPosition({ x: 0, y: 0 });
+                              }}
+                              title="Close zoom"
+                              aria-label="Close zoom"
+                            >
+                              <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {imageUrls.length > 1 && (
+                      <p className="rbw-j-counter mt-4 text-center w-full">
+                        <b>{String(activeImageIndex + 1).padStart(2, "0")}</b> / {String(Math.min(imageUrls.length, 4)).padStart(2, "0")}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Right: the piece */}
+                  <div className="w-full max-w-[540px] flex flex-col text-left justify-start">
+                    <p className="rbw-eyebrow rbw-in" style={reveal(120)}>
+                      {selectedCategory === "jeans" ? `${selectedWash} · ${selectedFit}` : `${selectedWash} denim`}
+                    </p>
+
+                    <h1 className="rbw-j-title rbw-in mt-3" style={reveal(200)}>
+                      {product.title.replace(/Denims/gi, 'Denim')}
+                    </h1>
+
+                    <div className="rbw-in mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2" style={reveal(280)}>
+                      <span className="rbw-j-price">{formattedPrice}</span>
+                      <span className="rbw-j-note">Incl. taxes</span>
+                    </div>
+
+                    <div className="rbw-in mt-3" style={reveal(340)}>
+                      <span className="rbw-j-status" data-low={!isVariantInStock}>
+                        {isVariantInStock ? "In stock · ships in 24h" : "Low stock · dispatch in 48h"}
+                      </span>
+                    </div>
+
+                    <span className="rbw-j-rule rbw-in my-6" style={reveal(380)} />
+
+                    {/* Size */}
+                    <div className="rbw-in" style={reveal(420)}>
+                      <div className="flex justify-between items-center mb-3 gap-3">
+                        <span className="rbw-j-label">Waist size · inches</span>
+                        <button type="button" onClick={() => setSizeChartOpen(true)} className="rbw-j-link">
+                          <TapeIcon className="w-3.5 h-3.5" />
+                          <span>Size guide</span>
                         </button>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right: Product Details */}
-                <div className="w-full md:w-1/2 max-w-[540px] flex flex-col text-left justify-start">
-                  {/* Badges */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] sm:text-[11px] font-black tracking-[0.2em] bg-stone-950 text-white px-3 py-1 rounded-full uppercase shadow-xs">
-                      {selectedCategory === "jeans" ? `${selectedWash} • ${selectedFit}` : selectedWash}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#1C1917] font-semibold uppercase leading-tight tracking-wide">
-                    {product.title.replace(/Denims/gi, 'Denim')}
-                  </h1>
-
-                  {/* Price */}
-                  {/* Price & Stock Status */}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-2.5">
-                    <div className="text-xl sm:text-2xl font-bold font-sans text-stone-900 tracking-tight flex items-center gap-2">
-                      <span>{formattedPrice}</span>
-                      <span className="text-[9px] sm:text-[9.5px] font-black tracking-widest text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md uppercase">
-                        INCL. TAXES
-                      </span>
-                    </div>
-
-                    {isVariantInStock ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        IN STOCK • SHIPS IN 24H
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                        LOW STOCK • DISPATCH IN 48H
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="w-full h-[1px] bg-[#E8E3DA] my-3.5" />
-
-                  {/* Size Selector + Size Guide inline link */}
-                  <div className="flex flex-col">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-[10.5px] sm:text-[11px] font-black tracking-wider uppercase text-stone-700">
-                        SELECT WAIST SIZE (INCHES)
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setSizeChartOpen(true)}
-                        className="inline-flex items-center gap-1 text-[10.5px] font-black tracking-wider uppercase text-[#8C6B2F] hover:text-black transition-colors cursor-pointer"
-                      >
-                        <TapeIcon className="w-3.5 h-3.5 text-[#B9965A]" />
-                        <span>SIZE GUIDE & CHART</span>
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-8 gap-2">
-                      {sizes.map((sz: string) => {
-                        const isSelected = selectedSize === sz;
-                        return (
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-8 gap-2">
+                        {sizes.map((sz: string) => (
                           <button
                             key={sz}
+                            type="button"
+                            aria-pressed={selectedSize === sz}
                             onClick={() => setSelectedSize(sz)}
-                            className={`w-full h-10 sm:h-11 flex items-center justify-center font-sans font-extrabold text-xs sm:text-sm tracking-wider rounded-xl transition-all duration-200 cursor-pointer ${
-                              isSelected
-                                ? "bg-stone-950 text-white border-stone-950 shadow-md ring-2 ring-stone-950/20 scale-[1.03]"
-                                : "bg-white text-stone-800 border border-stone-300 hover:border-black hover:bg-stone-100"
-                            }`}
+                            className="rbw-j-size"
                           >
                             {sz}
                           </button>
-                        );
-                      })}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Quantity Selector */}
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-[10.5px] font-black tracking-widest uppercase text-stone-600">
-                      QUANTITY
-                    </span>
-                    <div className="flex items-center gap-3 bg-white border border-[#E8E3DA] px-3 py-1 rounded-lg">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-6 h-6 flex items-center justify-center font-bold text-base text-neutral-700 hover:text-black cursor-pointer select-none"
-                      >
-                        −
-                      </button>
-                      <span className="font-sans font-black text-xs w-5 text-center text-neutral-900">
-                        {quantity}
-                      </span>
-                      <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-6 h-6 flex items-center justify-center font-bold text-base text-neutral-700 hover:text-black cursor-pointer select-none"
-                      >
-                        +
-                      </button>
+                    {/* Quantity */}
+                    <div className="rbw-in mt-6 flex items-center justify-between" style={reveal(480)}>
+                      <span className="rbw-j-label">Quantity</span>
+                      <div className="rbw-j-stepper">
+                        <button type="button" aria-label="Decrease quantity" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                          &minus;
+                        </button>
+                        <span aria-live="polite">{quantity}</span>
+                        <button type="button" aria-label="Increase quantity" onClick={() => setQuantity(quantity + 1)}>
+                          +
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Primary Action Buttons (Immediately Below Quantity for Clean Conversion Hierarchy) */}
-                  <div ref={buyButtonRef} className="w-full mt-5 flex flex-col gap-2.5">
-                    {/* Primary BUY NOW Button */}
-                    <button
-                      type="button"
-                      disabled={isBuyingNow || !isVariantInStock}
-                      onClick={() => handleBuyNowClick(product)}
-                      className="w-full py-3.5 px-6 rounded-xl font-sans font-black text-[12px] sm:text-[12.5px] tracking-[0.2em] uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer select-none bg-stone-950 hover:bg-black text-white shadow-lg hover:shadow-xl active:scale-[0.98] border border-stone-800 disabled:opacity-50"
-                    >
-                      {isBuyingNow ? (
-                        <span className="flex items-center gap-2">
-                          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          <span>PREPARING CHECKOUT...</span>
-                        </span>
-                      ) : !isVariantInStock ? (
-                        <span>CURRENTLY UNAVAILABLE</span>
-                      ) : (
-                        <>
-                          <span>BUY NOW &rarr;</span>
-                        </>
-                      )}
-                    </button>
-
-                    {/* Secondary Row: ADD TO CART + CHANGE FIT */}
-                    <div className="grid grid-cols-2 gap-2">
+                    {/* Actions */}
+                    <div ref={buyButtonRef} className="rbw-in w-full mt-6 flex flex-col gap-3" style={reveal(540)}>
                       <button
                         type="button"
-                        disabled={isAddingCart || !isVariantInStock}
-                        onClick={(e) => handleAddToCartClick(product, e)}
-                        className={`w-full py-3 px-3 rounded-xl font-sans font-black text-[10.5px] sm:text-[11px] tracking-[0.16em] uppercase transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer select-none border ${
-                          justAdded
-                            ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-400 shadow-md scale-[1.01]"
-                            : "bg-white hover:bg-stone-50 border-[#E8E3DA] text-stone-900 hover:border-black shadow-xs active:scale-[0.98]"
-                        } disabled:opacity-50`}
+                        disabled={isBuyingNow || !isVariantInStock}
+                        onClick={() => handleBuyNowClick(product)}
+                        className="rbw-cta rbw-j-cta-block"
                       >
-                        {justAdded ? (
-                          <span className="flex items-center gap-1 text-emerald-600">
-                            <Check className="w-4 h-4 stroke-[3] text-emerald-600" />
-                            <span>ADDED!</span>
-                          </span>
-                        ) : isAddingCart ? (
-                          <span className="flex items-center gap-1">
-                            <ShoppingBag className="w-3.5 h-3.5 animate-bounce" />
-                            <span>ADDING...</span>
-                          </span>
+                        {isBuyingNow ? (
+                          <>
+                            <span className="rbw-j-ring" />
+                            <span>Preparing checkout</span>
+                          </>
+                        ) : !isVariantInStock ? (
+                          <span>Currently unavailable</span>
                         ) : (
-                          <span className="flex items-center gap-1">
-                            <ShoppingBag className="w-3.5 h-3.5 text-[#B9965A]" />
-                            <span>ADD TO CART</span>
-                          </span>
+                          <>
+                            <span>Buy now</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          </>
                         )}
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={handleBackToFits}
-                        className="w-full py-3 px-3 rounded-xl font-sans font-black text-[10.5px] sm:text-[11px] tracking-[0.16em] uppercase transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer select-none bg-white hover:bg-stone-50 border border-[#E8E3DA] text-stone-900 hover:border-black shadow-xs active:scale-[0.98]"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5 text-stone-600" />
-                        <span>CHANGE FIT</span>
-                      </button>
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          disabled={isAddingCart || !isVariantInStock}
+                          onClick={(e) => handleAddToCartClick(product, e)}
+                          data-state={justAdded ? "added" : undefined}
+                          className="rbw-j-btn"
+                        >
+                          {justAdded ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" strokeWidth={1.75} />
+                              <span>Added</span>
+                            </>
+                          ) : isAddingCart ? (
+                            <>
+                              <ShoppingBag className="w-3.5 h-3.5 animate-bounce" strokeWidth={1.5} />
+                              <span>Adding</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
+                              <span>Add to cart</span>
+                            </>
+                          )}
+                        </button>
 
-                  <div className="w-full h-[1px] bg-[#E8E3DA] my-5" />
-
-                  {/* Secondary Information: Concise Garment Facts & Specifications */}
-                  <div className="rounded-xl bg-white/90 border border-[#E8E3DA] p-3.5 shadow-2xs">
-                    <h4 className="text-[10px] font-black tracking-[0.16em] uppercase text-stone-900 mb-2 flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#B9965A]" />
-                      <span>Garment Specifications</span>
-                    </h4>
-                    <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-[11px]">
-                      <div>
-                        <span className="text-stone-400 block text-[9px] font-bold uppercase tracking-wider">Fabric</span>
-                        <span className="font-semibold text-stone-800">{fabricSpec}</span>
-                      </div>
-                      <div>
-                        <span className="text-stone-400 block text-[9px] font-bold uppercase tracking-wider">Silhouette</span>
-                        <span className="font-semibold text-stone-800 capitalize">{silhouetteSpec}</span>
-                      </div>
-                      <div>
-                        <span className="text-stone-400 block text-[9px] font-bold uppercase tracking-wider">Stretch</span>
-                        <span className="font-semibold text-stone-800">100% Rigid Shuttle-Loom Cotton (0% Stretch)</span>
-                      </div>
-                      <div>
-                        <span className="text-stone-400 block text-[9px] font-bold uppercase tracking-wider">Care</span>
-                        <span className="font-semibold text-stone-800">{careSpec}</span>
+                        <button type="button" onClick={handleBackToFits} className="rbw-j-btn">
+                          <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          <span>Change fit</span>
+                        </button>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Shipping & Delivery Reassurance Strip with Dynamic Pincode Check */}
-                  <div className="mt-3 p-3 bg-stone-50 rounded-xl border border-stone-200/80 flex flex-col gap-2 text-[10.5px] text-stone-700">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <Truck className="w-3.5 h-3.5 text-[#B9965A] shrink-0" />
-                        <span className="font-semibold text-stone-900">Delivery & Dispatch</span>
+                    {/* Garment facts */}
+                    <dl className="rbw-j-specs rbw-in mt-9" style={reveal(600)}>
+                      <div className="rbw-j-spec">
+                        <dt>Fabric</dt>
+                        <dd>{fabricSpec}</dd>
                       </div>
-                      <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
-                        FREE ABOVE ₹1,500
-                      </span>
-                    </div>
+                      <div className="rbw-j-spec">
+                        <dt>Silhouette</dt>
+                        <dd>{silhouetteSpec}</dd>
+                      </div>
+                      <div className="rbw-j-spec">
+                        <dt>Stretch</dt>
+                        <dd>100% Rigid Shuttle-Loom Cotton (0% Stretch)</dd>
+                      </div>
+                      <div className="rbw-j-spec">
+                        <dt>Care</dt>
+                        <dd>{careSpec}</dd>
+                      </div>
+                    </dl>
 
-                    <div className="flex flex-wrap items-center gap-2 mt-0.5">
-                      <input
-                        type="text"
-                        maxLength={6}
-                        placeholder="Enter 6-digit PIN code"
-                        value={pincode}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          setPincode(val);
-                          if (val.length === 6) {
-                            handleCheckPincode(val);
-                          } else if (pincodeStatus) {
-                            setPincodeStatus(null);
-                          }
-                        }}
-                        className="w-36 px-2.5 py-1 text-[11px] font-mono bg-white border border-stone-300 rounded-lg focus:outline-hidden focus:border-stone-800 text-stone-900"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleCheckPincode(pincode)}
-                        className="px-3 py-1 bg-stone-900 hover:bg-black text-white rounded-lg text-[10px] font-bold tracking-wider uppercase cursor-pointer"
-                      >
-                        CHECK
-                      </button>
-                      {pincodeStatus && pincodeStatus.valid && (
-                        <span className="text-[10px] font-bold text-stone-700 flex items-center gap-1">
-                          <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
-                          <span>{pincodeStatus.eta}</span>
+                    {/* Delivery */}
+                    <div className="rbw-j-delivery rbw-in" style={reveal(660)}>
+                      <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+                        <span className="rbw-j-label inline-flex items-center gap-2">
+                          <Truck className="w-3.5 h-3.5 text-[color:var(--rbw-gold-bright)]" strokeWidth={1.5} />
+                          Delivery &amp; dispatch
                         </span>
+                        <span className="rbw-j-note" style={{ color: "var(--rbw-gold)" }}>
+                          Free above ₹1,500
+                        </span>
+                      </div>
+
+                      <div className="rbw-j-pin">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={6}
+                          placeholder="Enter 6-digit PIN code"
+                          aria-label="PIN code"
+                          value={pincode}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            setPincode(val);
+                            if (val.length === 6) {
+                              handleCheckPincode(val);
+                            } else if (pincodeStatus) {
+                              setPincodeStatus(null);
+                            }
+                          }}
+                        />
+                        <button type="button" onClick={() => handleCheckPincode(pincode)} className="rbw-j-link">
+                          Check
+                        </button>
+                        {pincodeStatus && pincodeStatus.valid && (
+                          <span className="rbw-j-status">{pincodeStatus.eta}</span>
+                        )}
+                      </div>
+
+                      {pincodeStatus && !pincodeStatus.valid && (
+                        <p className="mt-2.5 text-[11px] tracking-[0.04em]" style={{ color: "#9a4a3c" }}>
+                          {pincodeStatus.message}
+                        </p>
+                      )}
+
+                      {!pincodeStatus && (
+                        <p className="rbw-j-note mt-3.5 flex items-center justify-between gap-3 flex-wrap">
+                          <span>Standard delivery: 3–5 business days</span>
+                          <span style={{ color: "var(--rbw-ink-dim)" }}>Priority 24h dispatch</span>
+                        </p>
                       )}
                     </div>
 
-                    {pincodeStatus && !pincodeStatus.valid && (
-                      <span className="text-[10px] font-medium text-rose-600">
-                        {pincodeStatus.message}
-                      </span>
-                    )}
-
-                    {!pincodeStatus && (
-                      <div className="flex items-center justify-between text-stone-500 text-[10px]">
-                        <span>Standard delivery: 3–5 Business Days</span>
-                        <span className="font-bold text-stone-700">Priority 24h Dispatch</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Trust Badges */}
-                  <div className="flex items-center justify-center gap-4 text-[9.5px] text-stone-500 font-semibold tracking-wider uppercase mt-4 mb-20">
-                    <span>✓ 7-Day Easy Returns</span>
-                    <span>•</span>
-                    <span>✓ 100% Authentic Selvedge</span>
-                    <span>•</span>
-                    <span>✓ Secure Checkout</span>
-                  </div>
-
-                  {/* Dedicated Size Guide Modal Dialog */}
-                  {sizeChartOpen && (
-                    <div
-                      role="dialog"
-                      aria-modal="true"
-                      onClick={() => setSizeChartOpen(false)}
-                      className="fixed inset-0 z-[120] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-fadeIn"
-                    >
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-[640px] bg-[#FAF8F5] text-[#1C1917] border border-[#E8E3DA] rounded-2xl shadow-2xl p-5 sm:p-6 max-h-[90vh] overflow-y-auto"
-                      >
-                        {/* Header */}
-                        <div className="flex items-center justify-between border-b border-[#E8E3DA] pb-3 mb-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#D4B16A]/15 flex items-center justify-center">
-                              <TapeIcon className="w-4 h-4 text-[#B9965A]" />
-                            </div>
-                            <div>
-                              <h3 className="font-serif text-base sm:text-lg font-bold tracking-wide uppercase">
-                                {selectedFit ? `${selectedFit} Fit` : "Denim"} Size Guide & Chart
-                              </h3>
-                              <span className="text-[10px] text-stone-500 uppercase tracking-widest font-mono">
-                                Accurate Garment Specs • True to Size
-                              </span>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => setSizeChartOpen(false)}
-                            className="w-8 h-8 rounded-full bg-stone-200/80 hover:bg-stone-300 flex items-center justify-center cursor-pointer transition-colors"
-                            aria-label="Close size guide"
-                          >
-                            <X className="w-4 h-4 text-stone-700" />
-                          </button>
-                        </div>
-
-                        {/* How to Measure Section */}
-                        <div className="bg-white rounded-xl border border-stone-200/80 p-3.5 mb-4 shadow-2xs">
-                          <h4 className="text-[10.5px] font-black uppercase tracking-wider text-stone-900 mb-2 flex items-center gap-1.5">
-                            <span>📐</span>
-                            <span>How to Measure</span>
-                          </h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10.5px] text-stone-600">
-                            <div>
-                              <strong className="text-stone-900">Waist:</strong> Measure flat across waistband without stretching, &times; 2.
-                            </div>
-                            <div>
-                              <strong className="text-stone-900">Inseam:</strong> From inner crotch point straight down to leg hem.
-                            </div>
-                            <div>
-                              <strong className="text-stone-900">Front Rise:</strong> From crotch intersection up to top waistband.
-                            </div>
-                            <div>
-                              <strong className="text-stone-900">Thigh:</strong> 1" below crotch point flat across the leg.
-                            </div>
-                            <div>
-                              <strong className="text-stone-900">Leg Opening:</strong> Flat measurement across the bottom hem.
-                            </div>
-                            <div>
-                              <strong className="text-stone-900">Recommendation:</strong> Select your standard natural waist size.
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Unit Switcher */}
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-[10px] font-black tracking-widest uppercase text-stone-500">
-                            Measurements ({sizeGuideUnit === "in" ? "Inches" : "Centimeters"})
-                          </span>
-                          <div className="flex items-center rounded-lg border border-[#E8E3DA] bg-white p-0.5 text-[9.5px] font-bold">
-                            <button
-                              type="button"
-                              onClick={() => setSizeGuideUnit("in")}
-                              className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                                sizeGuideUnit === "in"
-                                  ? "bg-stone-900 text-white shadow-2xs"
-                                  : "text-neutral-500 hover:text-black"
-                              }`}
-                            >
-                              INCHES (")
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setSizeGuideUnit("cm")}
-                              className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                                sizeGuideUnit === "cm"
-                                  ? "bg-stone-900 text-white shadow-2xs"
-                                  : "text-neutral-500 hover:text-black"
-                              }`}
-                            >
-                              CM
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Measurement Table */}
-                        <div className="overflow-x-auto rounded-xl border border-[#E8E3DA] bg-white shadow-2xs">
-                          <table className="w-full text-left text-[11px] text-neutral-700 border-collapse">
-                            <thead>
-                              <tr className="border-b border-[#E8E3DA] bg-stone-50">
-                                <th className="py-2 px-2.5 font-bold tracking-wider text-[9px] text-neutral-500">SIZE</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500">WAIST</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500">INSEAM</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500">RISE</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500">THIGH</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500">LEG OPENING</th>
-                                <th className="py-2 px-2 font-bold tracking-wider text-[9px] text-neutral-500 text-right">ACTION</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activeFitSizing.map((row: any) => {
-                                const toUnit = (val: number) =>
-                                  sizeGuideUnit === "cm" ? (val * 2.54).toFixed(1) : `${val}"`;
-                                const isCurrent = selectedSize === row.size;
-                                return (
-                                  <tr
-                                    key={row.size}
-                                    className={`border-b border-[#E8E3DA]/60 transition-colors ${
-                                      isCurrent ? "bg-[#D4B16A]/15 font-bold text-black" : "hover:bg-stone-50"
-                                    }`}
-                                  >
-                                    <td className="py-2 px-2.5 font-extrabold text-black">
-                                      <span className="flex items-center gap-1.5">
-                                        <span>{row.size}</span>
-                                        {isCurrent && (
-                                          <span className="text-[8px] bg-stone-900 text-white px-1.5 py-0.5 rounded font-bold">
-                                            CURRENT
-                                          </span>
-                                        )}
-                                      </span>
-                                    </td>
-                                    <td className="py-2 px-2 font-mono">{toUnit(row.waist)}</td>
-                                    <td className="py-2 px-2 font-mono">{toUnit(row.inseam)}</td>
-                                    <td className="py-2 px-2 font-mono">{toUnit(row.frontRise)}</td>
-                                    <td className="py-2 px-2 font-mono">{toUnit(row.thigh)}</td>
-                                    <td className="py-2 px-2 font-mono">{toUnit(row.legOpening)}</td>
-                                    <td className="py-2 px-2 text-right">
-                                      <button
-                                        onClick={() => {
-                                          setSelectedSize(row.size);
-                                          setSizeChartOpen(false);
-                                        }}
-                                        className={`text-[9.5px] font-black uppercase px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                                          isCurrent
-                                            ? "bg-stone-900 text-white"
-                                            : "bg-stone-100 hover:bg-stone-200 text-stone-800"
-                                        }`}
-                                      >
-                                        {isCurrent ? "Selected" : "Select"}
-                                      </button>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div className="mt-4 flex items-center justify-between text-[11px] text-stone-500">
-                          <span>Need sizing help? Contact our fitting atelier.</span>
-                          <button
-                            onClick={() => setSizeChartOpen(false)}
-                            className="px-4 py-2 bg-stone-900 hover:bg-black text-white text-[10.5px] font-black tracking-wider uppercase rounded-xl cursor-pointer transition-all"
-                          >
-                            Done & Close
-                          </button>
-                        </div>
-                      </div>
+                    <div className="rbw-j-trust rbw-in mt-9 mb-16" style={reveal(720)}>
+                      <span>7-day easy returns</span>
+                      <span>100% authentic selvedge</span>
+                      <span>Secure checkout</span>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
+
+                {sizeChartOpen && (
+                  <RbwSizeChartModal
+                    kicker={selectedCategory === "jeans" ? `${selectedFit} fit` : "Denim"}
+                    title="Size guide & chart"
+                    subtitle="Accurate garment specs · true to size"
+                    rows={activeFitSizing}
+                    unit={sizeGuideUnit}
+                    onUnitChange={setSizeGuideUnit}
+                    onClose={() => setSizeChartOpen(false)}
+                    currentSize={selectedSize}
+                    onSelectSize={(sz) => {
+                      setSelectedSize(sz);
+                      setSizeChartOpen(false);
+                    }}
+                    showHowTo
+                    note="Need sizing help? Contact our fitting atelier."
+                  />
+                )}
+              </>
             );
           })()}
-        </div>
+        </RbwJourneyShell>
 
       </div>
 

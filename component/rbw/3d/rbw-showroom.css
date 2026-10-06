@@ -5,17 +5,17 @@
    ========================================================================== */
 
 .rbw-showroom {
-  --rbw-gold: #a07f3c;
-  --rbw-gold-bright: #b9965a;
-  --rbw-ink: #16130f;
-  --rbw-ink-dim: #5a5249;
-  --rbw-ink-faint: #8b8276;
-  --rbw-line: rgba(22, 19, 15, 0.16);
-  --rbw-glass: rgba(255, 255, 255, 0.86);
+  --rbw-gold: #c29d55;
+  --rbw-gold-bright: #d8b570;
+  --rbw-ink: #1a1713;
+  --rbw-ink-dim: #5c5345;
+  --rbw-ink-faint: #8e826e;
+  --rbw-line: rgba(194, 157, 85, 0.22);
+  --rbw-glass: rgba(252, 248, 238, 0.92);
   --rbw-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --rbw-wash-ms: 1000ms;
 
-  background: #ebe3d8;
+  background: #f3d485;
   color: var(--rbw-ink);
   isolation: isolate;
 }
@@ -37,8 +37,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(90% 60% at 50% 30%, rgba(255, 252, 247, 0.75) 0%, transparent 70%),
-    linear-gradient(180deg, #e4dbcf 0%, #ede6dc 38%, #e9e1d5 66%, #f0eae1 100%);
+    radial-gradient(90% 60% at 50% 30%, rgba(255, 252, 240, 0.95) 0%, transparent 72%),
+    linear-gradient(180deg, #F2EAD8 0%, #F8F3E6 38%, #F0E6D2 66%, #FAF5EA 100%);
 }
 
 .rbw-showroom .rbw-bd__lights {
@@ -62,20 +62,20 @@
 /* Each wash tints the same cream room very slightly */
 .rbw-showroom .rbw-bd__wash[data-wash="raw"] {
   background:
-    radial-gradient(50% 58% at 50% 44%, rgba(255, 250, 240, 0.55) 0%, rgba(255, 250, 240, 0.2) 55%, transparent 100%),
-    radial-gradient(110% 90% at 50% 50%, transparent 55%, rgba(120, 138, 172, 0.13) 100%);
+    radial-gradient(50% 58% at 50% 44%, rgb(228, 225, 220) 0%, rgba(255, 248, 232, 0.25) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 55%, rgba(135, 125, 95, 0.14) 100%);
 }
 
 .rbw-showroom .rbw-bd__wash[data-wash="black"] {
   background:
-    radial-gradient(50% 58% at 50% 44%, rgba(255, 248, 238, 0.5) 0%, rgba(255, 248, 238, 0.18) 55%, transparent 100%),
-    radial-gradient(110% 90% at 50% 50%, transparent 50%, rgba(104, 80, 70, 0.17) 100%);
+    radial-gradient(50% 58% at 50% 44%, rgba(255, 248, 236, 0.55) 0%, rgba(255, 246, 230, 0.22) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 50%, rgba(120, 95, 75, 0.17) 100%);
 }
 
 .rbw-showroom .rbw-bd__wash[data-wash="white"] {
   background:
-    radial-gradient(52% 62% at 50% 44%, rgba(255, 252, 244, 0.8) 0%, rgba(255, 250, 240, 0.3) 55%, transparent 100%),
-    radial-gradient(110% 90% at 50% 50%, transparent 58%, rgba(150, 126, 96, 0.1) 100%);
+    radial-gradient(52% 62% at 50% 44%, rgba(255, 252, 242, 0.85) 0%, rgba(255, 250, 236, 0.35) 55%, transparent 100%),
+    radial-gradient(110% 90% at 50% 50%, transparent 58%, rgba(160, 135, 95, 0.12) 100%);
 }
 
 /* Polished floor: brightens and softens toward the viewer, no horizon line */
@@ -84,25 +84,25 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 46%;
+  height: 48%;
   background:
-    radial-gradient(60% 40% at 50% 38%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.16) 45%, rgba(240, 233, 223, 0.5) 100%);
+    radial-gradient(60% 40% at 50% 38%, rgba(255, 251, 238, 0.55) 0%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 250, 235, 0.28) 45%, rgba(246, 238, 222, 0.78) 100%);
 }
 
 .rbw-showroom .rbw-bd__fabric {
   position: absolute;
   inset: 0;
-  opacity: 0.03;
+  opacity: 0.035;
   mix-blend-mode: multiply;
-  background-image: repeating-linear-gradient(115deg, rgba(60, 45, 30, 0.7) 0 1px, transparent 1px 3px);
+  background-image: repeating-linear-gradient(115deg, rgba(80, 60, 25, 0.7) 0 1px, transparent 1px 3px);
 }
 
 .rbw-showroom .rbw-bd__haze {
   display: none;
 }
 
-/* Oversized serif ghost word: warm taupe that fades out toward the floor */
+/* Oversized serif ghost word: dusty warm gold that fades out toward the floor */
 .rbw-showroom .rbw-bd__ghost {
   position: absolute;
   left: 0;
@@ -120,7 +120,7 @@
 .rbw-showroom .rbw-bd__ghost>span {
   display: inline-block;
   padding: 0 0.05em;
-  background: linear-gradient(180deg, rgba(122, 100, 74, 0.82) 0%, rgba(150, 128, 100, 0.5) 45%, rgba(190, 172, 148, 0) 92%);
+  background: linear-gradient(180deg, rgba(185, 150, 85, 0.85) 0%, rgba(210, 175, 105, 0.5) 45%, rgba(235, 215, 165, 0) 92%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -133,8 +133,8 @@
   inset: 0;
   background: radial-gradient(125% 100% at 50% 46%,
       transparent 58%,
-      rgba(110, 88, 64, 0.08) 82%,
-      rgba(90, 70, 50, 0.2) 100%);
+      rgba(150, 120, 65, 0.07) 82%,
+      rgba(120, 92, 45, 0.16) 100%);
 }
 
 /* --------------------------------------------------------------------------
@@ -279,8 +279,8 @@
 
 .rbw-showroom .rbw-glass-btn:hover {
   color: var(--rbw-ink);
-  border-color: rgba(160, 127, 60, 0.6);
-  background: #ffffff;
+  border-color: rgba(194, 157, 85, 0.65);
+  background: #FCF8EE;
 }
 
 .rbw-showroom .rbw-glass-btn:active {

@@ -727,7 +727,7 @@ export default function Navbar() {
                 : "relative z-[100] h-[54px] sm:h-[62px] max-xl:bg-[#0D0B0A] max-xl:text-white xl:bg-[#FAF8F5] xl:text-[#1C1917]"
               }`
               : `fixed left-0 z-[100] max-xl:bg-[#0D0B0A] max-xl:text-white max-xl:border-b max-xl:border-white/10 ${theme === "light"
-                ? "xl:bg-white xl:border-b xl:border-[var(--border-color)] xl:text-black"
+                ? "xl:bg-[var(--surface)] xl:border-b xl:border-[var(--border-color)] xl:text-[var(--foreground)]"
                 : "xl:bg-black xl:border-b xl:border-[var(--border-color)] xl:text-white"
               } ${isScrolled ? "top-0 h-[48px] sm:h-[52px]" : "top-[35px] h-[68px]"}`
           }`}
