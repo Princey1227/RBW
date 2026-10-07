@@ -18,13 +18,7 @@ export default function KwikpassLoginModal({
   onClose,
   onSuccess,
 }: KwikpassLoginModalProps) {
-  let theme = "dark";
-  try {
-    const themeContext = useTheme();
-    if (themeContext?.theme) theme = themeContext.theme;
-  } catch (e) {
-    theme = "dark";
-  }
+  const { theme = "dark" } = useTheme();
 
   const { updateBuyerIdentity } = useCart();
 

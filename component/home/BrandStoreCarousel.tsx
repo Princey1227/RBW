@@ -184,7 +184,12 @@ export default function BrandStoreCarousel({
       setActiveIndex(idx);
     } else {
       if (brand.isLive) {
-        router.push(brand.href);
+        const activeCat = brand.categories?.[categoryIndices[idx] || 0];
+        const targetUrl =
+          activeCat?.label === "JEANS"
+            ? "/stores/rbw?wash=raw"
+            : (activeCat?.href || brand.href);
+        router.push(targetUrl);
       } else {
         onOpenWaitlist(brand);
       }
@@ -337,21 +342,39 @@ export default function BrandStoreCarousel({
                 {/* Top Status Badge & Category Text */}
                 <div className="relative z-20 p-2.5 sm:p-3.5 flex items-start justify-between w-full pointer-events-none">
                   {brand.isLive ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#B9965A]/95 sm:bg-[#059669] border border-[#DFCFA8]/80 sm:border-[#10B981]/80 text-white text-[7.5px] sm:text-[8.5px] font-extrabold tracking-widest uppercase shadow-md backdrop-blur-md whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-[#B9965A]/95 sm:bg-[#059669] border border-[#DFCFA8]/80 sm:border-[#10B981]/80 text-white text-[7.5px] sm:text-[8.5px] font-extrabold tracking-widest uppercase shadow-md backdrop-blur-md whitespace-nowrap pointer-events-auto">
                       <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                       LIVE STORE
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-black/70 border border-white/20 backdrop-blur-md text-stone-200 text-[7.5px] sm:text-[8px] font-bold tracking-widest uppercase shadow-xs whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-black/70 border border-white/20 backdrop-blur-md text-stone-200 text-[7.5px] sm:text-[8px] font-bold tracking-widest uppercase shadow-xs whitespace-nowrap pointer-events-auto">
                       COMING SOON
                     </span>
                   )}
 
                   {/* Active Category Text on Top Right Corner */}
                   {brand.categories && brand.categories.length > 0 && (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-black/70 border border-white/20 backdrop-blur-md text-[#DFCFA8] text-[7.5px] sm:text-[8.5px] font-bold tracking-widest uppercase shadow-xs whitespace-nowrap transition-all duration-300">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (hasDragged.current) return;
+                        const cat = brand.categories?.[categoryIndices[idx] || 0];
+                        if (brand.isLive) {
+                          const targetUrl =
+                            cat?.label === "JEANS"
+                              ? "/stores/rbw?wash=raw"
+                              : (cat?.href || brand.href);
+                          router.push(targetUrl);
+                        } else {
+                          onOpenWaitlist(brand);
+                        }
+                      }}
+                      className="pointer-events-auto inline-flex items-center px-2.5 py-1 rounded-full bg-black/70 hover:bg-black border border-white/20 hover:border-[#B9965A] backdrop-blur-md text-[#DFCFA8] hover:text-white text-[7.5px] sm:text-[8.5px] font-bold tracking-widest uppercase shadow-xs whitespace-nowrap transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                      title={brand.categories[categoryIndices[idx] || 0]?.label === "JEANS" ? "Shop Jeans (Select Your Fit)" : undefined}
+                    >
                       {brand.categories[categoryIndices[idx] || 0]?.label}
-                    </span>
+                    </button>
                   )}
                 </div>
 
@@ -372,21 +395,73 @@ export default function BrandStoreCarousel({
 
                   <div className="w-6 h-[1.5px] bg-[#B9965A] my-2 transition-all duration-300 group-hover:w-14" />
 
+                  {/* Category Selection Pills */}
+                  {brand.categories && brand.categories.length > 0 && (
+                    <div className="flex items-center justify-center gap-1 sm:gap-1.5 my-2 flex-wrap max-w-full px-1 z-30">
+                      {brand.categories.map((c, cIdx) => {
+                        const isCatActive = (categoryIndices[idx] || 0) === cIdx;
+                        return (
+                          <button
+                            key={c.label}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (hasDragged.current) return;
+                              if (brand.isLive) {
+                                const targetUrl =
+                                  c.label === "JEANS"
+                                    ? "/stores/rbw?wash=raw"
+                                    : (c.href || brand.href);
+                                router.push(targetUrl);
+                              } else {
+                                onOpenWaitlist(brand);
+                              }
+                            }}
+                            onMouseEnter={() => {
+                              setCategoryIndices((prev) => {
+                                const next = [...prev];
+                                next[idx] = cIdx;
+                                return next;
+                              });
+                            }}
+                            className={`px-2 py-0.5 rounded-full text-[7px] sm:text-[8px] font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer ${
+                              isCatActive
+                                ? "bg-[#B9965A] text-black border border-[#DFCFA8] shadow-xs font-black scale-105"
+                                : "bg-black/50 hover:bg-black/80 text-stone-300 hover:text-white border border-white/10 hover:border-white/30"
+                            }`}
+                          >
+                            {c.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   {brand.isLive ? (
-                    <Link
-                      href={brand.href}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className={`inline-flex items-center justify-center gap-1.5 text-[8.5px] sm:text-[10.5px] tracking-[0.18em] font-black px-4 py-2 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300 uppercase hover:scale-105 cursor-pointer whitespace-nowrap shrink-0 ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#D4B16A] via-[#B9965A] to-[#8C6B2F] text-black font-extrabold border border-[#DFCFA8]"
-                          : "bg-white border border-stone-200 text-[#1C1917]"
-                      }`}
-                    >
-                      <span>{brand.actionText}</span>
-                      <ArrowRight className="w-3 h-3 text-current transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
-                    </Link>
+                    (() => {
+                      const activeCat = brand.categories?.[categoryIndices[idx] || 0];
+                      const targetUrl =
+                        activeCat?.label === "JEANS"
+                          ? "/stores/rbw?wash=raw"
+                          : (activeCat?.href || brand.href);
+
+                      return (
+                        <Link
+                          href={targetUrl}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className={`inline-flex items-center justify-center gap-1.5 text-[8.5px] sm:text-[10.5px] tracking-[0.18em] font-black px-4 py-2 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300 uppercase hover:scale-105 cursor-pointer whitespace-nowrap shrink-0 ${
+                            isActive
+                              ? "bg-gradient-to-r from-[#D4B16A] via-[#B9965A] to-[#8C6B2F] text-black font-extrabold border border-[#DFCFA8]"
+                              : "bg-white border border-stone-200 text-[#1C1917]"
+                          }`}
+                        >
+                          <span>{brand.actionText}</span>
+                          <ArrowRight className="w-3 h-3 text-current transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
+                        </Link>
+                      );
+                    })()
                   ) : (
                     <button
                       type="button"

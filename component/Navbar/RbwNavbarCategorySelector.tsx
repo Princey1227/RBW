@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 
 export type CategoryId = "jeans" | "jackets" | "shorts" | "accessories";
 
@@ -49,12 +49,6 @@ export default function RbwNavbarCategorySelector() {
       window.dispatchEvent(
         new CustomEvent("RBW_PREVIEW_TOGGLE_CATEGORY", { detail: catId })
       );
-    }
-  };
-
-  const handleToggleFilter = () => {
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("RBW_PREVIEW_TOGGLE_FILTER"));
     }
   };
 

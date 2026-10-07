@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Tag } from "lucide-react";
+import { Tag, ArrowLeft } from "lucide-react";
 import { RbwSizeChartModal, RbwSizingSpec } from "@/component/rbw/RbwSizeChartModal";
 import "@/component/rbw/3d/rbw-showroom.css";
 import "@/component/rbw/rbw-journey.css";
@@ -87,11 +87,29 @@ export function RbwFitSelector({
       {/* ------------------------------------------------------------------ */}
       {/* Editorial heading                                                  */}
       {/* ------------------------------------------------------------------ */}
-      <header className="relative z-10 flex flex-col items-center text-center pt-3 sm:pt-6 md:pt-8 mb-4 sm:mb-8 md:mb-10">
-        <h2 className="rbw-fit__heading rbw-in" style={delayStyle(200)}>
-          SELECT YOUR FIT
-        </h2>
-        <span className="rbw-fit__heading-accent rbw-in" style={delayStyle(320)} />
+      <header className="relative z-10 w-full max-w-[1780px] mx-auto flex items-center justify-center pt-1 sm:pt-2 md:pt-3 mb-3 sm:mb-6 md:mb-8 px-2 sm:px-4">
+        {/* Back to Select Wash button — positioned inline without adding vertical space */}
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("RESET_RBW_STOREFRONT"));
+            }
+          }}
+          title="Back to Wash Selection"
+          aria-label="Back to Wash Selection"
+          className="absolute left-2 sm:left-4 flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9.5px] sm:text-[11px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer bg-white hover:bg-white text-zinc-800 hover:text-black border border-zinc-300 hover:border-zinc-600 shadow-xs group"
+        >
+          <ArrowLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:-translate-x-0.5 transition-transform text-[#B9965A]" />
+          <span>Washes</span>
+        </button>
+
+        <div className="flex flex-col items-center text-center">
+          <h2 className="rbw-fit__heading rbw-in" style={delayStyle(200)}>
+            SELECT YOUR FIT
+          </h2>
+          <span className="rbw-fit__heading-accent rbw-in" style={delayStyle(320)} />
+        </div>
       </header>
 
       {/* ------------------------------------------------------------------ */}

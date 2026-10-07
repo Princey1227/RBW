@@ -68,7 +68,7 @@ export default function Navbar() {
     {
       name: "RBW",
       tagline: "Premium Everyday Denim",
-      href: "/stores/rbw",
+      href: "/stores/rbw?wash=raw",
       isLive: true,
       badge: "LIVE",
     },
@@ -914,15 +914,11 @@ export default function Navbar() {
                 <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform text-[#B9965A]" />
                 <span>ONLY DENIMS</span>
               </Link>
-              {pathname === "/stores/rbw" ? (
+              {pathname === "/stores/rbw" || pathname?.startsWith("/stores/template") ? (
                 <>
                   <div className="h-3.5 w-[1px] bg-zinc-300/80 mx-1 shrink-0" />
                   <RbwNavbarCategorySelector />
                 </>
-              ) : pathname?.startsWith("/stores/template") ? (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[9.5px] font-black tracking-widest text-[#B9965A] uppercase">
-                  <span>BRAND TEMPLATE DEMO</span>
-                </div>
               ) : (
                 <>
                   <div className="h-3.5 w-[1px] bg-foreground/20 mx-0.5" />

@@ -72,7 +72,7 @@ export function RbwJourneyShell({
 
       <div
         ref={scrollRef}
-        className="rbw-j-scroll flex flex-col [&>*]:shrink-0 pt-[123px] sm:pt-[129px] md:pt-[139px] xl:pt-[103px] pb-28 sm:pb-36"
+        className="rbw-j-scroll flex flex-col [&>*]:shrink-0 pt-[88px] sm:pt-[94px] md:pt-[98px] xl:pt-[106px] pb-28 sm:pb-36"
       >
         {bar}
         {children}

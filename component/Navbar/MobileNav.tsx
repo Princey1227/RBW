@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Heart, ArrowLeft, ChevronDown } from "lucide-react";
 
 const navItems = [
-  { label: "Jeans", href: "/stores/rbw" },
+  { label: "Jeans", href: "/stores/rbw?wash=raw" },
   { label: "Jackets", href: "/stores/rbw/jackets" },
   { label: "Shorts", href: "/stores/rbw/shorts" },
   { label: "Accessories", href: "/accessories" },
@@ -85,13 +85,13 @@ export default function MobileNav({
               </Link>
 
               {[
-                { label: "JEANS", href: "/stores/rbw" },
+                { label: "JEANS", href: "/stores/rbw?wash=raw" },
                 { label: "JACKETS", href: "/stores/rbw/jackets" },
                 { label: "SHORTS", href: "/stores/rbw/shorts" },
                 { label: "ACCESSORIES", href: "/accessories" },
               ].map((item) => {
                 const active =
-                  item.href === "/stores/rbw"
+                  item.href === "/stores/rbw?wash=raw" || item.href === "/stores/rbw"
                     ? pathname === "/stores/rbw" || pathname === "/stores/rbw/"
                     : item.href === "/stores/rbw/shorts"
                       ? pathname.startsWith("/shorts") || pathname.startsWith("/stores/rbw/shorts")

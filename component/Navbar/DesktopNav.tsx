@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { label: "Jeans", href: "/stores/rbw" },
+  { label: "Jeans", href: "/stores/rbw?wash=raw" },
   { label: "Jackets", href: "/stores/rbw/jackets" },
   { label: "Shorts", href: "/stores/rbw/shorts" },
   { label: "Accessories", href: "/accessories" },

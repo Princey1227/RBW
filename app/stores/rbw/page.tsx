@@ -5,7 +5,9 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  Suspense,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import axios from "axios";
@@ -154,9 +156,37 @@ const getProductHandleForWashAndFit = (wash: "raw" | "black" | "white" | "vintag
   return "raw-straight-denims";
 };
 
-export default function RBWStorefrontPage() {
-  const [activeWash, setActiveWash] = useState<"raw" | "black" | "white" | "vintage" | null>(null);
-  const [selectedWash, setSelectedWash] = useState<"raw" | "black" | "white" | "vintage" | null>(null);
+const getInitialWashVal = (): "raw" | "black" | "white" | "vintage" | null => {
+  if (typeof window !== "undefined") {
+    const rawWash = new URLSearchParams(window.location.search).get("wash")?.toLowerCase();
+    if (rawWash && ["raw", "black", "white", "vintage"].includes(rawWash)) {
+      return rawWash as "raw" | "black" | "white" | "vintage";
+    }
+    const sessionWash = sessionStorage.getItem("selectedWash")?.toLowerCase();
+    if (sessionWash && ["raw", "black", "white", "vintage"].includes(sessionWash)) {
+      return sessionWash as "raw" | "black" | "white" | "vintage";
+    }
+  }
+  return null;
+};
+
+const getInitialFitVal = (): string | null => {
+  if (typeof window !== "undefined") {
+    const rawFit = new URLSearchParams(window.location.search).get("fit")?.toLowerCase();
+    if (rawFit && ["ankle", "slim", "comfort", "straight", "baggy", "bootcut"].includes(rawFit)) {
+      return rawFit;
+    }
+  }
+  return null;
+};
+
+function RBWStorefrontContent() {
+  const searchParams = useSearchParams();
+  const washParam = searchParams?.get("wash")?.toLowerCase();
+  const fitParam = searchParams?.get("fit")?.toLowerCase();
+
+  const [activeWash, setActiveWash] = useState<"raw" | "black" | "white" | "vintage" | null>(getInitialWashVal);
+  const [selectedWash, setSelectedWash] = useState<"raw" | "black" | "white" | "vintage" | null>(getInitialWashVal);
   const [selectedCategory, setSelectedCategory] = useState<string>("jeans");
   const [mobileWashIndex, setMobileWashIndex] = useState<number>(0);
   const [prevMobileWashIndex, setPrevMobileWashIndex] = useState<number>(0);
@@ -178,7 +208,7 @@ export default function RBWStorefrontPage() {
     }
     setTouchStartX(null);
   };
-  const [selectedFit, setSelectedFit] = useState<string | null>(null);
+  const [selectedFit, setSelectedFit] = useState<string | null>(getInitialFitVal);
   const [selectedSize, setSelectedSize] = useState<string>("32");
   const [quantity, setQuantity] = useState<number>(1);
   const [isBuyingNow, setIsBuyingNow] = useState<boolean>(false);
@@ -192,15 +222,17 @@ export default function RBWStorefrontPage() {
 
   // The "room" remembers the last wash/fit so lighting and ghost lettering never
   // blink out while a drawer is sliding away (derived during render, no effect).
-  const [roomWash, setRoomWash] = useState<"raw" | "black" | "white" | "vintage">("raw");
-  const [roomFit, setRoomFit] = useState<string>("");
+  const [roomWash, setRoomWash] = useState<"raw" | "black" | "white" | "vintage">(
+    () => getInitialWashVal() || "raw"
+  );
+  const [roomFit, setRoomFit] = useState<string>(() => getInitialFitVal() || "");
   if (selectedWash && selectedWash !== roomWash) setRoomWash(selectedWash);
   if (selectedFit && selectedFit !== roomFit) setRoomFit(selectedFit);
 
   // Counts how many times the FIT room has been entered, so its staggered reveal
   // replays on every entry but never re-fires while the drawer is sliding out.
-  const [fitEntries, setFitEntries] = useState<number>(0);
-  const [hadWash, setHadWash] = useState<boolean>(false);
+  const [fitEntries, setFitEntries] = useState<number>(() => (getInitialWashVal() ? 1 : 0));
+  const [hadWash, setHadWash] = useState<boolean>(() => !!getInitialWashVal());
   if (!!selectedWash !== hadWash) {
     setHadWash(!!selectedWash);
     if (selectedWash) setFitEntries((n) => n + 1);
@@ -507,37 +539,33 @@ export default function RBWStorefrontPage() {
     const VALID_WASHES = ["raw", "black", "white", "vintage"];
     const VALID_FITS = ["ankle", "slim", "comfort", "straight", "baggy", "bootcut"];
 
-    const handleUrlCheck = () => {
+    const rawWash = washParam || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("wash")?.toLowerCase() : null);
+    const rawFit = fitParam || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("fit")?.toLowerCase() : null);
+
+    if (rawWash && VALID_WASHES.includes(rawWash)) {
+      const safeWash = rawWash as "raw" | "black" | "white" | "vintage";
+      setSelectedWash(safeWash);
+      setActiveWash(safeWash);
+      setRoomWash(safeWash);
+      setSelectedCategory("jeans");
       if (typeof window !== "undefined") {
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawWash = urlParams.get("wash")?.toLowerCase();
-        const rawFit = urlParams.get("fit")?.toLowerCase();
-
-        if (rawWash && VALID_WASHES.includes(rawWash)) {
-          setSelectedWash(rawWash as "raw" | "black" | "white" | "vintage");
-          setActiveWash(rawWash as "raw" | "black" | "white" | "vintage");
-          if (rawFit && VALID_FITS.includes(rawFit)) {
-            setSelectedFit(rawFit);
-          } else {
-            setSelectedFit(null);
-          }
-        } else {
-          // Graceful fallback for invalid/missing wash: show default showroom, never blank
-          setSelectedWash(null);
-          setSelectedFit(null);
-          try {
-            sessionStorage.removeItem("selectedWash");
-          } catch (e) {}
-        }
+        sessionStorage.setItem("selectedWash", safeWash);
+        window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: true } }));
       }
-    };
-
-    handleUrlCheck();
-    window.addEventListener("popstate", handleUrlCheck);
-    return () => {
-      window.removeEventListener("popstate", handleUrlCheck);
-    };
-  }, []);
+      if (rawFit && VALID_FITS.includes(rawFit)) {
+        setSelectedFit(rawFit);
+        setRoomFit(rawFit);
+      } else {
+        setSelectedFit(null);
+      }
+    } else {
+      setSelectedWash(null);
+      setSelectedFit(null);
+      try {
+        sessionStorage.removeItem("selectedWash");
+      } catch (e) {}
+    }
+  }, [washParam, fitParam]);
 
   const handleWashClick = (wash: "raw" | "black" | "white" | "vintage" | string, category?: string, defaultFit?: string) => {
     const safeWash = (["raw", "black", "white", "vintage"].includes(wash) ? wash : "raw") as "raw" | "black" | "white" | "vintage";
@@ -557,6 +585,7 @@ export default function RBWStorefrontPage() {
         url.searchParams.delete("fit");
         window.history.pushState({ wash: safeWash }, "", url.toString());
       } catch (e) {}
+      window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: true } }));
     }
     
     // Auto-skip fit selection (step 2) for non-jeans items
@@ -578,6 +607,7 @@ export default function RBWStorefrontPage() {
         url.searchParams.delete("fit");
         window.history.pushState({}, "", url.pathname);
       } catch (e) {}
+      window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: false } }));
     }
   };
 
@@ -638,6 +668,7 @@ export default function RBWStorefrontPage() {
         if (window.location.search) {
           window.history.replaceState({}, "", window.location.pathname);
         }
+        window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: false } }));
       } catch (e) {}
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -823,7 +854,7 @@ export default function RBWStorefrontPage() {
           scrollRef={fitsDrawerRef}
           theme={rbwTheme}
         >
-          <div className="flex-1 flex flex-col justify-center py-2 md:py-6">
+          <div className="flex-1 flex flex-col justify-start pt-1 sm:pt-3 pb-4">
             {/* keyed by entry so the staggered reveal replays every time the room is entered */}
             <ShopByFit
               key={fitEntries}
@@ -1455,5 +1486,13 @@ export default function RBWStorefrontPage() {
       )}
 
     </main>
+  );
+}
+
+export default function RBWStorefrontPage() {
+  return (
+    <Suspense fallback={null}>
+      <RBWStorefrontContent />
+    </Suspense>
   );
 }

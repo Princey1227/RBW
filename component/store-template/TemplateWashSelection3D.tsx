@@ -1,33 +1,43 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
-import { RbwShowroomUI } from "@/component/rbw/3d/RbwShowroomUI";
+import { RbwCinematicUI } from "@/component/rbw/3d/RbwCinematicUI";
+import {
+  RbwShowroomBackdrop,
+  toAtmosphere,
+  useRbwReducedMotion,
+} from "@/component/rbw/3d/RbwShowroomBackdrop";
 import { CarouselItemData } from "@/component/rbw/3d/RbwOrbitCarousel";
 import { TEMPLATE_SHOWROOM_ITEMS } from "./templateCatalog";
 import { RbwFilterPanel, CategoryId } from "@/component/rbw/3d/RbwFilterPanel";
+import "@/component/rbw/3d/rbw-showroom.css";
 
-const RbwCanvas = dynamic(() => import("@/component/rbw/3d/RbwCanvas"), {
-  ssr: false,
-  loading: () => null,
-});
+const RbwCanvas = dynamic(
+  () => import("@/component/rbw/3d/RbwCanvas"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
 
 interface TemplateWashSelection3DProps {
   brandName: string;
   accentColor: string;
   onWashSelect: (washKey: "raw" | "black" | "white" | string, category?: string, defaultFit?: string) => void;
+  theme?: "dark" | "light";
+  onToggleTheme?: () => void;
 }
 
 export function TemplateWashSelection3D({
   brandName,
   accentColor,
   onWashSelect,
+  theme = "dark",
+  onToggleTheme,
 }: TemplateWashSelection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
-  const [isInspecting, setIsInspecting] = useState(false);
-  const [rotationStep, setRotationStep] = useState(0);
 
   const [selectedCategories, setSelectedCategories] = useState<CategoryId[]>(["jeans"]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -36,6 +46,35 @@ export function TemplateWashSelection3D({
   const [selectedDiscount, setSelectedDiscount] = useState<number | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Cinematic showroom state
+  const reducedMotion = useRbwReducedMotion();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isSwitching, setIsSwitching] = useState(false);
+  const pendingSwitches = useRef(0);
+
+  /**
+   * Category changes dip the stage (≈240ms), swap the garments while it is dark,
+   * then bring the new set up — a showroom transition instead of a hard cut.
+   */
+  const runWithSwitch = useCallback(
+    (apply: () => void) => {
+      if (reducedMotion || typeof window === "undefined") {
+        apply();
+        return;
+      }
+      pendingSwitches.current += 1;
+      setIsSwitching(true);
+      window.setTimeout(() => {
+        apply();
+        window.setTimeout(() => {
+          pendingSwitches.current = Math.max(0, pendingSwitches.current - 1);
+          if (pendingSwitches.current === 0) setIsSwitching(false);
+        }, 60);
+      }, 240);
+    },
+    [reducedMotion]
+  );
 
   // Map all catalog products (jeans across all fits, jackets, shorts, accessories) to the template brand
   const allTemplateItems: CarouselItemData[] = useMemo(() => {
@@ -118,37 +157,35 @@ export function TemplateWashSelection3D({
   const handleNext = () => setActiveIndex((prev) => (prev + 1) % totalItems);
   const handlePrev = () => setActiveIndex((prev) => (prev - 1 + totalItems) % totalItems);
   const handleSelectIndex = (idx: number) => setActiveIndex(idx);
-  const handleRotateLeft = () => setRotationStep((prev) => prev - 1);
-  const handleRotateRight = () => setRotationStep((prev) => prev + 1);
-
-  const handleToggleInspect = () => {
-    setIsInspecting((prev) => {
-      const next = !prev;
-      if (next) setIsFilterOpen(false);
-      return next;
-    });
-  };
-
-  const handleCloseInspect = () => {
-    setIsInspecting(false);
-  };
 
   const handleToggleCategory = (catId: CategoryId) => {
-    setSelectedCategories((prev) => {
-      const exists = prev.includes(catId);
-      if (exists) {
-        if (prev.length === 1) return prev;
-        return prev.filter((id) => id !== catId);
-      } else {
-        return [...prev, catId];
-      }
+    if (selectedCategories.length === 1 && selectedCategories[0] === catId) {
+      setActiveIndex(0);
+      return;
+    }
+    runWithSwitch(() => {
+      setSelectedCategories((prev) => {
+        const exists = prev.includes(catId);
+        if (exists) {
+          if (prev.length === 1) return prev;
+          return prev.filter((id) => id !== catId);
+        } else {
+          return [...prev, catId];
+        }
+      });
+      setActiveIndex(0);
     });
-    setActiveIndex(0);
   };
 
   const handleSelectCategory = (catId: CategoryId) => {
-    setSelectedCategories([catId]);
-    setActiveIndex(0);
+    if (selectedCategories.length === 1 && selectedCategories[0] === catId) {
+      setActiveIndex(0);
+      return;
+    }
+    runWithSwitch(() => {
+      setSelectedCategories([catId]);
+      setActiveIndex(0);
+    });
   };
 
   const handleToggleColor = (colorId: string) => {
@@ -215,44 +252,37 @@ export function TemplateWashSelection3D({
     (selectedDiscount && selectedDiscount > 0 ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 5000 ? 1 : 0);
 
-  const ambientTint = activeItem?.accentHex || accentColor || "#C59B27";
+  const atmosphere = toAtmosphere(activeItem?.washKey);
+  const ghostWord = (activeItem?.name || brandName || "").split(" ")[0];
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none bg-[#EAE6DF]">
+    <div
+      className="rbw-showroom relative w-full h-full overflow-hidden select-none"
+      data-theme={theme}
+    >
       <link rel="preload" href="/rbwstore/raw.png" as="image" />
       <link rel="preload" href="/rbwstore/black.png" as="image" />
       <link rel="preload" href="/rbwstore/white.png" as="image" />
 
-      {/* Background with luxury ambience */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-        <Image
-          src="/preview_3d_bg.png"
-          alt="Architectural Showroom Background"
-          fill
-          priority
-          className="object-cover object-center pointer-events-none"
-        />
-        <div
-          className="absolute inset-0 pointer-events-none transition-colors duration-700 mix-blend-multiply opacity-20"
-          style={{ backgroundColor: ambientTint }}
-        />
-      </div>
+      {/* Cinematic studio environment (DOM layers behind the canvas) */}
+      <RbwShowroomBackdrop washKey={activeItem?.washKey} ghostText={ghostWord} />
 
       <div className="relative w-full h-full overflow-hidden z-10">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 rbw-stage" data-switching={isSwitching}>
           <RbwCanvas
             items={filteredItems}
             activeItem={activeItem}
             activeIndex={activeIndex}
             onSelectIndex={setActiveIndex}
             autoRotate={autoRotate}
-            isInspecting={isInspecting}
-            setIsInspecting={setIsInspecting}
-            rotationStep={rotationStep}
+            cinematic
+            atmosphere={atmosphere}
+            reducedMotion={reducedMotion}
+            onHoverIndex={setHoveredIndex}
           />
         </div>
 
-        <RbwShowroomUI
+        <RbwCinematicUI
           items={filteredItems}
           activeItem={activeItem}
           activeIndex={activeIndex}
@@ -263,16 +293,13 @@ export function TemplateWashSelection3D({
           autoRotate={autoRotate}
           onToggleAutoRotate={() => setAutoRotate((prev) => !prev)}
           selectedCategories={selectedCategories}
-          activeCategory={selectedCategories[0]}
-          onToggleCategory={handleToggleCategory}
           onSelectCategory={handleSelectCategory}
           onToggleFilterDrawer={() => setIsFilterOpen((prev) => !prev)}
           isFilterOpen={isFilterOpen}
-          isInspecting={isInspecting}
-          onToggleInspect={handleToggleInspect}
-          onCloseInspect={handleCloseInspect}
-          onRotateLeft={handleRotateLeft}
-          onRotateRight={handleRotateRight}
+          activeFilterCount={activeFilterCount}
+          hoveredIndex={hoveredIndex}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
           onShopItem={(item) => {
             onWashSelect(item.washKey, item.category, item.fitType);
           }}
@@ -298,7 +325,6 @@ export function TemplateWashSelection3D({
           onResetFilters={handleResetFilters}
           onApplyFilters={() => setIsFilterOpen(false)}
           activeFilterCount={activeFilterCount}
-          isInspecting={isInspecting}
         />
       </div>
     </div>
