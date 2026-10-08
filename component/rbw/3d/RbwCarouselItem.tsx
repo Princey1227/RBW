@@ -156,6 +156,7 @@ function RbwFloatingMeshItem({
   fxRef,
   dimsRef,
   reducedMotion = false,
+  isPaused = false,
 }: {
   imagePath: string;
   accentHex?: string;
@@ -163,6 +164,7 @@ function RbwFloatingMeshItem({
   fxRef?: React.MutableRefObject<ItemFx>;
   dimsRef?: React.MutableRefObject<ItemDims>;
   reducedMotion?: boolean;
+  isPaused?: boolean;
 }) {
   const texture = useTexture(imagePath);
   const meshGroupRef = useRef<THREE.Group>(null);
@@ -212,14 +214,14 @@ function RbwFloatingMeshItem({
       const { focus, enter, hover } = fx;
 
       // Slow breathing: rest → +8px at 2.5s → rest at 5s. Only the hero breathes.
-      const breathe = reducedMotion
+      const breathe = (reducedMotion || isPaused)
         ? 0
         : 0.5 * (1 - Math.cos((time / FLOAT_PERIOD_S) * Math.PI * 2));
       const lift = breathe * floatUnits * focus;
 
       meshGroupRef.current.position.y = baseY + lift + hover * 0.02;
-      meshGroupRef.current.rotation.y = reducedMotion ? 0 : Math.sin(time * 0.6) * 0.03 * focus;
-      meshGroupRef.current.rotation.x = reducedMotion ? 0 : Math.cos(time * 0.5) * 0.01 * focus;
+      meshGroupRef.current.rotation.y = (reducedMotion || isPaused) ? 0 : Math.sin(time * 0.6) * 0.03 * focus;
+      meshGroupRef.current.rotation.x = (reducedMotion || isPaused) ? 0 : Math.cos(time * 0.5) * 0.01 * focus;
 
       // Depth cue: receding products are dimmer and more transparent
       const brightness = Math.min(1, THREE.MathUtils.lerp(0.8, 1, focus) + hover * 0.12);
@@ -244,11 +246,11 @@ function RbwFloatingMeshItem({
 
     if (meshGroupRef.current) {
       // Elegant floating vertical bob inside the glowing 3D stage
-      meshGroupRef.current.position.y = baseY + floatSine * 0.045;
+      meshGroupRef.current.position.y = baseY + (isPaused ? 0 : floatSine * 0.045);
       // Gentle 3D atelier yaw oscillation
-      meshGroupRef.current.rotation.y = Math.sin(time * 1.3) * 0.07;
+      meshGroupRef.current.rotation.y = isPaused ? 0 : Math.sin(time * 1.3) * 0.07;
       // Subtle pitch tilt breathing
-      meshGroupRef.current.rotation.x = Math.cos(time * 1.1) * 0.025;
+      meshGroupRef.current.rotation.x = isPaused ? 0 : Math.cos(time * 1.1) * 0.025;
     }
   });
 
@@ -330,6 +332,7 @@ interface RbwCarouselItemProps {
   /** Opt-in premium showroom presentation (used by /stores/rbw only) */
   cinematic?: boolean;
   reducedMotion?: boolean;
+  isPaused?: boolean;
   onHoverChange?: (hovered: boolean) => void;
 }
 
@@ -346,6 +349,7 @@ export function RbwCarouselItem({
   onClick,
   cinematic = false,
   reducedMotion = false,
+  isPaused = false,
   onHoverChange,
 }: RbwCarouselItemProps) {
   const groupRef = useRef<THREE.Group>(null);
@@ -643,6 +647,7 @@ export function RbwCarouselItem({
               fxRef={fxRef}
               dimsRef={dimsRef}
               reducedMotion={reducedMotion}
+              isPaused={isPaused}
             />
           ) : null}
         </group>

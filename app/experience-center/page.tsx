@@ -21,6 +21,8 @@ import BrandShowroomSection, {
 } from "@/component/experience-center/BrandShowroomSection";
 import StickyShopFilters from "@/component/experience-center/StickyShopFilters";
 import MobileShowroomExperience from "@/component/experience-center/MobileShowroomExperience";
+import "@/component/experience-center/experience-center.css";
+import { STAGE_ART } from "@/component/experience-center/showroomPresentation";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 export type BrandName = "RBW" | "THINC" | "WIDE" | "IJNS" | "SECOND ARMY";
@@ -49,128 +51,385 @@ export interface ExperienceProduct {
 
 const FEATURED_SHOWCASE: ExperienceProduct[] = [
   {
-    id: "wide-bleached-baggy",
-    brand: "WIDE",
-    category: "JEANS",
-    title: "Bleached Baggy Jeans",
-    subtitle: "Loose fit. Big attitude.",
-    wash: "Bleached Light Blue",
-    price: 1899,
-    image: "/baggy_fit_flat.png",
-    handle: "wide-bleached-baggy-jeans",
-    description: "Wide-leg silhouette in premium 14oz ring-spun denim with vintage bleach treatment.",
-    fitBadge: "BAGGY",
-    specs: ["14oz Pure Ring-Spun Cotton", "Wide Stacking Hem", "Vintage Bleach Wash"],
-    sizes: ["28", "30", "32", "34", "36", "38"],
-    colors: ["#7FA6CB", "#1A2A3A"],
-    isMockupFeatured: true,
-  },
-  {
-    id: "rbw-straight-mockup",
+    id: "rbw-raw-hero",
     brand: "RBW",
     category: "JEANS",
-    title: "Straight Fit Jeans",
-    subtitle: "Classic. Versatile. Timeless.",
-    wash: "Classic Blue",
-    price: 1899,
-    image: "/straight_fit_flat.png",
-    handle: "rbw-straight-fit-jeans",
-    description: "14.5oz Japanese selvedge denim in a classic straight leg silhouette.",
+    title: "Raw Straight Selvedge",
+    subtitle: "Zero Wash Rigid. Pure Japanese Selvedge.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/rbwstore/raw.png",
+    handle: "rbw-raw-straight-denims",
+    description: "14.5oz Japanese rigid selvedge denim in an iconic straight leg silhouette.",
     fitBadge: "STRAIGHT FIT",
-    specs: ["14.5oz Pure Selvedge", "Custom Copper Rivets", "Button Fly"],
-    sizes: ["28", "30", "32", "34", "36", "38"],
-    colors: ["#1A3A5C", "#0A0A0A"],
+    specs: ["14.5oz Pure Selvedge", "Zero Wash Rigid Twill", "Custom Copper Rivets"],
+    sizes: ["28", "30", "32", "34", "36", "38", "40", "42"],
+    colors: ["#1E3A8A", "#0F172A"],
     isMockupFeatured: true,
   },
   {
-    id: "thinc-jacket-mockup",
+    id: "thinc-jacket-hero",
     brand: "THINC",
     category: "JACKETS",
-    title: "Essential Denim Jacket",
-    subtitle: "Minimal. Modern. Made for you.",
-    wash: "Ecru Cream",
-    price: 2499,
-    image: "/cream_denim_jacket.jpg",
-    handle: "thinc-ecru-denim-jacket",
-    description: "Clean architect-inspired minimal denim trucker jacket in natural ecru twill.",
-    fitBadge: "MINIMAL TRUCKER",
-    specs: ["Natural Unbleached Twill", "Matte Brass Hardware", "Clean Welt Pockets"],
+    title: "Architect Denim Jacket",
+    subtitle: "Monochrome precision cut.",
+    wash: "Jet Black",
+    price: 2599,
+    image: "/black_denim_jacket.png",
+    handle: "thinc-architect-black-jacket",
+    description: "Collarless minimal denim overshirt jacket tailored for modern architectural layering.",
+    fitBadge: "MINIMAL JACKET",
+    specs: ["Concealed Snaps", "Matte Black Hardware", "Internal Chest Pocket"],
     sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: ["#1A3A5C", "#244B5A"],
+    colors: ["#111111", "#222222"],
     isMockupFeatured: true,
   },
   {
-    id: "wide-cargo-mockup",
-    brand: "WIDE",
+    id: "rbw-black-hero",
+    brand: "RBW",
     category: "JEANS",
-    title: "Relaxed Cargo Jeans",
-    subtitle: "Loose fit. Big attitude.",
-    wash: "Washed Charcoal Black",
-    price: 2199,
-    image: "/black_cargo_jeans.jpg",
-    handle: "wide-relaxed-cargo-jeans",
-    description: "Heavyweight washed black cargo denim with utilitarian side flap pockets and wide drape.",
-    fitBadge: "CARGO WIDE",
-    specs: ["Enzyme Mineral Wash", "Utilitarian Flap Pockets", "Extra Length Stacking"],
+    title: "Sulfur Black Baggy Jeans",
+    subtitle: "Sulfur Dyed Obsidian. Streetwear volume.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/rbwstore/black.png",
+    handle: "rbw-black-baggy-denims",
+    description: "Deep sulfur-dyed black warp & weft denim tailored with generous streetwear proportions.",
+    fitBadge: "BAGGY FIT",
+    specs: ["Sulfur Dyed Obsidian", "Wide Puddle Stacking", "Heavy Ring-Spun Cotton"],
     sizes: ["28", "30", "32", "34", "36", "38"],
-    colors: ["#1A2A3A", "#3A3A3A"],
+    colors: ["#18181B", "#0A0A0A"],
     isMockupFeatured: true,
   },
   {
-    id: "ijns-shorts-mockup",
+    id: "ijns-shorts-hero",
     brand: "IJNS",
     category: "SHORTS",
-    title: "Denim Shorts",
+    title: "Raw Edge Denim Shorts",
     subtitle: "Young. Bold. Expressive.",
-    wash: "Light Bleach Wash",
-    price: 1599,
-    image: "/light_denim_shorts.jpg",
-    handle: "ijns-light-denim-shorts",
-    description: "Summer-ready light wash denim shorts with a raw frayed hem and vintage fade.",
+    wash: "Deep Indigo",
+    price: 1499,
+    image: "/raw_denim_shorts.png",
+    handle: "ijns-raw-edge-jorts",
+    description: "Summer-ready knee-length denim shorts featuring raw frayed hems and vintage fade.",
     fitBadge: "RAW HEM SHORT",
-    specs: ["Enzyme Stone Wash", "Raw Cut Distressed Hem", "Classic 5-Pocket"],
+    specs: ["Raw Frayed Hem", "Classic 5-Pocket", "Chainstitched Seams"],
     sizes: ["28", "30", "32", "34", "36", "38"],
-    colors: ["#1A3A5C", "#6B8FB5"],
+    colors: ["#1E3A5F", "#2B4B70"],
     isMockupFeatured: true,
   },
   {
-    id: "sa-utility-mockup",
-    brand: "SECOND ARMY",
-    category: "JACKETS",
-    title: "Utility Jacket",
-    subtitle: "Built for the street.",
-    wash: "Olive Military",
-    price: 2799,
-    image: "/olive_utility_jacket.jpg",
-    handle: "second-army-utility-jacket",
-    description: "Military specification field jacket with reinforced chest cargo pockets and epaulets.",
-    fitBadge: "MIL-SPEC UTILITY",
-    specs: ["Heavy Cotton Canvas", "4-Pocket Field Layout", "Reinforced Bar Tack"],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: ["#1A3A5C", "#4A5C3A"],
-    isMockupFeatured: true,
-  },
-  {
-    id: "rbw-cap-mockup",
+    id: "rbw-white-hero",
     brand: "RBW",
-    category: "ACCESSORIES",
-    title: "Logo Cap",
-    subtitle: "Everyday essential.",
-    wash: "Washed Black",
-    price: 799,
-    image: "/rbw_cap.jpg",
-    handle: "rbw-embroidered-logo-cap",
-    description: "Everyday unstructured baseball cap in black denim with raised RBW white embroidery.",
-    fitBadge: "BASEBALL CAP",
-    specs: ["100% Cotton Denim", "3D Raised Embroidery", "Brass Buckle Strap"],
-    sizes: ["ONE SIZE"],
-    colors: ["#1A3A5C", "#0A0A0A"],
+    category: "JEANS",
+    title: "Ecru White Bootcut Jeans",
+    subtitle: "Ecru Bull Denim. Statement cut.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/rbwstore/white.png",
+    handle: "rbw-white-bootcut-denims",
+    description: "Optical white weft on natural warp twill cut in a sharp modern bootcut silhouette.",
+    fitBadge: "BOOTCUT FIT",
+    specs: ["Ecru Bull Denim", "Subtle Boot Flare", "Custom Metal Hardware"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0", "#FFFFFF"],
     isMockupFeatured: true,
   },
 ];
 
 // Additional products for natural marketplace discovery across all brands & categories
 const ADDITIONAL_PRODUCTS: ExperienceProduct[] = [
+  // ── 18 RBW SHOP BY FIT PIECES (3 WASHES × 6 FITS) ──
+  {
+    id: "rbw-fit-raw-ankle",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Ankle Jeans",
+    subtitle: "Cropped modern taper.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/ankle.png",
+    handle: "rbw-raw-ankle-denims",
+    description: "Cropped length with a modern taper above the footwear.",
+    fitBadge: "ANKLE FIT",
+    specs: ["Inseam 28\"", "14.5oz Pure Selvedge", "Modern Taper"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  {
+    id: "rbw-fit-raw-slim",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Slim Jeans",
+    subtitle: "Clean streamlined silhouette.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/slim.png",
+    handle: "rbw-raw-slim-denims",
+    description: "Tailored silhouette close through the thigh and calf with clean line.",
+    fitBadge: "SLIM FIT",
+    specs: ["Inseam 32\"", "14.5oz Pure Selvedge", "Streamlined Leg Line"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  {
+    id: "rbw-fit-raw-comfort",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Comfort Jeans",
+    subtitle: "Roomier seat and thigh.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/comfort.png",
+    handle: "rbw-raw-comfort-denims",
+    description: "Roomier through the seat and thighs with a slight taper.",
+    fitBadge: "COMFORT FIT",
+    specs: ["Inseam 31\"", "14.5oz Pure Selvedge", "Roomy Seat"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  {
+    id: "rbw-fit-raw-straight",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Straight Jeans",
+    subtitle: "Classic regular heritage cut.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/straight.png",
+    handle: "rbw-raw-straight-denims",
+    description: "Classic regular heritage cut, parallel from thigh down to leg opening.",
+    fitBadge: "STRAIGHT FIT",
+    specs: ["Inseam 32\"", "14.5oz Pure Selvedge", "Straight Leg"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  {
+    id: "rbw-fit-raw-baggy",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Baggy Jeans",
+    subtitle: "Relaxed street volume.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/baggy.png",
+    handle: "rbw-raw-baggy-denims",
+    description: "Wide-leg relaxed street style with generous proportions.",
+    fitBadge: "BAGGY FIT",
+    specs: ["Inseam 30\"", "Wide Leg Hem", "Natural Stacking"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  {
+    id: "rbw-fit-raw-bootcut",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Raw Bootcut Jeans",
+    subtitle: "Subtle boot flare.",
+    wash: "Raw Indigo",
+    price: 1900,
+    image: "/fits/bootcut.png",
+    handle: "rbw-raw-bootcut-denims",
+    description: "Fitted through thigh and opening below knee to drape over boots.",
+    fitBadge: "BOOTCUT FIT",
+    specs: ["Inseam 33\"", "Subtle Boot Flare", "Selvedge ID"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#1E3A8A"],
+  },
+  // Black fits
+  {
+    id: "rbw-fit-black-ankle",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Ankle Jeans",
+    subtitle: "Sulfur dyed cropped taper.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bankle.png",
+    handle: "rbw-black-ankle-denims",
+    description: "Cropped length with a modern taper above footwear in obsidian black.",
+    fitBadge: "ANKLE FIT",
+    specs: ["Inseam 28\"", "Sulfur Dyed Obsidian", "Clean Taper"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  {
+    id: "rbw-fit-black-slim",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Slim Jeans",
+    subtitle: "Tailored obsidian cut.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bslim.png",
+    handle: "rbw-black-slim-denims",
+    description: "Deep double-black warp & weft selvedge in a tailored silhouette.",
+    fitBadge: "SLIM FIT",
+    specs: ["Inseam 32\"", "Warp & Weft Dyed", "Matte Hardware"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  {
+    id: "rbw-fit-black-comfort",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Comfort Jeans",
+    subtitle: "Effortless obsidian drape.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bcomfort.png",
+    handle: "rbw-black-comfort-denims",
+    description: "Roomier through the seat and thighs in sulfur-dyed obsidian denim.",
+    fitBadge: "COMFORT FIT",
+    specs: ["Inseam 31\"", "Roomy Thighs", "Deep Black Dye"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  {
+    id: "rbw-fit-black-straight",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Straight Jeans",
+    subtitle: "Classic obsidian straight cut.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bstraight.png",
+    handle: "rbw-black-straight-denims",
+    description: "Classic straight heritage cut in sulfur-dyed black denim.",
+    fitBadge: "STRAIGHT FIT",
+    specs: ["Inseam 32\"", "Classic Straight Leg", "Reinforced Bar Tacks"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  {
+    id: "rbw-fit-black-baggy",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Baggy Jeans",
+    subtitle: "Obsidian relaxed street volume.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bbaggy.png",
+    handle: "rbw-black-baggy-denims",
+    description: "Wide-leg relaxed street style with generous obsidian black proportions.",
+    fitBadge: "BAGGY FIT",
+    specs: ["Inseam 30\"", "Wide Leg Hem", "Natural Stacking"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  {
+    id: "rbw-fit-black-bootcut",
+    brand: "RBW",
+    category: "JEANS",
+    title: "Black Bootcut Jeans",
+    subtitle: "Obsidian retro bootcut.",
+    wash: "Sulfur Black",
+    price: 1900,
+    image: "/fits/black/bbootcut.png",
+    handle: "rbw-black-bootcut-denims",
+    description: "Subtle bootcut flare in pure obsidian denim.",
+    fitBadge: "BOOTCUT FIT",
+    specs: ["Inseam 33\"", "Boot Flare", "Heavy Ring-Spun Cotton"],
+    sizes: ["28", "30", "32", "34", "36", "38"],
+    colors: ["#18181B"],
+  },
+  // White fits
+  {
+    id: "rbw-fit-white-ankle",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Ankle Jeans",
+    subtitle: "Cropped optical white taper.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wankle.png",
+    handle: "rbw-white-ankle-denims",
+    description: "Cropped modern taper in natural ecru bull denim.",
+    fitBadge: "ANKLE FIT",
+    specs: ["Inseam 28\"", "Ecru Bull Denim", "Modern Taper"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
+  {
+    id: "rbw-fit-white-slim",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Slim Jeans",
+    subtitle: "Tailored chalk white line.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wslim.png",
+    handle: "rbw-white-slim-denims",
+    description: "Optical white weft on natural warp twill in a clean slim cut.",
+    fitBadge: "SLIM FIT",
+    specs: ["Inseam 32\"", "Optical White Twill", "Streamlined Leg Line"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
+  {
+    id: "rbw-fit-white-comfort",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Comfort Jeans",
+    subtitle: "Relaxed ecru bull denim.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wcomfort.png",
+    handle: "rbw-white-comfort-denims",
+    description: "Roomier seat and thighs in natural unbleached ecru denim.",
+    fitBadge: "COMFORT FIT",
+    specs: ["Inseam 31\"", "Roomy Fit", "Natural Ecru Twill"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
+  {
+    id: "rbw-fit-white-straight",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Straight Jeans",
+    subtitle: "Classic chalk white cut.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wstraight.png",
+    handle: "rbw-white-straight-denims",
+    description: "Parallel classic straight leg in optical white bull denim.",
+    fitBadge: "STRAIGHT FIT",
+    specs: ["Inseam 32\"", "Straight Leg", "Solid Brass Hardware"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
+  {
+    id: "rbw-fit-white-baggy",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Baggy Jeans",
+    subtitle: "Streetwear chalk white volume.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wbaggy.png",
+    handle: "rbw-white-baggy-denims",
+    description: "Wide-leg relaxed street style in optic white bull denim.",
+    fitBadge: "BAGGY FIT",
+    specs: ["Inseam 30\"", "Wide Leg Hem", "Puddle Stacking"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
+  {
+    id: "rbw-fit-white-bootcut",
+    brand: "RBW",
+    category: "JEANS",
+    title: "White Bootcut Jeans",
+    subtitle: "Optic white retro bootcut flare.",
+    wash: "Chalk White",
+    price: 1900,
+    image: "/fits/white/wbootcut.png",
+    handle: "rbw-white-bootcut-denims",
+    description: "Subtle bootcut flare in optic white bull denim.",
+    fitBadge: "BOOTCUT FIT",
+    specs: ["Inseam 33\"", "Boot Flare", "Ecru Twill"],
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["#F5F5F0"],
+  },
   {
     id: "thinc-minimal-raw",
     brand: "THINC",
@@ -1049,9 +1308,9 @@ export default function ExperienceCenterPage() {
       {/* ═══════════════════════════════════════════════════════════════════
           EXPERIENCE CENTER: FILTERS & ROTATING SHOWROOM PANEL
       ═══════════════════════════════════════════════════════════════════ */}
-      <main className="w-full h-[100dvh] overflow-hidden bg-[#EFE9DF] pb-0 pt-0">
+      <main className="ec-root ec-shell">
         {/* ─── 1. MOBILE LUXURY SHOWROOM EXHIBITION (<1024px) ─── */}
-        <div className="lg:hidden w-full h-[100dvh] overflow-hidden">
+        <div className="lg:hidden w-full flex-1 min-h-0 overflow-hidden">
           <MobileShowroomExperience
             products={filtered}
             onAddToCart={handleAddToCart}
@@ -1070,7 +1329,7 @@ export default function ExperienceCenterPage() {
         </div>
 
         {/* ─── 2. DESKTOP PANORAMIC ARCHITECTURAL SHOWROOM (≥1024px) ─── */}
-        <div className="hidden lg:flex flex-col w-full h-[100dvh] overflow-hidden">
+        <div className="hidden lg:flex flex-col w-full flex-1 min-h-0 overflow-hidden">
           {/* Sticky Filter Toolbar */}
           <StickyShopFilters
             selectedBrands={selectedBrands}
@@ -1086,52 +1345,50 @@ export default function ExperienceCenterPage() {
             onResetAll={handleResetAll}
             brandsList={BRANDS_LIST}
             categoriesList={CATEGORIES_LIST}
+            resultCount={filtered.length}
           />
 
           {/* Unified Single Brand Showroom Runway Section (Full Width Edge-to-Edge) */}
           <div className="w-full flex-1 min-h-0 relative flex flex-col overflow-hidden">
             {filtered.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center relative overflow-hidden bg-[#EFE9DF]">
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+              <div className="ec-section">
+                <div className="ec-stage">
                   <Image
-                    src="/showroom_lightbox_bg.png"
+                    src={STAGE_ART}
                     alt="Only Denims Architectural Showroom"
                     fill
                     priority
-                    className="object-cover object-center pointer-events-none opacity-30 blur-xs"
+                    className="ec-bg"
                   />
-                  <div className="absolute inset-0 bg-[#EFE9DF]/50 pointer-events-none" />
+                  <div className="ec-grade" />
+                  <div className="ec-vignette" />
                 </div>
-                <div className="relative z-10 py-12 px-8 text-center bg-white/95 backdrop-blur-md rounded-[20px] border border-[#ECE7DC] shadow-xl max-w-lg mx-auto">
-                  <p className="text-[18px] font-serif font-bold text-[#17140F] mb-1">
-                    {searchQuery ? `No products found for “${searchQuery}”` : "No Showroom Pieces Found"}
-                  </p>
-                  <p className="text-[#78716C] text-xs mb-5 font-sans">
-                    {searchQuery
-                      ? "Check for typos or try searching for another style, brand, or wash."
-                      : "No products matched your active filters."}
-                  </p>
-                  <div className="flex items-center justify-center gap-3">
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery("")}
-                        className="px-5 py-2.5 rounded-full bg-[#17140F] text-white text-[10px] font-bold tracking-[0.14em] uppercase cursor-pointer hover:opacity-85 font-sans transition-opacity"
-                      >
-                        CLEAR SEARCH
+                <div className="ec-empty">
+                  <div className="ec-empty__card ec-glass">
+                    <p className="ec-empty__eyebrow">The showroom is quiet</p>
+                    <p className="ec-empty__title">
+                      {searchQuery ? `Nothing found for “${searchQuery}”` : "No pieces on display"}
+                    </p>
+                    <p className="ec-empty__text">
+                      {searchQuery
+                        ? "Check the spelling, or search for another style, brand or wash."
+                        : "No products matched your active filters."}
+                    </p>
+                    <div className="ec-empty__actions">
+                      {searchQuery && (
+                        <button type="button" onClick={() => setSearchQuery("")} className="ec-btn">
+                          Clear search
+                        </button>
+                      )}
+                      <button type="button" onClick={handleResetAll} className="ec-btn ec-btn--ghost">
+                        Reset all filters
                       </button>
-                    )}
-                    <button
-                      onClick={handleResetAll}
-                      className="px-5 py-2.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-[10px] font-bold tracking-[0.14em] uppercase cursor-pointer font-sans transition-colors"
-                    >
-                      RESET ALL FILTERS
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
               <BrandShowroomSection
-                key={selectedBrands.join("-") || "ALL"}
                 brand={currentBrandConfig}
                 products={filtered}
                 onAddToCart={handleAddToCart}
@@ -1145,6 +1402,8 @@ export default function ExperienceCenterPage() {
                   { number: "05", name: "SECOND ARMY", key: "SECOND ARMY" },
                 ]}
                 onSelectBrand={handleToggleBrand}
+                selectedBrands={selectedBrands}
+                onClearBrands={handleClearBrands}
               />
             )}
           </div>

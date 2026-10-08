@@ -27,6 +27,9 @@ interface TemplateWashSelection3DProps {
   onWashSelect: (washKey: "raw" | "black" | "white" | string, category?: string, defaultFit?: string) => void;
   theme?: "dark" | "light";
   onToggleTheme?: () => void;
+  isPaused?: boolean;
+  selectedWash?: "raw" | "black" | "white" | "vintage" | string | null;
+  selectedCategory?: string;
 }
 
 export function TemplateWashSelection3D({
@@ -35,6 +38,9 @@ export function TemplateWashSelection3D({
   onWashSelect,
   theme = "dark",
   onToggleTheme,
+  isPaused = false,
+  selectedWash,
+  selectedCategory,
 }: TemplateWashSelection3DProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
@@ -150,6 +156,21 @@ export function TemplateWashSelection3D({
   ]);
 
   const totalItems = filteredItems.length;
+
+  // Keep the 3D showroom background aligned with the selected wash/category
+  useEffect(() => {
+    if (selectedWash) {
+      const idx = filteredItems.findIndex(
+        (it) =>
+          it.washKey.toLowerCase() === selectedWash.toLowerCase() &&
+          (!selectedCategory || it.category.toLowerCase() === selectedCategory.toLowerCase())
+      );
+      if (idx !== -1 && idx !== activeIndex) {
+        setActiveIndex(idx);
+      }
+    }
+  }, [selectedWash, selectedCategory, filteredItems]);
+
   const activeItem =
     filteredItems[((activeIndex % totalItems) + totalItems) % totalItems] ||
     filteredItems[0];
@@ -274,11 +295,15 @@ export function TemplateWashSelection3D({
             activeItem={activeItem}
             activeIndex={activeIndex}
             onSelectIndex={setActiveIndex}
-            autoRotate={autoRotate}
+            autoRotate={autoRotate && !isPaused}
+            isPaused={isPaused}
             cinematic
             atmosphere={atmosphere}
             reducedMotion={reducedMotion}
             onHoverIndex={setHoveredIndex}
+            onShopItem={(item) => {
+              onWashSelect(item.washKey, item.category, item.fitType);
+            }}
           />
         </div>
 
@@ -290,7 +315,7 @@ export function TemplateWashSelection3D({
           onPrev={handlePrev}
           onNext={handleNext}
           onSelectIndex={handleSelectIndex}
-          autoRotate={autoRotate}
+          autoRotate={autoRotate && !isPaused}
           onToggleAutoRotate={() => setAutoRotate((prev) => !prev)}
           selectedCategories={selectedCategories}
           onSelectCategory={handleSelectCategory}

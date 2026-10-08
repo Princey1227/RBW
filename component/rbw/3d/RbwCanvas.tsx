@@ -121,7 +121,9 @@ interface RbwCanvasProps {
   cinematic?: boolean;
   atmosphere?: RbwAtmosphereKey;
   reducedMotion?: boolean;
+  isPaused?: boolean;
   onHoverIndex?: (index: number | null) => void;
+  onShopItem?: (item: CarouselItemData) => void;
 }
 
 export default function RbwCanvas({
@@ -133,7 +135,9 @@ export default function RbwCanvas({
   cinematic = false,
   atmosphere = "raw",
   reducedMotion = false,
+  isPaused = false,
   onHoverIndex,
+  onShopItem,
 }: RbwCanvasProps) {
   const accentColor = activeItem?.accentHex || "#C59B27";
 
@@ -247,7 +251,9 @@ export default function RbwCanvas({
           autoRotate={autoRotate}
           cinematic={cinematic}
           reducedMotion={reducedMotion}
+          isPaused={isPaused}
           onHoverIndex={onHoverIndex}
+          onShopItem={onShopItem}
         />
       </Canvas>
     </div>

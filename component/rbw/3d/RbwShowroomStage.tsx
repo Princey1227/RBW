@@ -7,13 +7,14 @@ import { MeshReflectorMaterial, Sparkles } from "@react-three/drei";
 
 interface RbwShowroomStageProps {
   accentColor?: string;
+  isPaused?: boolean;
 }
 
-export function RbwShowroomStage({ accentColor = "#B9965A" }: RbwShowroomStageProps) {
+export function RbwShowroomStage({ accentColor = "#B9965A", isPaused = false }: RbwShowroomStageProps) {
   const haloRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
-    if (haloRef.current) {
+    if (haloRef.current && !isPaused) {
       haloRef.current.rotation.y += 0.001;
     }
   });

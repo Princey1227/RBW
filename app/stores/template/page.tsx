@@ -691,6 +691,9 @@ function StoreTemplateContent() {
             onWashSelect={handleWashClick}
             theme={rbwTheme}
             onToggleTheme={handleToggleTheme}
+            isPaused={!!selectedWash}
+            selectedWash={selectedWash}
+            selectedCategory={selectedCategory}
           />
         </div>
 

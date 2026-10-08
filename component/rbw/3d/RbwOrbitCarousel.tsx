@@ -347,8 +347,11 @@ interface RbwOrbitCarouselProps {
   /** Opt-in premium showroom presentation (used by /stores/rbw only) */
   cinematic?: boolean;
   reducedMotion?: boolean;
+  isPaused?: boolean;
   /** Reports the hovered carousel index (or null) so the DOM overlay can react */
   onHoverIndex?: (index: number | null) => void;
+  /** Callback triggered when active product is clicked to shop */
+  onShopItem?: (item: CarouselItemData) => void;
 }
 
 export function RbwOrbitCarousel({
@@ -359,7 +362,9 @@ export function RbwOrbitCarousel({
   autoRotate,
   cinematic = false,
   reducedMotion = false,
+  isPaused = false,
   onHoverIndex,
+  onShopItem,
 }: RbwOrbitCarouselProps) {
   const currentOffsetRef = useRef<number>(0);
   const targetOffsetRef = useRef<number>(0);
@@ -449,8 +454,8 @@ export function RbwOrbitCarousel({
         delta
       );
 
-      // Auto-slide to next denim after 5 seconds of inactivity if enabled
-      if (autoRotate) {
+      // Auto-slide to next denim after 5 seconds of inactivity if enabled and not paused
+      if (autoRotate && !isPaused) {
         autoSlideTimerRef.current += delta;
         if (autoSlideTimerRef.current >= 5.0) {
           autoSlideTimerRef.current = 0;
@@ -487,6 +492,7 @@ export function RbwOrbitCarousel({
               isInspecting={false}
               cinematic={cinematic}
               reducedMotion={reducedMotion}
+              isPaused={isPaused}
               onHoverChange={
                 onHoverIndex ? (hovered) => onHoverIndex(hovered ? i : null) : undefined
               }
@@ -494,6 +500,8 @@ export function RbwOrbitCarousel({
                 if (dragDistanceRef.current < 10) {
                   if (!isActive) {
                     onSelectIndex(i);
+                  } else if (onShopItem) {
+                    onShopItem(item);
                   }
                 }
               }}
