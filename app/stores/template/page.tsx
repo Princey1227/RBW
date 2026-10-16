@@ -697,7 +697,7 @@ function StoreTemplateContent() {
           />
         </div>
 
-        {/* Slide 2: FIT — showroom journey room inheriting backdrop and controls */}
+        {/* Slide 2: FIT — locked to light mode only */}
         <RbwJourneyShell
           open={!!selectedWash}
           layerClass="z-50"
@@ -705,7 +705,7 @@ function StoreTemplateContent() {
           ghostText={roomWash.toUpperCase()}
           receded={!!selectedFit}
           scrollRef={fitsDrawerRef}
-          theme={rbwTheme}
+          theme="light"
         >
           <div className="flex-1 flex flex-col justify-start pt-1 sm:pt-3 pb-4">
             <ShopByFit

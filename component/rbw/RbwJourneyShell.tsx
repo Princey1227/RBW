@@ -89,10 +89,11 @@ interface RbwJourneyBarProps {
   backLabel: string;
   onBack: () => void;
   children?: React.ReactNode;
+  rightSlot?: React.ReactNode;
 }
 
-/** Back control (left) + path (centre). The right column mirrors the left so the path is truly centred. */
-export function RbwJourneyBar({ backLabel, onBack, children }: RbwJourneyBarProps) {
+/** Back control (left) + path (centre) + rightSlot (right corner). */
+export function RbwJourneyBar({ backLabel, onBack, children, rightSlot }: RbwJourneyBarProps) {
   return (
     <div className="rbw-j-bar rbw-fade">
       <button
@@ -105,7 +106,9 @@ export function RbwJourneyBar({ backLabel, onBack, children }: RbwJourneyBarProp
         <span className="hidden sm:inline">{backLabel}</span>
       </button>
       {children && <div className="hidden md:block min-w-0 overflow-x-auto scrollbar-none">{children}</div>}
-      <span aria-hidden="true" className="hidden md:block" />
+      <div className="justify-self-end flex items-center">
+        {rightSlot ? rightSlot : <span aria-hidden="true" className="hidden md:block" />}
+      </div>
     </div>
   );
 }

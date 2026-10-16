@@ -995,20 +995,52 @@ export default function Navbar() {
               </div>
 
               {/* Vertical Divider */}
-              <div className="hidden sm:block w-[1px] h-7 bg-[#E8E3DA]" />
+              <div
+                className={`hidden sm:block w-[1px] h-7 ${
+                  isRbwShowroom
+                    ? rbwTheme === "dark"
+                      ? "bg-white/20"
+                      : "bg-[#241F1D]/15"
+                    : "bg-white/20 xl:bg-[#E8E3DA]"
+                }`}
+              />
 
               {/* Price & Items Details */}
               <div className="hidden sm:flex flex-col items-start leading-none gap-0.5">
-                <span className="font-sans text-[12px] sm:text-[13px] font-extrabold text-foreground">
+                <span
+                  className={`font-sans text-[12px] sm:text-[13px] font-extrabold ${
+                    isRbwShowroom
+                      ? rbwTheme === "dark"
+                        ? "text-white"
+                        : "text-[#18181B]"
+                      : "max-xl:text-white xl:text-[#18181B]"
+                  }`}
+                >
                   ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-                <span className="font-sans text-[9.5px] sm:text-[10px] text-neutral-500 font-medium">
+                <span
+                  className={`font-sans text-[9.5px] sm:text-[10px] font-medium ${
+                    isRbwShowroom
+                      ? rbwTheme === "dark"
+                        ? "text-neutral-300"
+                        : "text-[#71717A]"
+                      : "max-xl:text-neutral-300 xl:text-[#71717A]"
+                  }`}
+                >
                   {totalCartItems} {totalCartItems === 1 ? "item" : "items"}
                 </span>
               </div>
 
               {/* Dropdown Arrow */}
-              <ChevronDown className="hidden sm:block h-3.5 w-3.5 text-neutral-500 pl-0.5" />
+              <ChevronDown
+                className={`hidden sm:block h-3.5 w-3.5 pl-0.5 ${
+                  isRbwShowroom
+                    ? rbwTheme === "dark"
+                      ? "text-neutral-300"
+                      : "text-[#71717A]"
+                    : "max-xl:text-neutral-300 xl:text-[#71717A]"
+                }`}
+              />
             </button>
           </div>
 

@@ -370,9 +370,9 @@ function JacketsPageContent() {
         </div>
 
         {/* Filter & Sort Toolbar */}
-        <div className={`flex flex-col gap-4 sm:grid sm:grid-cols-3 items-center border-b border-foreground/5 pb-6 w-full select-none ${getActiveChips().length > 0 ? "mb-4" : "mb-8"}`}>
+        <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-foreground/5 pb-6 w-full select-none ${getActiveChips().length > 0 ? "mb-4" : "mb-8"}`}>
           {/* Left Zone: Filters Button */}
-          <div className="flex justify-start w-full sm:w-auto">
+          <div className="flex justify-start items-center">
             <button
               onClick={() => setIsDrawerOpen(true)}
               className="relative inline-flex items-center gap-2 px-5 py-2.5 border border-foreground/15 hover:border-[var(--foreground)] text-[10px] font-bold tracking-widest uppercase transition-all duration-300 rounded-none cursor-pointer hover:bg-foreground hover:text-background group/filter"
@@ -387,8 +387,9 @@ function JacketsPageContent() {
             </button>
           </div>
 
-          {/* Center Zone: Premium Segmented Wash Control */}
-          <div className="flex justify-center w-full sm:w-auto">
+          {/* Right Corner: Washes in Right Corner + Sort */}
+          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-6 w-full sm:w-auto">
+            {/* Washes segmented control in right corner */}
             <div className="inline-flex items-center bg-foreground/[0.03] dark:bg-white/[0.02] border border-foreground/10 px-1 py-1 rounded-full relative">
               {["RAW", "BLACK", "WHITE"].map((wash) => {
                 const isSelected = selectedCollections.includes(wash);
@@ -398,7 +399,7 @@ function JacketsPageContent() {
                   <button
                     key={wash}
                     onClick={() => toggleCollection(wash)}
-                    className={`px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-widest uppercase transition-all duration-300 relative cursor-pointer select-none bg-transparent border-0 outline-none ${isSelected
+                    className={`px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-widest uppercase transition-all duration-300 relative cursor-pointer select-none bg-transparent border-0 outline-none ${isSelected
                         ? "text-foreground font-black"
                         : "text-neutral-400 hover:text-foreground/80 font-bold"
                       }`}
@@ -424,30 +425,30 @@ function JacketsPageContent() {
                 );
               })}
             </div>
-          </div>
 
-          {/* Right Zone: Sort Selector */}
-          <div className="flex justify-end items-center w-full sm:w-auto">
-            <span className="text-[9px] tracking-widest text-neutral-500 font-bold mr-1 uppercase">Sort:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent text-xs font-bold uppercase tracking-wider text-[var(--foreground)] border-0 focus:outline-none focus:ring-0 cursor-pointer pr-6 py-1.5 select-none"
-              style={{
-                WebkitAppearance: "none",
-                MozAppearance: "none",
-                backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='${theme === 'light' ? 'black' : 'white'}' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right center",
-                backgroundSize: "16px"
-              }}
-            >
-              <option value="featured" className="bg-[#090A0C] text-white">Featured</option>
-              <option value="price-asc" className="bg-[#090A0C] text-white">Price: Low to High</option>
-              <option value="price-desc" className="bg-[#090A0C] text-white">Price: High to Low</option>
-              <option value="title-asc" className="bg-[#090A0C] text-white">Name: A to Z</option>
-              <option value="title-desc" className="bg-[#090A0C] text-white">Name: Z to A</option>
-            </select>
+            {/* Right Zone: Sort Selector */}
+            <div className="flex items-center">
+              <span className="text-[9px] tracking-widest text-neutral-500 font-bold mr-1 uppercase">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent text-xs font-bold uppercase tracking-wider text-[var(--foreground)] border-0 focus:outline-none focus:ring-0 cursor-pointer pr-6 py-1.5 select-none"
+                style={{
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='${theme === 'light' ? 'black' : 'white'}' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right center",
+                  backgroundSize: "16px"
+                }}
+              >
+                <option value="featured" className="bg-[#090A0C] text-white">Featured</option>
+                <option value="price-asc" className="bg-[#090A0C] text-white">Price: Low to High</option>
+                <option value="price-desc" className="bg-[#090A0C] text-white">Price: High to Low</option>
+                <option value="title-asc" className="bg-[#090A0C] text-white">Name: A to Z</option>
+                <option value="title-desc" className="bg-[#090A0C] text-white">Name: Z to A</option>
+              </select>
+            </div>
           </div>
         </div>
 

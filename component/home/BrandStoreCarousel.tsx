@@ -184,12 +184,13 @@ export default function BrandStoreCarousel({
       setActiveIndex(idx);
     } else {
       if (brand.isLive) {
-        const activeCat = brand.categories?.[categoryIndices[idx] || 0];
-        const targetUrl =
-          activeCat?.label === "JEANS"
-            ? "/stores/rbw?wash=raw"
-            : (activeCat?.href || brand.href);
-        router.push(targetUrl);
+        if (typeof window !== "undefined") {
+          try {
+            sessionStorage.removeItem("selectedWash");
+            sessionStorage.removeItem("selectedFit");
+          } catch (err) {}
+        }
+        router.push(brand.href);
       } else {
         onOpenWaitlist(brand);
       }
@@ -408,9 +409,17 @@ export default function BrandStoreCarousel({
                               e.stopPropagation();
                               if (hasDragged.current) return;
                               if (brand.isLive) {
+                                if (c.label === "JEANS") {
+                                  if (typeof window !== "undefined") {
+                                    try {
+                                      sessionStorage.removeItem("selectedWash");
+                                      sessionStorage.removeItem("selectedFit");
+                                    } catch (err) {}
+                                  }
+                                }
                                 const targetUrl =
                                   c.label === "JEANS"
-                                    ? "/stores/rbw?wash=raw"
+                                    ? "/stores/rbw"
                                     : (c.href || brand.href);
                                 router.push(targetUrl);
                               } else {
@@ -438,30 +447,26 @@ export default function BrandStoreCarousel({
                   )}
 
                   {brand.isLive ? (
-                    (() => {
-                      const activeCat = brand.categories?.[categoryIndices[idx] || 0];
-                      const targetUrl =
-                        activeCat?.label === "JEANS"
-                          ? "/stores/rbw?wash=raw"
-                          : (activeCat?.href || brand.href);
-
-                      return (
-                        <Link
-                          href={targetUrl}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                          className={`inline-flex items-center justify-center gap-1.5 text-[8.5px] sm:text-[10.5px] tracking-[0.18em] font-black px-4 py-2 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300 uppercase hover:scale-105 cursor-pointer whitespace-nowrap shrink-0 ${
-                            isActive
-                              ? "bg-gradient-to-r from-[#D4B16A] via-[#B9965A] to-[#8C6B2F] text-black font-extrabold border border-[#DFCFA8]"
-                              : "bg-white border border-stone-200 text-[#1C1917]"
-                          }`}
-                        >
-                          <span>{brand.actionText}</span>
-                          <ArrowRight className="w-3 h-3 text-current transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
-                        </Link>
-                      );
-                    })()
+                    <Link
+                      href={brand.href}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (typeof window !== "undefined") {
+                          try {
+                            sessionStorage.removeItem("selectedWash");
+                            sessionStorage.removeItem("selectedFit");
+                          } catch (err) {}
+                        }
+                      }}
+                      className={`inline-flex items-center justify-center gap-1.5 text-[8.5px] sm:text-[10.5px] tracking-[0.18em] font-black px-4 py-2 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300 uppercase hover:scale-105 cursor-pointer whitespace-nowrap shrink-0 ${
+                        isActive
+                          ? "bg-gradient-to-r from-[#D4B16A] via-[#B9965A] to-[#8C6B2F] text-black font-extrabold border border-[#DFCFA8]"
+                          : "bg-white border border-stone-200 text-[#1C1917]"
+                      }`}
+                    >
+                      <span>{brand.actionText}</span>
+                      <ArrowRight className="w-3 h-3 text-current transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
+                    </Link>
                   ) : (
                     <button
                       type="button"

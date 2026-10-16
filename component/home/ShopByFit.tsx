@@ -10,6 +10,7 @@ interface ShopByFitProps {
   selectedFit?: string | null;
   isInsideViewport: boolean;
   onFitClick?: (fitName: string) => void;
+  onWashChange?: (wash: "raw" | "black" | "white" | "vintage") => void;
   /** Opt-in showroom styling (used by /stores/rbw). Default keeps the original look. */
   variant?: "default" | "showroom";
 }
@@ -184,6 +185,7 @@ export default function ShopByFit(props: ShopByFitProps) {
         fits={fitItems}
         sizing={JEANS_SIZING_DATA}
         onFitClick={props.onFitClick}
+        onWashChange={props.onWashChange}
         hrefFor={(fitName) =>
           props.selectedWash
             ? getProductUrlForWashAndFit(props.selectedWash, fitName)
@@ -195,7 +197,7 @@ export default function ShopByFit(props: ShopByFitProps) {
   return <ShopByFitClassic {...props} />;
 }
 
-function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick }: ShopByFitProps) {
+function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick, onWashChange }: ShopByFitProps) {
   const sv = false; // the showroom variant is delegated to RbwFitSelector above
   const ghostWord = (selectedWash || "").toUpperCase();
   const ghostSize =
@@ -245,7 +247,8 @@ function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick }: ShopBy
   return (
     <div
       id={isInsideViewport ? "shop-by-fit-viewport" : "shop-by-fit-scroll"}
-      className={`${sv ? "rbw-fit " : ""}w-full flex flex-col items-start px-6 sm:px-12 md:px-16 lg:px-20 select-none z-20 transition-colors duration-500 ease-in-out bg-transparent text-[var(--foreground)] ${isInsideViewport
+      data-theme="light"
+      className={`${sv ? "rbw-fit " : ""}w-full flex flex-col items-start px-6 sm:px-12 md:px-16 lg:px-20 select-none z-20 transition-colors duration-500 ease-in-out bg-transparent text-[#1A1713] ${isInsideViewport
         ? "opacity-100 h-auto py-2 sm:py-4 pointer-events-auto"
         : "pt-2 pb-6 sm:pt-4 sm:pb-6 md:pt-5 md:pb-8 border-b border-foreground/5"
         }`}
@@ -264,17 +267,39 @@ function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick }: ShopBy
       )}
 
       {/* Centered Select Your Fit Heading */}
-      <div className={`w-full flex flex-col items-center justify-center mb-8 select-none ${sv ? "relative z-10 mt-4 sm:mt-6 mb-6 sm:mb-10" : ""}`}>
+      <div className={`w-full flex items-center justify-center relative mb-8 select-none ${sv ? "relative z-10 mt-4 sm:mt-6 mb-6 sm:mb-10" : ""}`}>
         <h2
           className={
             sv
               ? "rbw-fit__title text-[22px] sm:text-[30px] md:text-[38px]"
-              : "font-serif font-normal text-[24px] sm:text-[30px] md:text-[36px] uppercase tracking-wide leading-none text-[var(--foreground)]"
+              : "font-serif font-normal text-[24px] sm:text-[30px] md:text-[36px] uppercase tracking-wide leading-none text-[#1A1713]"
           }
         >
           SELECT YOUR FIT
         </h2>
         {sv && <span className="rbw-fit__rule" />}
+        {onWashChange && (
+          <div className="absolute right-0 flex items-center bg-white/95 border border-zinc-300 rounded-full p-0.5 shadow-xs shrink-0">
+            {(["raw", "black", "white"] as const).map((w) => {
+              const isCur = (selectedWash || "raw").toLowerCase() === w;
+              return (
+                <button
+                  key={w}
+                  type="button"
+                  onClick={() => onWashChange(w)}
+                  title={`Switch to ${w.toUpperCase()} wash`}
+                  className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8.5px] sm:text-[10px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer ${
+                    isCur
+                      ? "bg-[#B9965A] text-black shadow-xs font-black"
+                      : "text-zinc-600 hover:text-black hover:bg-zinc-100"
+                  }`}
+                >
+                  {w}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Horizontal grid of fits */}
@@ -325,7 +350,7 @@ function ShopByFitClassic({ selectedWash, isInsideViewport, onFitClick }: ShopBy
                   className={
                     sv
                       ? "rbw-fit__name text-[10.5px] sm:text-[12px] uppercase mb-1 sm:mb-2"
-                      : "text-[10.5px] sm:text-[13px] font-black tracking-[0.18em] sm:tracking-[0.25em] uppercase font-sans text-[var(--foreground)] opacity-95 mb-1 sm:mb-2.5"
+                      : "text-[10.5px] sm:text-[13px] font-black tracking-[0.18em] sm:tracking-[0.25em] uppercase font-sans text-[#1A1713] opacity-95 mb-1 sm:mb-2.5"
                   }
                 >
                   {item.name}

@@ -361,71 +361,95 @@ export default function BrandShowroomSection({
       {/* ─── LABEL PLATE + EXHIBITION SELECTOR ─── */}
       <div className="ec-ui">
         <div
-          className="ec-plate ec-glass"
+          className="ec-product-card ec-plate ec-glass"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-
-
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={current.id}
-              className="ec-info"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.42, ease: EASE }}
-            >
-              <div className="ec-kicker">
-                {brandDisplayName}
-              </div>
-              <div className="ec-divider" />
-              <h3 className="ec-name">{current.title}</h3>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="ec-divider" style={{ marginLeft: "auto", marginRight: "24px" }} />
-
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={`${current.id}-price`}
-              className="ec-price"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35, ease: EASE }}
-            >
-              <small>₹</small>
-              {current.price.toLocaleString("en-IN")}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="ec-actions">
-            <button
-              type="button"
-              className="ec-iconbtn ec-heart"
-              aria-label="Wishlist"
-              aria-pressed={isWishlisted}
-              onClick={(e) => toggleWishlist(current.id, e)}
-            >
-              <Heart size={17} strokeWidth={1.4} />
-            </button>
-            <button type="button" className="ec-btn" onClick={() => onAddToCart(current)} disabled={isAdding}>
-              {isAdding ? (
-                <>
-                  <span>Added</span>
-                  <Check size={14} strokeWidth={1.8} />
-                </>
-              ) : (
-                <>
-                  <span>Add to bag</span>
-                  <ArrowRight size={14} strokeWidth={1.5} />
-                </>
-              )}
-            </button>
+          {/* Column 1: Image thumbnail (38px x 44px) */}
+          <div className="ec-product-card__image">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={current.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="w-full h-full flex items-center justify-center"
+              >
+                <Image
+                  src={current.image}
+                  alt={current.title}
+                  width={38}
+                  height={44}
+                  unoptimized
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </div>
 
+          {/* Column 2: Title (minmax(0, 1fr)) */}
+          <div className="ec-product-card__title">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={current.id}
+                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -3 }}
+                transition={{ duration: 0.25, ease: EASE }}
+                className="w-full min-w-0"
+              >
+                <div className="ec-product-card__brand">{brandDisplayName}</div>
+                <h3 className="ec-product-card__name">{current.title}</h3>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Column 3: Price (auto) */}
+          <div className="ec-product-card__price">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={`${current.id}-price`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: EASE }}
+              >
+                ₹{current.price.toLocaleString("en-IN")}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+
+          {/* Column 4: Wishlist (32px x 32px) */}
+          <button
+            type="button"
+            className="ec-product-card__wishlist"
+            aria-label="Wishlist"
+            aria-pressed={isWishlisted}
+            onClick={(e) => toggleWishlist(current.id, e)}
+          >
+            <Heart size={16} strokeWidth={1.4} />
+          </button>
+
+          {/* Column 5: Add to bag (36px x 120px) */}
+          <button
+            type="button"
+            className="ec-product-card__add"
+            onClick={() => onAddToCart(current)}
+            disabled={isAdding}
+          >
+            {isAdding ? (
+              <>
+                <span>Added</span>
+                <Check size={14} strokeWidth={1.8} />
+              </>
+            ) : (
+              <>
+                <span>Add to bag</span>
+                <ArrowRight size={13} strokeWidth={1.5} />
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* ─── LEGAL MICRO-STRIP ─── */}

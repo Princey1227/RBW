@@ -49,6 +49,69 @@ interface ShopifyProduct {
   };
 }
 
+const MOCK_JACKETS: ShopifyProduct[] = [
+  {
+    id: "gid://shopify/Product/jacket_raw_selvedge",
+    title: "Raw Denim Jacket",
+    handle: "raw-denim-jacket",
+    description: "Heavyweight 14.5oz selvedge denim jacket. Unwashed, rigid, and built to break in uniquely to your body over years of wear.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2499", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/raw_denim_jacket.png", altText: "Raw Denim Jacket" } }] },
+    tags: ["wash:raw", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+  {
+    id: "gid://shopify/Product/jacket_black_selvedge",
+    title: "Black Denim Jacket",
+    handle: "black-denim-jacket",
+    description: "Premium black warp and weft selvedge denim jacket, slightly rinsed for comfort. Styled with minimalist matte black hardware.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2499", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/black_denim_jacket.png", altText: "Black Denim Jacket" } }] },
+    tags: ["wash:black", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+  {
+    id: "gid://shopify/Product/jacket_vintage_selvedge",
+    title: "White Denim Jacket",
+    handle: "white-denim-jacket",
+    description: "Artisan distressed white-wash denim jacket inspired by vintage workwear archives. Crafted from premium 13oz denim.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2699", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/vintage_denim_jacket.png", altText: "White Denim Jacket" } }] },
+    tags: ["wash:white", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+];
+
 function ShopPageContent() {
   const { theme } = useTheme();
   const { addToCart, wishlist, toggleWishlist, isWishlisted } = useCart();
@@ -65,17 +128,19 @@ function ShopPageContent() {
   const searchParams = useSearchParams();
   const washFilter = searchParams.get("wash");
   const fitFilter = searchParams.get("fit");
+  const categoryFilter = searchParams.get("category")?.toLowerCase();
+  const isJacketsCategory = categoryFilter === "jackets";
 
   // Filter Drawer and Sort States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
   const [selectedFits, setSelectedFits] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState<number>(1999);
+  const [maxPrice, setMaxPrice] = useState<number>(isJacketsCategory ? 3500 : 1999);
   const [inStockOnly, setInStockOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("featured");
   const [quickViewProduct, setQuickViewProduct] = useState<ShopifyProduct | null>(null);
-  const [quickViewSelectedSize, setQuickViewSelectedSize] = useState<string>("32");
+  const [quickViewSelectedSize, setQuickViewSelectedSize] = useState<string>(isJacketsCategory ? "M" : "32");
 
   const openQuickView = (product: ShopifyProduct) => {
     setQuickViewProduct(product);
@@ -110,7 +175,8 @@ function ShopPageContent() {
           validateStatus: (status) => status < 500,
         });
         if (response.status === 200 && Array.isArray(response.data)) {
-          setProducts(response.data);
+          const shopifyHasJackets = response.data.some((p: any) => p.handle?.includes("jacket"));
+          setProducts(shopifyHasJackets ? response.data : [...response.data, ...MOCK_JACKETS]);
         }
       } catch (error) {
         console.error("Failed to load products from Shopify:", error);
@@ -163,15 +229,20 @@ function ShopPageContent() {
     const title = product.title.toLowerCase();
     const tags = product.tags?.map((t) => t.toLowerCase()) || [];
 
-    // Filter out accessories and jackets from the shop catalog
-    if (
-      tags.includes("accessories") || 
-      tags.includes("jacket") || 
-      tags.includes("jackets") || 
-      handle.includes("jacket") || 
-      title.includes("jacket")
-    ) {
-      return false;
+    if (isJacketsCategory) {
+      const isJk = tags.includes("jacket") || tags.includes("jackets") || handle.includes("jacket") || title.includes("jacket");
+      if (!isJk) return false;
+    } else {
+      // Filter out accessories and jackets from the shop catalog
+      if (
+        tags.includes("accessories") || 
+        tags.includes("jacket") || 
+        tags.includes("jackets") || 
+        handle.includes("jacket") || 
+        title.includes("jacket")
+      ) {
+        return false;
+      }
     }
 
     // 1. Collection wash filter
@@ -182,8 +253,8 @@ function ShopPageContent() {
       if (!selectedCollections.includes(tagLabel)) return false;
     }
 
-    // 2. Fit Filter
-    if (selectedFits.length > 0) {
+    // 2. Fit Filter (only for jeans)
+    if (!isJacketsCategory && selectedFits.length > 0) {
       const matchesFit = selectedFits.some((fit) => {
         const f = fit.toLowerCase();
         return handle.includes(f) || title.includes(f) || tags.includes(`fit:${f}`);
@@ -253,14 +324,19 @@ function ShopPageContent() {
       const handle = product.handle.toLowerCase();
       const title = product.title.toLowerCase();
       const tags = product.tags?.map((t) => t.toLowerCase()) || [];
-      if (
-        tags.includes("accessories") || 
-        tags.includes("jacket") || 
-        tags.includes("jackets") || 
-        handle.includes("jacket") || 
-        title.includes("jacket")
-      ) {
-        return false;
+      if (isJacketsCategory) {
+        const isJk = tags.includes("jacket") || tags.includes("jackets") || handle.includes("jacket") || title.includes("jacket");
+        if (!isJk) return false;
+      } else {
+        if (
+          tags.includes("accessories") || 
+          tags.includes("jacket") || 
+          tags.includes("jackets") || 
+          handle.includes("jacket") || 
+          title.includes("jacket")
+        ) {
+          return false;
+        }
       }
 
       const tagLabel = product.tags?.find((t) => t.startsWith('wash:'))?.replace('wash:', '').toUpperCase()
@@ -283,9 +359,10 @@ function ShopPageContent() {
 
   const clearAllFilters = () => {
     setSelectedCollections([]);
+    const defaultMaxPrice = isJacketsCategory ? 3500 : 1999;
     setSelectedFits([]);
     setSelectedSizes([]);
-    setMaxPrice(1999);
+    setMaxPrice(defaultMaxPrice);
     setInStockOnly(false);
   };
 
@@ -295,13 +372,16 @@ function ShopPageContent() {
       const label = col === "RAW" ? "RAW INDIGO" : col === "BLACK" ? "CARBON BLACK" : col === "WHITE" ? "ALABASTER WHITE" : col;
       chips.push({ id: `col-${col}`, type: "collection", value: col, label });
     });
-    selectedFits.forEach((fit) => {
-      chips.push({ id: `fit-${fit}`, type: "fit", value: fit, label: fit });
-    });
+    if (!isJacketsCategory) {
+      selectedFits.forEach((fit) => {
+        chips.push({ id: `fit-${fit}`, type: "fit", value: fit, label: fit });
+      });
+    }
     selectedSizes.forEach((size) => {
       chips.push({ id: `size-${size}`, type: "size", value: size, label: `SIZE: ${size}` });
     });
-    if (maxPrice < 1999) {
+    const defaultMaxPrice = isJacketsCategory ? 3500 : 1999;
+    if (maxPrice < defaultMaxPrice) {
       chips.push({ id: "price", type: "price", value: "", label: `UNDER ₹ ${maxPrice.toLocaleString('en-IN')}` });
     }
     if (inStockOnly) {
@@ -311,6 +391,7 @@ function ShopPageContent() {
   };
 
   const removeFilter = (type: string, value: string) => {
+    const defaultMaxPrice = isJacketsCategory ? 3500 : 1999;
     if (type === "collection") {
       setSelectedCollections((prev) => prev.filter((item) => item !== value));
     } else if (type === "fit") {
@@ -318,7 +399,7 @@ function ShopPageContent() {
     } else if (type === "size") {
       setSelectedSizes((prev) => prev.filter((item) => item !== value));
     } else if (type === "price") {
-      setMaxPrice(1999);
+      setMaxPrice(defaultMaxPrice);
     } else if (type === "stock") {
       setInStockOnly(false);
     }
@@ -347,9 +428,9 @@ function ShopPageContent() {
         </div>
 
         {/* Filter & Sort Toolbar */}
-        <div className={`flex flex-col gap-4 sm:grid sm:grid-cols-3 items-center border-b border-foreground/5 pb-6 w-full select-none ${getActiveChips().length > 0 ? "mb-4" : "mb-8"}`}>
+        <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-foreground/5 pb-6 w-full select-none ${getActiveChips().length > 0 ? "mb-4" : "mb-8"}`}>
           {/* Left Zone: Filters Button */}
-          <div className="flex justify-start w-full sm:w-auto">
+          <div className="flex justify-start items-center">
             <button
               onClick={() => setIsDrawerOpen(true)}
               className="relative inline-flex items-center gap-2 px-5 py-2.5 border border-foreground/15 hover:border-[var(--foreground)] text-[10px] font-bold tracking-widest uppercase transition-all duration-300 rounded-none cursor-pointer hover:bg-foreground hover:text-background group/filter"
@@ -364,8 +445,9 @@ function ShopPageContent() {
             </button>
           </div>
 
-          {/* Center Zone: Premium Segmented Wash Control */}
-          <div className="flex justify-center w-full sm:w-auto">
+          {/* Right Corner: Washes in Right Corner + Sort */}
+          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-6 w-full sm:w-auto">
+            {/* Washes segmented control in right corner */}
             <div className="inline-flex items-center bg-foreground/[0.03] dark:bg-white/[0.02] border border-foreground/10 px-1 py-1 rounded-full relative">
               {["RAW", "BLACK", "WHITE"].map((wash) => {
                 const isSelected = selectedCollections.includes(wash);
@@ -375,7 +457,7 @@ function ShopPageContent() {
                   <button
                     key={wash}
                     onClick={() => toggleCollection(wash)}
-                    className={`px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-widest uppercase transition-all duration-300 relative cursor-pointer select-none bg-transparent border-0 outline-none ${
+                    className={`px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-widest uppercase transition-all duration-300 relative cursor-pointer select-none bg-transparent border-0 outline-none ${
                       isSelected
                         ? "text-foreground font-black"
                         : "text-neutral-400 hover:text-foreground/80 font-bold"
@@ -402,30 +484,30 @@ function ShopPageContent() {
                 );
               })}
             </div>
-          </div>
 
-          {/* Right Zone: Sort Selector */}
-          <div className="flex justify-end items-center w-full sm:w-auto">
-            <span className="text-[9px] tracking-widest text-neutral-500 font-bold mr-1 uppercase">Sort:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent text-xs font-bold uppercase tracking-wider text-[var(--foreground)] border-0 focus:outline-none focus:ring-0 cursor-pointer pr-6 py-1.5 select-none"
-              style={{
-                WebkitAppearance: "none",
-                MozAppearance: "none",
-                backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='${theme === 'light' ? 'black' : 'white'}' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right center",
-                backgroundSize: "16px"
-              }}
-            >
-              <option value="featured" className="bg-[#090A0C] text-white">Featured</option>
-              <option value="price-asc" className="bg-[#090A0C] text-white">Price: Low to High</option>
-              <option value="price-desc" className="bg-[#090A0C] text-white">Price: High to Low</option>
-              <option value="title-asc" className="bg-[#090A0C] text-white">Name: A to Z</option>
-              <option value="title-desc" className="bg-[#090A0C] text-white">Name: Z to A</option>
-            </select>
+            {/* Right Zone: Sort Selector */}
+            <div className="flex items-center">
+              <span className="text-[9px] tracking-widest text-neutral-500 font-bold mr-1 uppercase">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent text-xs font-bold uppercase tracking-wider text-[var(--foreground)] border-0 focus:outline-none focus:ring-0 cursor-pointer pr-6 py-1.5 select-none"
+                style={{
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  backgroundImage: `url("data:image/svg+xml;utf8,<svg fill='${theme === 'light' ? 'black' : 'white'}' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right center",
+                  backgroundSize: "16px"
+                }}
+              >
+                <option value="featured" className="bg-[#090A0C] text-white">Featured</option>
+                <option value="price-asc" className="bg-[#090A0C] text-white">Price: Low to High</option>
+                <option value="price-desc" className="bg-[#090A0C] text-white">Price: High to Low</option>
+                <option value="title-asc" className="bg-[#090A0C] text-white">Name: A to Z</option>
+                <option value="title-desc" className="bg-[#090A0C] text-white">Name: Z to A</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -635,34 +717,38 @@ function ShopPageContent() {
               </div>
             </div>
 
-            {/* 2. Fit Filter */}
-            <div className="space-y-3">
-              <h4 className="text-[10px] tracking-[0.25em] font-black uppercase text-neutral-500">FIT STYLE</h4>
-              <div className="grid grid-cols-2 gap-2.5">
-                {["ANKLE", "SLIM", "COMFORT", "STRAIGHT", "BAGGY", "BOOTCUT"].map((fit) => {
-                  const isSelected = selectedFits.includes(fit);
-                  return (
-                    <button
-                      key={fit}
-                      onClick={() => toggleFit(fit)}
-                      className={`py-2 text-[10px] font-bold tracking-widest uppercase transition-all rounded-none cursor-pointer border text-center ${
-                        isSelected
-                          ? "bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)]"
-                          : "border-foreground/15 text-neutral-400 hover:border-foreground/50 hover:text-[var(--foreground)]"
-                      }`}
-                    >
-                      {fit}
-                    </button>
-                  );
-                })}
+            {/* 2. Fit Filter (Jeans only) */}
+            {!isJacketsCategory && (
+              <div className="space-y-3">
+                <h4 className="text-[10px] tracking-[0.25em] font-black uppercase text-neutral-500">FIT STYLE</h4>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {["ANKLE", "SLIM", "COMFORT", "STRAIGHT", "BAGGY", "BOOTCUT"].map((fit) => {
+                    const isSelected = selectedFits.includes(fit);
+                    return (
+                      <button
+                        key={fit}
+                        onClick={() => toggleFit(fit)}
+                        className={`py-2 text-[10px] font-bold tracking-widest uppercase transition-all rounded-none cursor-pointer border text-center ${
+                          isSelected
+                            ? "bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)]"
+                            : "border-foreground/15 text-neutral-400 hover:border-foreground/50 hover:text-[var(--foreground)]"
+                        }`}
+                      >
+                        {fit}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* 3. Size Filter */}
             <div className="space-y-3">
-              <h4 className="text-[10px] tracking-[0.25em] font-black uppercase text-neutral-500">WAIST SIZE</h4>
-              <div className="grid grid-cols-4 gap-2">
-                {["28", "30", "32", "34", "36", "38", "40", "42"].map((size) => {
+              <h4 className="text-[10px] tracking-[0.25em] font-black uppercase text-neutral-500">
+                {isJacketsCategory ? "JACKET SIZE" : "WAIST SIZE"}
+              </h4>
+              <div className={isJacketsCategory ? "grid grid-cols-5 gap-2" : "grid grid-cols-4 gap-2"}>
+                {(isJacketsCategory ? ["S", "M", "L", "XL", "XXL"] : ["28", "30", "32", "34", "36", "38", "40", "42"]).map((size) => {
                   const isSelected = selectedSizes.includes(size);
                   return (
                     <button
@@ -690,16 +776,16 @@ function ShopPageContent() {
               <div className="pt-2">
                 <input
                   type="range"
-                  min="1499"
-                  max="1999"
+                  min={isJacketsCategory ? "2000" : "1499"}
+                  max={isJacketsCategory ? "3500" : "1999"}
                   step="50"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(parseInt(e.target.value))}
                   className="w-full h-1 bg-foreground/10 accent-[#d7a33c] cursor-pointer"
                 />
                 <div className="flex justify-between text-[9px] font-mono text-neutral-500 uppercase tracking-widest mt-2">
-                  <span>₹ 1,499</span>
-                  <span>₹ 1,999</span>
+                  <span>₹ {isJacketsCategory ? "2,000" : "1,499"}</span>
+                  <span>₹ {isJacketsCategory ? "3,500" : "1,999"}</span>
                 </div>
               </div>
             </div>

@@ -14,6 +14,7 @@ import {
   ChevronRight,
   SlidersHorizontal,
   Check,
+  ArrowRight,
 } from "lucide-react";
 import { ExperienceProduct, BrandName, CategoryType } from "@/app/experience-center/page";
 import FilterBottomSheet from "./FilterBottomSheet";
@@ -47,7 +48,7 @@ const BRANDS: { number: string; label: string; value: BrandName }[] = [
   { number: "05", label: "SECOND ARMY", value: "SECOND ARMY" },
 ];
 
-const SLOTS = [-2, -1, 0, 1, 2];
+const SLOTS = [0];
 const EASE = [0.22, 0.8, 0.24, 1] as const;
 
 export default function MobileShowroomExperience({
@@ -275,28 +276,28 @@ export default function MobileShowroomExperience({
   if (!current) {
     return (
       <>
-      <section ref={sectionRef} className="ec-section ec-m">
-        <div className="ec-stage">
-          <Image src={STAGE_ART} alt="" fill priority sizes="100vw" className="ec-bg" />
-          <div className="ec-grade" />
-          <div className="ec-vignette" />
-        </div>
-        {header}
-        {brandBar}
-        <div className="ec-empty">
-          <div className="ec-empty__card ec-glass">
-            <p className="ec-empty__eyebrow">The showroom is quiet</p>
-            <p className="ec-empty__title">No pieces on display</p>
-            <p className="ec-empty__text">No garments match your active filters. Reset to view the complete showroom.</p>
-            <div className="ec-empty__actions">
-              <button type="button" className="ec-btn" onClick={onResetAll}>
-                Reset all filters
-              </button>
+        <section ref={sectionRef} className="ec-section ec-m">
+          <div className="ec-stage">
+            <Image src={STAGE_ART} alt="" fill priority sizes="100vw" className="ec-bg" />
+            <div className="ec-grade" />
+            <div className="ec-vignette" />
+          </div>
+          {header}
+          {brandBar}
+          <div className="ec-empty">
+            <div className="ec-empty__card ec-glass">
+              <p className="ec-empty__eyebrow">The showroom is quiet</p>
+              <p className="ec-empty__title">No pieces on display</p>
+              <p className="ec-empty__text">No garments match your active filters. Reset to view the complete showroom.</p>
+              <div className="ec-empty__actions">
+                <button type="button" className="ec-btn" onClick={onResetAll}>
+                  Reset all filters
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      {sheet}
+        </section>
+        {sheet}
       </>
     );
   }
@@ -309,172 +310,202 @@ export default function MobileShowroomExperience({
 
   return (
     <>
-    <section
-      ref={sectionRef}
-      className="ec-section ec-m"
-      aria-label="ONLY DENIMS showroom"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* ─── ARCHITECTURE & LIGHT ─── */}
-      <div className="ec-stage">
-        <Image src={STAGE_ART} alt="" fill priority sizes="100vw" className="ec-bg" />
-        <div className="ec-grade" />
-        <div className="ec-pool ec-pool--hero" />
-        <div className="ec-podium-glow" />
-        <div className="ec-vignette" />
+      <section
+        ref={sectionRef}
+        className="ec-section ec-m"
+        aria-label="ONLY DENIMS showroom"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* ─── ARCHITECTURE & LIGHT ─── */}
+        <div className="ec-stage">
+          <Image src={STAGE_ART} alt="" fill priority sizes="100vw" className="ec-bg" />
+          <div className="ec-grade" />
+          <div className="ec-pool ec-pool--hero" />
+          <div className="ec-podium-glow" />
+          <div className="ec-vignette" />
 
-        {/* ─── PRODUCTS: hero on the podium, neighbours on the plinth at depth ─── */}
-        <div key={signature} className={`ec-slots${still ? " ec-slots--still" : ""}`}>
-          {SLOTS.map((slot) => {
-            const idx = currentIndex + slot;
-            const item = products[((idx % total) + total) % total];
-            const isHero = slot === 0;
-            const shown = visible.has(slot);
-            const pres = getPresentation(item.image);
-            const { h0, w0 } = getItemGeometry(pres, heroMaxW, size.w >= 600 ? 50 : 40);
-            const isPanel = pres.kind === "panel";
-            const bh = pres.bbox[3] - pres.bbox[1];
-            const boxH = isPanel ? h0 : h0 / bh;
-            const boxW = isPanel ? h0 * (pres.frame ?? 0.74) : boxH * pres.ar;
-            const cx = isPanel ? 0.5 : (pres.bbox[0] + pres.bbox[2]) / 2;
-            const by = isPanel ? 1 : pres.bbox[3];
+          {/* ─── PRODUCTS: hero on the podium, neighbours on the plinth at depth ─── */}
+          <div key={signature} className={`ec-slots${still ? " ec-slots--still" : ""}`}>
+            {SLOTS.map((slot) => {
+              const idx = currentIndex + slot;
+              const item = products[((idx % total) + total) % total];
+              const isHero = slot === 0;
+              const shown = visible.has(slot);
+              const pres = getPresentation(item.image);
+              const { h0, w0 } = getItemGeometry(pres, heroMaxW, size.w >= 600 ? 50 : 40);
+              const isPanel = pres.kind === "panel";
+              const bh = pres.bbox[3] - pres.bbox[1];
+              const boxH = isPanel ? h0 : h0 / bh;
+              const boxW = isPanel ? h0 * (pres.frame ?? 0.74) : boxH * pres.ar;
+              const cx = isPanel ? 0.5 : (pres.bbox[0] + pres.bbox[2]) / 2;
+              const by = isPanel ? 1 : pres.bbox[3];
 
-            const sideScale = isPanel ? 0.32 : 0.38;
-            const half = visPct / 2;
-            const wSide = w0 * sideScale;
-            let x = 50;
-            let y = 78.8;
-            let scale = 1;
-            let opacity = 1;
-            let z = 30;
-            let filter = "none";
-            if (!isHero) {
-              const dir = Math.sign(slot);
-              const near = Math.abs(slot) === 1;
-              x = near ? 50 + dir * Math.max(half * 0.45, half - wSide / 2 - 1.0) : 50 + dir * (half + 14);
-              y = 77.6;
-              scale = sideScale;
-              opacity = near ? 0.9 : 0;
-              z = 20;
-              filter = isPanel ? "saturate(0.8) brightness(0.84)" : "saturate(0.92) brightness(0.96)";
-            }
+              const sideScale = isPanel ? 0.32 : 0.38;
+              const half = visPct / 2;
+              const wSide = w0 * sideScale;
+              let x = 50;
+              let y = 74.8;
+              let scale = 1;
+              let opacity = 1;
+              let z = 30;
+              let filter = "none";
+              if (!isHero) {
+                const dir = Math.sign(slot);
+                const near = Math.abs(slot) === 1;
+                x = near ? 50 + dir * Math.max(half * 0.45, half - wSide / 2 - 1.0) : 50 + dir * (half + 14);
+                y = 77.6;
+                scale = sideScale;
+                opacity = near ? 0.9 : 0;
+                z = 20;
+                filter = isPanel ? "saturate(0.8) brightness(0.84)" : "saturate(0.92) brightness(0.96)";
+              }
 
-            return (
-              <div
-                key={`${item.id}-${idx}`}
-                className={`ec-slot ec-slot--${pres.kind}${isHero ? " ec-slot--hero" : ""}`}
-                style={{
-                  transform: `translate3d(${x}cqw, ${y}cqh, 0) scale(${scale})`,
-                  opacity: shown ? opacity : 0,
-                  zIndex: z,
-                  filter: shown ? filter : "none",
-                  pointerEvents: shown ? "auto" : "none",
-                  ["--mask" as string]: pres.mask ? `url(${pres.mask})` : "none",
-                }}
-              >
-                <span className="ec-shadow" style={{ ["--sw" as string]: (w0 * STAGE_AR * 0.92).toFixed(2) }} />
-                <button
-                  type="button"
-                  className="ec-item"
-                  tabIndex={shown ? 0 : -1}
-                  aria-hidden={!shown}
-                  aria-label={isHero ? `Quick view ${item.title}` : `Show ${item.title}`}
-                  onClick={() => {
-                    if (isHero) onQuickView(item);
-                    else {
-                      setStill(false);
-                      setCurrentIndex((p) => p + slot);
-                    }
-                  }}
+              return (
+                <div
+                  key={`${item.id}-${idx}`}
+                  className={`ec-slot ec-slot--${pres.kind}${isHero ? " ec-slot--hero" : ""}`}
                   style={{
-                    width: `${boxW.toFixed(3)}cqh`,
-                    height: `${boxH.toFixed(3)}cqh`,
-                    ["--cx" as string]: cx,
-                    ["--by" as string]: by,
+                    transform: `translate3d(${x}cqw, ${y}cqh, 0) scale(${scale})`,
+                    opacity: shown ? opacity : 0,
+                    zIndex: z,
+                    filter: shown ? filter : "none",
+                    pointerEvents: shown ? "auto" : "none",
+                    ["--mask" as string]: pres.mask ? `url(${pres.mask})` : "none",
                   }}
                 >
-                  <span className="ec-lift">
-                    {isPanel ? (
-                      <span className="ec-panel">
+                  <span className="ec-shadow" style={{ ["--sw" as string]: (w0 * STAGE_AR * 0.92).toFixed(2) }} />
+                  <button
+                    type="button"
+                    className="ec-item"
+                    tabIndex={shown ? 0 : -1}
+                    aria-hidden={!shown}
+                    aria-label={isHero ? `Quick view ${item.title}` : `Show ${item.title}`}
+                    onClick={() => {
+                      if (isHero) onQuickView(item);
+                      else {
+                        setStill(false);
+                        setCurrentIndex((p) => p + slot);
+                      }
+                    }}
+                    style={{
+                      width: `${boxW.toFixed(3)}cqh`,
+                      height: `${boxH.toFixed(3)}cqh`,
+                      ["--cx" as string]: cx,
+                      ["--by" as string]: by,
+                    }}
+                  >
+                    <span className="ec-lift">
+                      {isPanel ? (
+                        <span className="ec-panel">
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            fill
+                            sizes="260px"
+                            unoptimized
+                            style={{ objectPosition: `${pres.focusX ?? 50}% 50%` }}
+                          />
+                        </span>
+                      ) : (
                         <Image
                           src={item.image}
                           alt={item.title}
-                          fill
-                          sizes="260px"
+                          width={1024}
+                          height={Math.round(1024 / pres.ar)}
                           unoptimized
-                          style={{ objectPosition: `${pres.focusX ?? 50}% 50%` }}
+                          priority={isHero}
+                          className="ec-img"
+                          draggable={false}
                         />
-                      </span>
-                    ) : (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={1024}
-                        height={Math.round(1024 / pres.ar)}
-                        unoptimized
-                        priority={isHero}
-                        className="ec-img"
-                        draggable={false}
-                      />
-                    )}
-                  </span>
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {header}
-      {brandBar}
-
-      {/* ─── LABEL CARD ─── */}
-      <div className="ec-mui">
-        <div className="ec-mcard ec-glass">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={current.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.4, ease: EASE }}
-            >
-              <div className="ec-mrow">
-                <div className="ec-kicker">
-                  {brandName}
-                  <b />
-                  <span>{subBadge}</span>
+                      )}
+                    </span>
+                  </button>
                 </div>
-                <span className="ec-counter__num" aria-live="polite">
-                  {String(safeIdx + 1).padStart(2, "0")} <i>/</i> {String(total).padStart(2, "0")}
-                </span>
-                <span className="ec-mprice-narrow">₹{current.price.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="ec-mrow">
-                <button type="button" className="ec-mname" onClick={() => onQuickView(current)} aria-label={`Quick view ${current.title}`}>
-                  <span>{current.title}</span>
-                  <Maximize2 size={13} strokeWidth={1.5} />
-                </button>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              );
+            })}
+          </div>
+        </div>
 
-          <div className="ec-mactions">
-            <button type="button" className="ec-iconbtn" aria-label="Previous garment" disabled={total <= 1} onClick={handlePrev}>
-              <ChevronLeft size={18} strokeWidth={1.5} />
-            </button>
+        {header}
+        {brandBar}
+
+        {/* ─── LABEL CARD ─── */}
+        <div className="ec-mui">
+          <div className="ec-product-card ec-mcard ec-glass">
+            {/* Column 1: Image thumbnail (38px x 44px) */}
+            <div className="ec-product-card__image">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={current.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <Image
+                    src={current.image}
+                    alt={current.title}
+                    width={38}
+                    height={44}
+                    unoptimized
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Column 2: Title (minmax(0, 1fr)) */}
+            <div className="ec-product-card__title">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={current.id}
+                  initial={{ opacity: 0, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -3 }}
+                  transition={{ duration: 0.25, ease: EASE }}
+                  className="w-full min-w-0"
+                >
+                  <div className="ec-product-card__brand">{brandName}</div>
+                  <div className="ec-product-card__name">{current.title}</div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Column 3: Price (auto) */}
+            <div className="ec-product-card__price">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={`${current.id}-price`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2, ease: EASE }}
+                >
+                  ₹{current.price.toLocaleString("en-IN")}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+
+            {/* Column 4: Wishlist (32px x 32px) */}
             <button
               type="button"
-              className="ec-iconbtn ec-heart"
+              className="ec-product-card__wishlist"
               aria-label="Wishlist item"
               aria-pressed={isWishlisted}
               onClick={() => toggleWishlist(current.id)}
             >
-              <Heart size={17} strokeWidth={1.4} />
+              <Heart size={15} strokeWidth={1.5} />
             </button>
-            <button type="button" className="ec-btn" onClick={() => onAddToCart(current)} disabled={isAdding}>
+
+            {/* Column 5: Add to bag (36px x 120px) */}
+            <button
+              type="button"
+              className="ec-product-card__add"
+              onClick={() => onAddToCart(current)}
+              disabled={isAdding}
+            >
               {isAdding ? (
                 <>
                   <Check size={14} strokeWidth={1.8} />
@@ -483,20 +514,16 @@ export default function MobileShowroomExperience({
               ) : (
                 <>
                   <span>Add to bag</span>
-                  <span className="ec-btn__price">₹{current.price.toLocaleString("en-IN")}</span>
+                  <ArrowRight size={12} strokeWidth={1.5} />
                 </>
               )}
             </button>
-            <button type="button" className="ec-iconbtn" aria-label="Next garment" disabled={total <= 1} onClick={handleNext}>
-              <ChevronRight size={18} strokeWidth={1.5} />
-            </button>
           </div>
         </div>
-      </div>
 
-    </section>
-    {/* rendered outside the section: it is position:fixed and must escape its containment */}
-    {sheet}
+      </section>
+      {/* rendered outside the section: it is position:fixed and must escape its containment */}
+      {sheet}
     </>
   );
 }

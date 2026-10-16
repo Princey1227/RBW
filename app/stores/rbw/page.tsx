@@ -115,6 +115,13 @@ const sizingData: Record<string, SizingSpec[]> = {
     { size: "40", waist: 41.0, inseam: 28, frontRise: 13.25, thigh: 27.5, legOpening: 15.75 },
     { size: "42", waist: 43.0, inseam: 28, frontRise: 13.75, thigh: 28.5, legOpening: 16.25 },
   ],
+  jacket: [
+    { size: "S", waist: 38.0, inseam: 25.5, frontRise: 24.5, thigh: 17.5, legOpening: 19.5 },
+    { size: "M", waist: 40.0, inseam: 26.0, frontRise: 25.0, thigh: 18.0, legOpening: 20.5 },
+    { size: "L", waist: 42.0, inseam: 26.5, frontRise: 25.5, thigh: 18.5, legOpening: 21.5 },
+    { size: "XL", waist: 44.0, inseam: 27.0, frontRise: 26.0, thigh: 19.0, legOpening: 22.5 },
+    { size: "XXL", waist: 46.0, inseam: 27.5, frontRise: 26.5, thigh: 19.5, legOpening: 23.5 },
+  ],
 };
 
 const getProductHandleForWashAndFit = (wash: "raw" | "black" | "white" | "vintage" | string, fit: string, category: string = "jeans") => {
@@ -162,10 +169,6 @@ const getInitialWashVal = (): "raw" | "black" | "white" | "vintage" | null => {
     if (rawWash && ["raw", "black", "white", "vintage"].includes(rawWash)) {
       return rawWash as "raw" | "black" | "white" | "vintage";
     }
-    const sessionWash = sessionStorage.getItem("selectedWash")?.toLowerCase();
-    if (sessionWash && ["raw", "black", "white", "vintage"].includes(sessionWash)) {
-      return sessionWash as "raw" | "black" | "white" | "vintage";
-    }
   }
   return null;
 };
@@ -180,14 +183,88 @@ const getInitialFitVal = (): string | null => {
   return null;
 };
 
+const getInitialCategoryVal = (): string => {
+  if (typeof window !== "undefined") {
+    const rawCat = new URLSearchParams(window.location.search).get("category")?.toLowerCase();
+    if (rawCat && ["jeans", "jackets", "shorts", "accessories"].includes(rawCat)) {
+      return rawCat;
+    }
+  }
+  return "jeans";
+};
+
+const MOCK_JACKETS: any[] = [
+  {
+    id: "gid://shopify/Product/jacket_raw_selvedge",
+    title: "Raw Denim Jacket",
+    handle: "raw-denim-jacket",
+    description: "Heavyweight 14.5oz selvedge denim jacket. Unwashed, rigid, and built to break in uniquely to your body over years of wear. Features classic contrast stitching, engraved brass buttons, and redline selvedge ID detailing.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2499", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/raw_denim_jacket.png", altText: "Raw Denim Jacket" } }] },
+    tags: ["wash:raw", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_raw_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+  {
+    id: "gid://shopify/Product/jacket_black_selvedge",
+    title: "Black Denim Jacket",
+    handle: "black-denim-jacket",
+    description: "Premium black warp and weft selvedge denim jacket, slightly rinsed for a comfortable feel. Styled with minimalist matte black hardware and tonal stitching.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2499", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/black_denim_jacket.png", altText: "Black Denim Jacket" } }] },
+    tags: ["wash:black", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_black_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+  {
+    id: "gid://shopify/Product/jacket_vintage_selvedge",
+    title: "White Denim Jacket",
+    handle: "white-denim-jacket",
+    description: "Artisan distressed white-wash denim jacket inspired by vintage workwear archives. Crafted from premium 13oz denim, featuring hand-rubbed fading and antique brass buttons.",
+    availableForSale: true,
+    options: [{ name: "Size", values: ["S", "M", "L", "XL", "XXL"] }],
+    priceRange: { minVariantPrice: { amount: "2699", currencyCode: "INR" } },
+    images: { edges: [{ node: { url: "/vintage_denim_jacket.png", altText: "White Denim Jacket" } }] },
+    tags: ["wash:white", "jacket", "selvedge"],
+    variants: {
+      edges: [
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_S", title: "S", availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_M", title: "M", availableForSale: true, selectedOptions: [{ name: "Size", value: "M" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_L", title: "L", availableForSale: true, selectedOptions: [{ name: "Size", value: "L" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_XL", title: "XL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XL" }] } },
+        { node: { id: "gid://shopify/ProductVariant/jacket_white_XXL", title: "XXL", availableForSale: true, selectedOptions: [{ name: "Size", value: "XXL" }] } },
+      ],
+    },
+  },
+];
+
 function RBWStorefrontContent() {
   const searchParams = useSearchParams();
   const washParam = searchParams?.get("wash")?.toLowerCase();
   const fitParam = searchParams?.get("fit")?.toLowerCase();
+  const categoryParam = searchParams?.get("category")?.toLowerCase();
 
   const [activeWash, setActiveWash] = useState<"raw" | "black" | "white" | "vintage" | null>(getInitialWashVal);
   const [selectedWash, setSelectedWash] = useState<"raw" | "black" | "white" | "vintage" | null>(getInitialWashVal);
-  const [selectedCategory, setSelectedCategory] = useState<string>("jeans");
+  const [selectedCategory, setSelectedCategory] = useState<string>(getInitialCategoryVal);
   const [mobileWashIndex, setMobileWashIndex] = useState<number>(0);
   const [prevMobileWashIndex, setPrevMobileWashIndex] = useState<number>(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -536,27 +613,59 @@ function RBWStorefrontContent() {
   }, []);
 
   useEffect(() => {
+    const handleCatToggle = (e: any) => {
+      const catId = e.detail;
+      if (catId && ["jeans", "jackets", "shorts", "accessories"].includes(catId)) {
+        setSelectedCategory(catId);
+      }
+    };
+    const handleCatState = (e: any) => {
+      if (e.detail?.activeCategory) {
+        setSelectedCategory(e.detail.activeCategory);
+      }
+    };
+    window.addEventListener("RBW_PREVIEW_TOGGLE_CATEGORY", handleCatToggle);
+    window.addEventListener("RBW_PREVIEW_CATEGORIES_STATE", handleCatState);
+    return () => {
+      window.removeEventListener("RBW_PREVIEW_TOGGLE_CATEGORY", handleCatToggle);
+      window.removeEventListener("RBW_PREVIEW_CATEGORIES_STATE", handleCatState);
+    };
+  }, []);
+
+  useEffect(() => {
     const VALID_WASHES = ["raw", "black", "white", "vintage"];
     const VALID_FITS = ["ankle", "slim", "comfort", "straight", "baggy", "bootcut"];
 
     const rawWash = washParam || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("wash")?.toLowerCase() : null);
     const rawFit = fitParam || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("fit")?.toLowerCase() : null);
+    const rawCat = categoryParam || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("category")?.toLowerCase() : null);
+
+    const activeCat = rawCat && ["jeans", "jackets", "shorts", "accessories"].includes(rawCat) ? rawCat : selectedCategory || "jeans";
+    setSelectedCategory(activeCat);
 
     if (rawWash && VALID_WASHES.includes(rawWash)) {
       const safeWash = rawWash as "raw" | "black" | "white" | "vintage";
       setSelectedWash(safeWash);
       setActiveWash(safeWash);
       setRoomWash(safeWash);
-      setSelectedCategory("jeans");
       if (typeof window !== "undefined") {
         sessionStorage.setItem("selectedWash", safeWash);
         window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: true } }));
       }
-      if (rawFit && VALID_FITS.includes(rawFit)) {
-        setSelectedFit(rawFit);
-        setRoomFit(rawFit);
+      if (activeCat === "jeans") {
+        if (rawFit && VALID_FITS.includes(rawFit)) {
+          setSelectedFit(rawFit);
+          setRoomFit(rawFit);
+        } else {
+          setSelectedFit(null);
+        }
       } else {
-        setSelectedFit(null);
+        // Non-jeans items (Jackets, Shorts) have NO fits! Go directly to product view
+        setSelectedFit("standard");
+        setRoomFit("");
+        if (activeCat === "jackets") {
+          setSelectedSize("M");
+        }
       }
     } else {
       setSelectedWash(null);
@@ -565,34 +674,42 @@ function RBWStorefrontContent() {
         sessionStorage.removeItem("selectedWash");
       } catch (e) {}
     }
-  }, [washParam, fitParam]);
+  }, [washParam, fitParam, categoryParam]);
 
   const handleWashClick = (wash: "raw" | "black" | "white" | "vintage" | string, category?: string, defaultFit?: string) => {
     const safeWash = (["raw", "black", "white", "vintage"].includes(wash) ? wash : "raw") as "raw" | "black" | "white" | "vintage";
     setSelectedWash(safeWash);
     setActiveWash(safeWash);
-    setSelectedFit(null);
-    if (category) {
-      setSelectedCategory(category);
+    const cat = category || selectedCategory || "jeans";
+    setSelectedCategory(cat);
+
+    if (cat === "jeans") {
+      if (!selectedFit || selectedFit === "standard") {
+        setSelectedFit(null);
+      }
     } else {
-      setSelectedCategory("jeans");
+      // Non-jeans items (Jackets, Shorts) have NO fits! Skip Slide 2 directly to Slide 3
+      setSelectedFit("standard");
+      setRoomFit("");
+      if (cat === "jackets") {
+        setSelectedSize("M");
+      }
     }
+
     if (typeof window !== "undefined") {
       sessionStorage.setItem("selectedWash", safeWash);
       try {
         const url = new URL(window.location.href);
         url.searchParams.set("wash", safeWash);
-        url.searchParams.delete("fit");
-        window.history.pushState({ wash: safeWash }, "", url.toString());
+        if (cat !== "jeans") {
+          url.searchParams.set("category", cat);
+          url.searchParams.delete("fit");
+        } else if (selectedFit && selectedFit !== "standard") {
+          url.searchParams.set("fit", selectedFit);
+        }
+        window.history.pushState({ wash: safeWash, category: cat }, "", url.toString());
       } catch (e) {}
       window.dispatchEvent(new CustomEvent("RBW_WASH_STATE_CHANGED", { detail: { hasWash: true } }));
-    }
-    
-    // Auto-skip fit selection (step 2) for non-jeans items
-    if (category && category !== "jeans" && defaultFit) {
-      setTimeout(() => {
-        handleFitClick(defaultFit);
-      }, 100);
     }
   };
 
@@ -847,15 +964,15 @@ function RBWStorefrontContent() {
           />
         </div>
 
-        {/* Slide 2: FIT — same showroom room as Step 1 (backdrop, type, controls inherited) */}
+        {/* Slide 2: FIT — only for jeans! Locked to light mode only */}
         <RbwJourneyShell
-          open={!!selectedWash}
+          open={!!selectedWash && selectedCategory === "jeans"}
           layerClass="z-50"
           washKey={roomWash}
           ghostText={roomWash.toUpperCase()}
-          receded={!!selectedFit}
+          receded={!!selectedFit && selectedFit !== "standard"}
           scrollRef={fitsDrawerRef}
-          theme={rbwTheme}
+          theme="light"
         >
           <div className="flex-1 flex flex-col justify-start pt-1 sm:pt-3 pb-4">
             {/* keyed by entry so the staggered reveal replays every time the room is entered */}
@@ -866,6 +983,7 @@ function RBWStorefrontContent() {
               selectedFit={roomFit}
               isInsideViewport={false}
               onFitClick={handleFitClick}
+              onWashChange={(w) => handleWashClick(w, "jeans")}
             />
             <Footer />
           </div>
@@ -873,10 +991,10 @@ function RBWStorefrontContent() {
 
         {/* Slide 3: PRODUCT — the same room, one step further in */}
         <RbwJourneyShell
-          open={!!(selectedFit && selectedWash)}
+          open={selectedCategory === "jeans" ? !!(selectedFit && selectedWash && selectedFit !== "standard") : !!selectedWash}
           layerClass="z-55"
           washKey={roomWash}
-          ghostText={(selectedCategory === "jeans" && roomFit ? roomFit : roomWash).toUpperCase()}
+          ghostText={(selectedCategory === "jeans" && roomFit ? roomFit : (selectedCategory === "jackets" ? "JACKET" : roomWash)).toUpperCase()}
           ghost="soft"
           scrollRef={detailDrawerRef}
           theme={rbwTheme}
@@ -884,12 +1002,34 @@ function RBWStorefrontContent() {
             <RbwJourneyBar
               backLabel={selectedCategory === "jeans" ? "Fits" : "Back"}
               onBack={selectedCategory === "jeans" ? handleBackToFits : handleShopAgain}
+              rightSlot={
+                <div className="flex items-center bg-white/10 dark:bg-black/40 border border-white/20 dark:border-white/10 rounded-full p-0.5 shadow-xs">
+                  {(["raw", "black", "white"] as const).map((w) => {
+                    const isCur = (selectedWash || "raw").toLowerCase() === w;
+                    return (
+                      <button
+                        key={w}
+                        type="button"
+                        onClick={() => handleWashClick(w, selectedCategory)}
+                        title={`Switch to ${w.toUpperCase()} wash`}
+                        className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer ${
+                          isCur
+                            ? "bg-[#B9965A] text-black shadow-xs font-black"
+                            : "text-[color:var(--rbw-ink-dim)] hover:text-[color:var(--rbw-ink)] hover:bg-white/10"
+                        }`}
+                      >
+                        {w}
+                      </button>
+                    );
+                  })}
+                </div>
+              }
             />
           }
         >
-          {selectedFit && selectedWash && (() => {
-            const productHandle = getProductHandleForWashAndFit(selectedWash, selectedFit, selectedCategory);
-            const product = shopifyProducts.find((p) => p.handle === productHandle);
+          {selectedWash && (selectedCategory === "jeans" ? !!(selectedFit && selectedFit !== "standard") : true) && (() => {
+            const productHandle = getProductHandleForWashAndFit(selectedWash, selectedFit || "standard", selectedCategory);
+            const product = shopifyProducts.find((p) => p.handle === productHandle) || (selectedCategory === "jackets" ? MOCK_JACKETS.find((p) => p.handle === productHandle) : null);
             const reveal = (ms: number): React.CSSProperties => ({ ["--rbw-delay" as any]: `${ms}ms` }) as React.CSSProperties;
 
             if (shopifyLoading) {
@@ -940,8 +1080,13 @@ function RBWStorefrontContent() {
             const activeStep3Img = imageUrls[activeImageIndex] || imageUrls[0];
 
             const sizeOpt = product.options?.find((opt: any) => opt.name.toLowerCase() === "size");
-            const sizes = sizeOpt?.values || ["28", "30", "32", "34", "36", "38", "40", "42"];
-            const activeFitSizing = sizingData[selectedFit.toLowerCase()] || [];
+            const rawSizes = sizeOpt?.values;
+            const sizes = selectedCategory === "jackets"
+              ? (rawSizes && rawSizes.some((v: string) => ["S", "M", "L", "XL"].includes(v.toUpperCase())) ? rawSizes : ["S", "M", "L", "XL", "XXL"])
+              : (rawSizes || ["28", "30", "32", "34", "36", "38", "40", "42"]);
+            const activeFitSizing = selectedCategory === "jackets"
+              ? (sizingData["jacket"] || [])
+              : (selectedFit ? (sizingData[selectedFit.toLowerCase()] || []) : []);
 
             const selectedVariantNode = product.variants?.edges?.find((edge: any) => {
               return edge?.node?.selectedOptions?.some((opt: any) => opt.value === selectedSize);
@@ -1097,7 +1242,9 @@ function RBWStorefrontContent() {
                   {/* Right: the piece */}
                   <div className="w-full max-w-[540px] flex flex-col text-left justify-start">
                     <p className="rbw-eyebrow rbw-in" style={reveal(120)}>
-                      {selectedCategory === "jeans" ? `${selectedWash} · ${selectedFit}` : `${selectedWash} denim`}
+                      {selectedCategory === "jeans"
+                        ? `${selectedWash} · ${selectedFit}`
+                        : `${(selectedWash || "raw").toUpperCase()} SELVEDGE JACKET`}
                     </p>
 
                     <h1 className="rbw-j-title rbw-in mt-3" style={reveal(200)}>
@@ -1120,7 +1267,9 @@ function RBWStorefrontContent() {
                     {/* Size */}
                     <div className="rbw-in" style={reveal(420)}>
                       <div className="flex justify-between items-center mb-3 gap-3">
-                        <span className="rbw-j-label">Waist size · inches</span>
+                        <span className="rbw-j-label">
+                          {selectedCategory === "jackets" ? "Jacket size · Chest" : "Waist size · inches"}
+                        </span>
                         <button type="button" onClick={() => setSizeChartOpen(true)} className="rbw-j-link">
                           <TapeIcon className="w-3.5 h-3.5" />
                           <span>Size guide</span>
@@ -1204,10 +1353,30 @@ function RBWStorefrontContent() {
                           )}
                         </button>
 
-                        <button type="button" onClick={handleBackToFits} className="rbw-j-btn">
-                          <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
-                          <span>Change fit</span>
-                        </button>
+                        {selectedCategory === "jeans" ? (
+                          <button type="button" onClick={handleBackToFits} className="rbw-j-btn">
+                            <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
+                            <span>Change fit</span>
+                          </button>
+                        ) : (
+                          <div className="flex items-center justify-center gap-1 sm:gap-1.5 p-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full">
+                            {(["raw", "black", "white"] as const).map((w) => (
+                              <button
+                                key={w}
+                                type="button"
+                                onClick={() => handleWashClick(w, selectedCategory)}
+                                title={`Switch to ${w.toUpperCase()} wash`}
+                                className={`flex-1 py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase transition-all cursor-pointer ${
+                                  selectedWash === w
+                                    ? "bg-[#B9965A] text-black font-extrabold shadow-xs"
+                                    : "text-[color:var(--rbw-ink-dim)] hover:text-[color:var(--rbw-ink)]"
+                                }`}
+                              >
+                                {w}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
 
