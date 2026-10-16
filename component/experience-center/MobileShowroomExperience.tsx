@@ -434,7 +434,7 @@ export default function MobileShowroomExperience({
         {/* ─── LABEL CARD ─── */}
         <div className="ec-mui">
           <div className="ec-product-card ec-mcard ec-glass">
-            {/* Column 1: Image thumbnail (38px x 44px) */}
+            {/* Column 1: Image thumbnail (54px x 64px) */}
             <div className="ec-product-card__image">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -448,8 +448,8 @@ export default function MobileShowroomExperience({
                   <Image
                     src={current.image}
                     alt={current.title}
-                    width={38}
-                    height={44}
+                    width={54}
+                    height={64}
                     unoptimized
                   />
                 </motion.div>
@@ -488,7 +488,7 @@ export default function MobileShowroomExperience({
               </AnimatePresence>
             </div>
 
-            {/* Column 4: Wishlist (32px x 32px) */}
+            {/* Column 4: Wishlist (44px x 44px) */}
             <button
               type="button"
               className="ec-product-card__wishlist"
@@ -496,10 +496,10 @@ export default function MobileShowroomExperience({
               aria-pressed={isWishlisted}
               onClick={() => toggleWishlist(current.id)}
             >
-              <Heart size={15} strokeWidth={1.5} />
+              <Heart size={20} strokeWidth={1.5} />
             </button>
 
-            {/* Column 5: Add to bag (36px x 120px) */}
+            {/* Column 5: Add to bag (48px x 156px) */}
             <button
               type="button"
               className="ec-product-card__add"
@@ -508,13 +508,13 @@ export default function MobileShowroomExperience({
             >
               {isAdding ? (
                 <>
-                  <Check size={14} strokeWidth={1.8} />
+                  <Check size={16} strokeWidth={1.8} />
                   <span>Added</span>
                 </>
               ) : (
                 <>
                   <span>Add to bag</span>
-                  <ArrowRight size={12} strokeWidth={1.5} />
+                  <ArrowRight size={15} strokeWidth={1.5} />
                 </>
               )}
             </button>

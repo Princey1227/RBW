@@ -365,7 +365,7 @@ export default function BrandShowroomSection({
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Column 1: Image thumbnail (38px x 44px) */}
+          {/* Column 1: Image thumbnail (54px x 64px) */}
           <div className="ec-product-card__image">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -379,8 +379,8 @@ export default function BrandShowroomSection({
                 <Image
                   src={current.image}
                   alt={current.title}
-                  width={38}
-                  height={44}
+                  width={54}
+                  height={64}
                   unoptimized
                 />
               </motion.div>
@@ -419,7 +419,7 @@ export default function BrandShowroomSection({
             </AnimatePresence>
           </div>
 
-          {/* Column 4: Wishlist (32px x 32px) */}
+          {/* Column 4: Wishlist (44px x 44px) */}
           <button
             type="button"
             className="ec-product-card__wishlist"
@@ -427,10 +427,10 @@ export default function BrandShowroomSection({
             aria-pressed={isWishlisted}
             onClick={(e) => toggleWishlist(current.id, e)}
           >
-            <Heart size={16} strokeWidth={1.4} />
+            <Heart size={20} strokeWidth={1.5} />
           </button>
 
-          {/* Column 5: Add to bag (36px x 120px) */}
+          {/* Column 5: Add to bag (48px x 156px) */}
           <button
             type="button"
             className="ec-product-card__add"
@@ -440,12 +440,12 @@ export default function BrandShowroomSection({
             {isAdding ? (
               <>
                 <span>Added</span>
-                <Check size={14} strokeWidth={1.8} />
+                <Check size={16} strokeWidth={1.8} />
               </>
             ) : (
               <>
                 <span>Add to bag</span>
-                <ArrowRight size={13} strokeWidth={1.5} />
+                <ArrowRight size={15} strokeWidth={1.5} />
               </>
             )}
           </button>
