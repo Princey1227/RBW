@@ -1,3 +1,3 @@
-import ProductDetailPage from "@/app/product/[id]/page";
+import ProductDetailPage from "@/app/(onlydenims)/product/[id]/page";
 
 export default ProductDetailPage;

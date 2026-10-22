@@ -1,0 +1,75 @@
+/* ==========================================================================
+   Second army (second-army) — Dedicated Scoped Styles
+   Modify brand colors, typography, and logo sizes specifically for this store.
+   ========================================================================== */
+
+.second-army-store {
+  --brand-accent: #5A6E3E; /* Tactical olive accent for Second Army */
+  --brand-accent-glow: rgba(90, 110, 62, 0.25);
+  --brand-bg-dark: #07080a;
+  --brand-bg-light: #ecece4;
+}
+
+/* Header & Navbar */
+.second-army-store .brand-head {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 75px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 clamp(16px, 3vw, 40px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 8, 10, 0.88);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+@media (min-width: 768px) { .second-army-store .brand-head { height: 85px; } }
+@media (min-width: 1280px) { .second-army-store .brand-head { height: 103px; } }
+
+/* Brand Logo in Header */
+.second-army-store .brand-logo {
+  display: block;
+  max-height: 48px;
+  max-width: min(240px, 45vw);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 250ms ease;
+}
+.second-army-store .brand-logo:hover {
+  transform: scale(1.03);
+}
+@media (max-width: 767px) {
+  .second-army-store .brand-logo {
+    max-height: 36px;
+    max-width: 38vw;
+  }
+}
+
+/* Category Filter Pills */
+.second-army-store .brand-cat-btn {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e5e5e5;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 250ms ease;
+}
+.second-army-store .brand-cat-btn:hover {
+  border-color: var(--brand-accent);
+  color: #fff;
+}
+.second-army-store .brand-cat-btn[data-active="true"] {
+  background: var(--brand-accent);
+  border-color: var(--brand-accent);
+  color: #fff;
+}

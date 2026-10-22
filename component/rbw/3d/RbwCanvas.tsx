@@ -124,6 +124,9 @@ interface RbwCanvasProps {
   isPaused?: boolean;
   onHoverIndex?: (index: number | null) => void;
   onShopItem?: (item: CarouselItemData) => void;
+  isInspecting?: boolean;
+  setIsInspecting?: React.Dispatch<React.SetStateAction<boolean>> | ((val: boolean) => void);
+  rotationStep?: number;
 }
 
 export default function RbwCanvas({
@@ -138,6 +141,9 @@ export default function RbwCanvas({
   isPaused = false,
   onHoverIndex,
   onShopItem,
+  isInspecting = false,
+  setIsInspecting,
+  rotationStep = 0,
 }: RbwCanvasProps) {
   const accentColor = activeItem?.accentHex || "#C59B27";
 
@@ -254,6 +260,9 @@ export default function RbwCanvas({
           isPaused={isPaused}
           onHoverIndex={onHoverIndex}
           onShopItem={onShopItem}
+          isInspecting={isInspecting}
+          setIsInspecting={setIsInspecting}
+          rotationStep={rotationStep}
         />
       </Canvas>
     </div>

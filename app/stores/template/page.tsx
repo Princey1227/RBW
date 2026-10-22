@@ -12,18 +12,18 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import ShopByFit from "../../../component/home/ShopByFit";
-import Footer from "../../../component/Footer";
-import { useCart } from "../../../context/CartContext";
+import ShopByFit from "@/component/onlydenims/home/ShopByFit";
+import Footer from "@/component/onlydenims/ui/Footer";
+import { useCart } from "@/context/CartContext";
 import { Truck, Check, ShoppingBag, ZoomIn, X, Move, ArrowUpRight, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TemplateWashSelection3D } from "../../../component/store-template/TemplateWashSelection3D";
-import TemplateBrandCustomizerBar from "../../../component/store-template/TemplateBrandCustomizerBar";
-import TemplateSimulationModal from "../../../component/store-template/TemplateSimulationModal";
-import { RbwJourneyShell, RbwJourneyBar } from "../../../component/rbw/RbwJourneyShell";
-import { RbwSizeChartModal } from "../../../component/rbw/RbwSizeChartModal";
-import "@/component/rbw/3d/rbw-showroom.css";
-import "@/component/rbw/rbw-journey.css";
+import { TemplateWashSelection3D } from "@/component/stores/store-template/TemplateWashSelection3D";
+import TemplateBrandCustomizerBar from "@/component/stores/store-template/TemplateBrandCustomizerBar";
+import TemplateSimulationModal from "@/component/stores/store-template/TemplateSimulationModal";
+import { RbwJourneyShell, RbwJourneyBar } from "@/component/stores/rbw/RbwJourneyShell";
+import { RbwSizeChartModal } from "@/component/stores/rbw/RbwSizeChartModal";
+import "@/component/stores/rbw/3d/rbw-showroom.css";
+import "@/component/stores/rbw/rbw-journey.css";
 
 interface FlyingItemData {
   id: number;
@@ -824,12 +824,12 @@ function StoreTemplateContent() {
 
             return (
               <>
-                <div className="max-w-[1240px] mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start px-6 sm:px-10 md:px-14 pt-6 sm:pt-8 md:pt-10 pb-8">
+                <div className="w-[88%] max-w-[1360px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-start px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-12">
                   {/* Left: Plate with Image Gallery */}
-                  <div className="rbw-in w-full md:sticky md:top-6 flex flex-col items-center md:items-end" style={reveal(80)}>
-                    <div className="w-full flex items-start justify-center md:justify-end gap-3.5">
+                  <div className="rbw-in w-full lg:col-span-6 lg:sticky lg:top-6 flex flex-col items-center lg:items-start" style={reveal(80)}>
+                    <div className="w-full flex flex-col-reverse sm:flex-row items-center sm:items-start justify-center lg:justify-start gap-4">
                       {imageUrls.length > 1 && (
-                        <div className="rbw-j-thumbs">
+                        <div className="rbw-j-thumbs flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 max-w-full">
                           {imageUrls.slice(0, 4).map((url: string, idx: number) => (
                             <button
                               key={idx}
@@ -869,7 +869,7 @@ function StoreTemplateContent() {
                             transition: isDragging ? "none" : "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
                             cursor: isInlineZoomActive ? (isDragging ? "grabbing" : "grab") : "default"
                           }}
-                          className="rbw-fade w-full h-full object-cover object-center pointer-events-none"
+                          className="rbw-fade w-full h-full object-contain p-2 sm:p-3 object-center pointer-events-none"
                         />
 
                         {isInlineZoomActive && inlineZoomScale > 1 && (
@@ -937,14 +937,14 @@ function StoreTemplateContent() {
                     </div>
 
                     {imageUrls.length > 1 && (
-                      <p className="rbw-j-counter mt-4 text-center w-full">
+                      <p className="rbw-j-counter mt-4 text-center sm:text-left w-full sm:pl-20 lg:pl-24">
                         <b>{String(activeImageIndex + 1).padStart(2, "0")}</b> / {String(Math.min(imageUrls.length, 4)).padStart(2, "0")}
                       </p>
                     )}
                   </div>
 
                   {/* Right: Garment Information & Atelier Actions */}
-                  <div className="w-full max-w-[540px] flex flex-col text-left justify-start">
+                  <div className="w-full lg:col-span-6 flex flex-col text-left justify-start">
                     <div className="flex items-center gap-2 flex-wrap rbw-in" style={reveal(100)}>
                       <span
                         className="text-[10.5px] font-mono font-bold tracking-widest px-2.5 py-0.5 rounded-full uppercase"
@@ -983,7 +983,7 @@ function StoreTemplateContent() {
                           <span>Size guide</span>
                         </button>
                       </div>
-                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-8 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
                         {sizes.map((sz: string) => (
                           <button
                             key={sz}
@@ -1118,7 +1118,7 @@ function StoreTemplateContent() {
                             }
                           }}
                         />
-                        <button type="button" onClick={() => handleCheckPincode(pincode)} className="rbw-j-link">
+                        <button type="button" onClick={() => handleCheckPincode(pincode)} className="rbw-j-pin-btn">
                           Check
                         </button>
                         {pincodeStatus && pincodeStatus.valid && (

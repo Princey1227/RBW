@@ -27,6 +27,14 @@ interface RbwWashSelection3DProps {
   isPaused?: boolean;
   selectedWash?: "raw" | "black" | "white" | "vintage" | string | null;
   selectedCategory?: string;
+  /**
+   * Brand-store mode (optional). When `items` is supplied the carousel shows those
+   * items instead of RBW's built-in list and does not talk to the global RBW navbar.
+   * Omitted for RBW, which behaves exactly as before.
+   */
+  items?: CarouselItemData[];
+  /** Brand-store mode: the category chosen in the brand's own header. */
+  controlledCategory?: string;
 }
 
 export function RbwWashSelection3D({
@@ -36,11 +44,16 @@ export function RbwWashSelection3D({
   isPaused = false,
   selectedWash,
   selectedCategory,
+  items,
+  controlledCategory,
 }: RbwWashSelection3DProps) {
+  const sourceItems = items ?? ALL_SHOWROOM_ITEMS;
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
 
-  const [selectedCategories, setSelectedCategories] = useState<CategoryId[]>(["jeans"]);
+  const [selectedCategories, setSelectedCategories] = useState<CategoryId[]>(
+    controlledCategory ? [controlledCategory as CategoryId] : ["jeans"]
+  );
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedFits, setSelectedFits] = useState<string[]>([]);
@@ -79,7 +92,7 @@ export function RbwWashSelection3D({
   );
 
   const filteredItems = useMemo(() => {
-    let result = ALL_SHOWROOM_ITEMS;
+    let result = sourceItems;
 
     if (selectedCategories.length > 0) {
       result = result.filter((item) => selectedCategories.includes(item.category));
@@ -122,14 +135,15 @@ export function RbwWashSelection3D({
     }
 
     if (result.length === 0) {
-      const catFallback = ALL_SHOWROOM_ITEMS.filter((item) =>
+      const catFallback = sourceItems.filter((item) =>
         selectedCategories.includes(item.category)
       );
-      return catFallback.length > 0 ? catFallback : ALL_SHOWROOM_ITEMS;
+      return catFallback.length > 0 ? catFallback : sourceItems;
     }
 
     return result;
   }, [
+    sourceItems,
     selectedCategories,
     selectedColors,
     selectedSizes,
@@ -137,6 +151,18 @@ export function RbwWashSelection3D({
     selectedDiscount,
     priceRange,
   ]);
+
+  // Brand mode: follow the category picked in the brand header (same dip-and-swap transition)
+  const lastControlled = useRef(controlledCategory);
+  useEffect(() => {
+    if (!items || !controlledCategory || lastControlled.current === controlledCategory) return;
+    lastControlled.current = controlledCategory;
+    runWithSwitch(() => {
+      setSelectedCategories([controlledCategory as CategoryId]);
+      setActiveIndex(0);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controlledCategory]);
 
   const totalItems = filteredItems.length;
 
@@ -192,6 +218,7 @@ export function RbwWashSelection3D({
 
   // URL query param support
   useEffect(() => {
+    if (items) return; // brand stores manage their own URL state
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const cat = params.get("category") as CategoryId;
@@ -209,6 +236,7 @@ export function RbwWashSelection3D({
 
   // Broadcast state to Navbar
   useEffect(() => {
+    if (items) return; // brand stores have their own header
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("RBW_PREVIEW_CATEGORIES_STATE", {
@@ -223,6 +251,7 @@ export function RbwWashSelection3D({
 
   // Listen for actions from Navbar
   useEffect(() => {
+    if (items) return;
     const handleExtToggle = (e: any) => {
       const catId = e.detail as CategoryId;
       if (catId && ["jeans", "jackets", "shorts", "accessories"].includes(catId)) {
@@ -282,7 +311,7 @@ export function RbwWashSelection3D({
   };
 
   const handleResetFilters = () => {
-    setSelectedCategories(["jeans"]);
+    setSelectedCategories([(controlledCategory as CategoryId) || "jeans"]);
     setSelectedColors([]);
     setSelectedSizes([]);
     setSelectedFits([]);
@@ -302,7 +331,7 @@ export function RbwWashSelection3D({
     (selectedDiscount && selectedDiscount > 0 ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 5000 ? 1 : 0);
 
-  const atmosphere = toAtmosphere(activeItem?.washKey);
+  const atmosphere = toAtmosphere(activeItem?.atmosphere ?? activeItem?.washKey);
   // first word only for the oversized ghost lettering ("RAW JACKET" → "RAW")
   const ghostWord = (activeItem?.name || "").split(" ")[0];
 
@@ -311,12 +340,16 @@ export function RbwWashSelection3D({
       className="rbw-showroom relative w-full h-full overflow-hidden select-none"
       data-theme={theme}
     >
-      <link rel="preload" href="/rbwstore/raw.png" as="image" />
-      <link rel="preload" href="/rbwstore/black.png" as="image" />
-      <link rel="preload" href="/rbwstore/white.png" as="image" />
+      {!items && (
+        <>
+          <link rel="preload" href="/rbwstore/raw.png" as="image" />
+          <link rel="preload" href="/rbwstore/black.png" as="image" />
+          <link rel="preload" href="/rbwstore/white.png" as="image" />
+        </>
+      )}
 
       {/* Cinematic studio environment (DOM layers behind the canvas) */}
-      <RbwShowroomBackdrop washKey={activeItem?.washKey} ghostText={ghostWord} />
+      <RbwShowroomBackdrop washKey={activeItem?.atmosphere ?? activeItem?.washKey} ghostText={ghostWord} />
 
       <div className="relative w-full h-full overflow-hidden z-10">
         <div className="absolute inset-0 rbw-stage" data-switching={isSwitching}>

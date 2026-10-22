@@ -1,0 +1,102 @@
+{
+  "id": "store_a780515a1dd9a73e",
+  "name": "THINC",
+  "slug": "thinc",
+  "status": "active",
+  "logo": {
+    "file": "940bd700f5322049e5c090bf.png",
+    "mime": "image/png",
+    "bytes": 36939,
+    "originalName": "e9018936-c6a3-4624-8531-ee9e69f3d4ac.png"
+  },
+  "products": [
+    {
+      "id": "prod_27d8e98e1a9c6fbc",
+      "name": "Black Jeans",
+      "images": [
+        {
+          "file": "690fcf192b4d3721b8f129d4.png",
+          "mime": "image/png",
+          "bytes": 115779,
+          "originalName": "Screenshot 2026-08-06 023643.png"
+        }
+      ],
+      "price": 1900,
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36",
+        "38",
+        "40"
+      ],
+      "fits": [],
+      "category": null,
+      "stock": "in_stock",
+      "createdAt": "2026-10-19T06:05:25.585Z",
+      "updatedAt": "2026-10-19T06:57:07.212Z"
+    },
+    {
+      "id": "prod_b9c08648d2751c00",
+      "name": "Raw jeans",
+      "images": [
+        {
+          "file": "bbabe221a1a6d7a92d4c9da8.png",
+          "mime": "image/png",
+          "bytes": 115299,
+          "originalName": "Screenshot 2026-08-06 023702.png"
+        }
+      ],
+      "price": 1900,
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36",
+        "38",
+        "40"
+      ],
+      "fits": [],
+      "category": null,
+      "stock": "in_stock",
+      "createdAt": "2026-10-19T06:05:25.585Z",
+      "updatedAt": "2026-10-19T06:57:08.804Z"
+    },
+    {
+      "id": "prod_a5335fea416a039a",
+      "name": "Blue Jeans",
+      "images": [
+        {
+          "file": "57f88658b3aa0d026352d391.png",
+          "mime": "image/png",
+          "bytes": 131492,
+          "originalName": "Screenshot 2026-08-06 023729.png"
+        }
+      ],
+      "price": 1900,
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36",
+        "38",
+        "40"
+      ],
+      "fits": [],
+      "category": "Jeans",
+      "stock": "in_stock",
+      "createdAt": "2026-10-19T06:05:25.585Z",
+      "updatedAt": "2026-10-19T06:57:05.047Z"
+    }
+  ],
+  "auth": {
+    "hash": "scrypt$32768$8$1$/cVZRMRmMvor+zSsLx+8fQ==$vh7GvhpsU+JXoattDaaLJgencJAyklQxIrkilg3orqMPO8ek/9yTLCdvZrIwDldk+gNzZxe8f23vKvxNQgOJyg==",
+    "version": 1,
+    "updatedAt": "2026-10-19T06:05:25.585Z"
+  },
+  "createdAt": "2026-10-19T06:05:25.585Z",
+  "updatedAt": "2026-10-19T06:57:08.804Z"
+}

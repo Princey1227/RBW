@@ -385,16 +385,18 @@ button.rbw-j-step {
 .rbw-showroom .rbw-j-frame {
   position: relative;
   width: 100%;
-  max-width: 460px;
+  max-width: 580px;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  background: #e6dfd3;
+  background: #ebe4d8;
   border: 1px solid var(--rbw-line);
+  border-radius: 2px;
   box-shadow:
-    0 34px 60px -34px rgba(60, 44, 24, 0.42),
-    0 2px 10px rgba(60, 44, 24, 0.06);
+    0 24px 50px -28px rgba(60, 44, 24, 0.35),
+    0 2px 10px rgba(60, 44, 24, 0.05);
   user-select: none;
   cursor: grab;
+  transition: border-color 300ms var(--rbw-ease), box-shadow 300ms var(--rbw-ease);
 }
 
 .rbw-showroom .rbw-j-frame:active {
@@ -408,43 +410,59 @@ button.rbw-j-step {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(90% 60% at 50% 0%, rgba(255, 252, 247, 0.22) 0%, transparent 70%),
-    radial-gradient(120% 100% at 50% 50%, transparent 62%, rgba(90, 70, 50, 0.1) 100%);
+    radial-gradient(90% 60% at 50% 0%, rgba(255, 252, 247, 0.24) 0%, transparent 70%),
+    radial-gradient(120% 100% at 50% 50%, transparent 64%, rgba(90, 70, 50, 0.09) 100%);
 }
 
 .rbw-showroom .rbw-j-thumbs {
   display: flex;
-  flex-direction: column;
   gap: 10px;
   flex: none;
 }
 
+@media (min-width: 640px) {
+  .rbw-showroom .rbw-j-thumbs {
+    flex-direction: column;
+  }
+}
+
 .rbw-showroom .rbw-j-thumb {
   position: relative;
-  width: 52px;
-  height: 68px;
+  width: 58px;
+  height: 78px;
   overflow: hidden;
   padding: 0;
   border: 1px solid var(--rbw-line);
-  background: #e6dfd3;
-  opacity: 0.55;
+  border-radius: 2px;
+  background: #ece5d9;
+  opacity: 0.65;
   cursor: pointer;
-  transition: opacity 400ms var(--rbw-ease), border-color 400ms var(--rbw-ease);
+  transition: opacity 300ms var(--rbw-ease), border-color 300ms var(--rbw-ease), box-shadow 300ms var(--rbw-ease);
+}
+
+@media (min-width: 1024px) {
+  .rbw-showroom .rbw-j-thumb {
+    width: 64px;
+    height: 86px;
+  }
 }
 
 .rbw-showroom .rbw-j-thumb:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  border-color: rgba(185, 150, 90, 0.6);
 }
 
 .rbw-showroom .rbw-j-thumb[data-on="true"] {
   opacity: 1;
   border-color: var(--rbw-gold);
+  box-shadow: 0 0 0 1px var(--rbw-gold), 0 2px 8px rgba(185, 150, 90, 0.22);
 }
 
 .rbw-showroom .rbw-j-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
 }
 
 .rbw-showroom .rbw-j-counter {
@@ -511,25 +529,25 @@ button.rbw-j-step {
   font-family: var(--font-serif), "Playfair Display", Didot, Georgia, serif;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  line-height: 1.08;
-  font-size: clamp(1.6rem, 2.7vw, 2.55rem);
+  letter-spacing: 0.12em;
+  line-height: 1.12;
+  font-size: clamp(30px, 2.5vw, 38px);
   color: var(--rbw-ink);
 }
 
 .rbw-showroom .rbw-j-price {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: clamp(19px, 2vw, 23px);
+  font-size: clamp(22px, 1.8vw, 26px);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   color: var(--rbw-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .rbw-showroom .rbw-j-note {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 9.5px;
-  letter-spacing: 0.26em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--rbw-ink-faint);
 }
@@ -537,10 +555,10 @@ button.rbw-j-step {
 .rbw-showroom .rbw-j-status {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--rbw-ink-dim);
 }
@@ -559,61 +577,70 @@ button.rbw-j-step {
   box-shadow: 0 0 0 3px rgba(185, 150, 90, 0.2);
 }
 
-/* size cells — thin-bordered like the category bar, selected = the CTA's ink */
+/* size cells — uniform grid, dark charcoal selected state */
 .rbw-showroom .rbw-j-size {
-  height: 44px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--rbw-ink-dim);
-  background: var(--rbw-glass);
+  background: rgba(255, 255, 255, 0.45);
   border: 1px solid var(--rbw-line);
+  border-radius: 2px;
   cursor: pointer;
   transition:
-    color 300ms var(--rbw-ease),
-    border-color 300ms var(--rbw-ease),
-    background-color 300ms var(--rbw-ease),
-    transform 300ms var(--rbw-ease);
+    color 250ms var(--rbw-ease),
+    border-color 250ms var(--rbw-ease),
+    background-color 250ms var(--rbw-ease),
+    box-shadow 250ms var(--rbw-ease),
+    transform 200ms var(--rbw-ease);
 }
 
 .rbw-showroom .rbw-j-size:hover {
   color: var(--rbw-ink);
-  border-color: rgba(166, 131, 66, 0.6);
+  border-color: rgba(185, 150, 90, 0.6);
   background: #FAF7F2;
 }
 
+.rbw-showroom .rbw-j-size:focus-visible {
+  outline: 1.5px solid var(--rbw-gold);
+  outline-offset: 2px;
+}
+
 .rbw-showroom .rbw-j-size:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .rbw-showroom .rbw-j-size[aria-pressed="true"] {
-  color: #f6f2ea;
-  background: #211f1c;
-  border-color: rgba(185, 150, 90, 0.55);
-  box-shadow: 0 8px 20px rgba(30, 22, 12, 0.22);
+  color: #FAF7F2;
+  background: #1f1d1a;
+  border-color: rgba(185, 150, 90, 0.65);
+  box-shadow: 0 4px 14px rgba(30, 22, 12, 0.22);
 }
 
 .rbw-showroom .rbw-j-stepper {
   display: inline-flex;
   align-items: stretch;
+  height: 38px;
   border: 1px solid var(--rbw-line);
-  background: var(--rbw-glass);
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 2px;
 }
 
 .rbw-showroom .rbw-j-stepper button {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   color: var(--rbw-ink-dim);
   cursor: pointer;
-  transition: color 300ms var(--rbw-ease), background-color 300ms var(--rbw-ease);
+  transition: color 250ms var(--rbw-ease), background-color 250ms var(--rbw-ease);
 }
 
 .rbw-showroom .rbw-j-stepper button:hover {
@@ -622,36 +649,38 @@ button.rbw-j-step {
 }
 
 .rbw-showroom .rbw-j-stepper span {
-  min-width: 36px;
+  min-width: 38px;
+  padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--rbw-ink);
   border-left: 1px solid var(--rbw-line);
   border-right: 1px solid var(--rbw-line);
   font-variant-numeric: tabular-nums;
 }
 
-/* garment facts — an editorial definition list instead of a boxed card */
+/* garment facts — clean 2-column specifications layout */
 .rbw-showroom .rbw-j-specs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 28px;
+  column-gap: 24px;
 }
 
 .rbw-showroom .rbw-j-spec {
-  padding: 14px 0 15px;
+  padding: 13px 0 14px;
   border-top: 1px solid var(--rbw-line);
 }
 
 .rbw-showroom .rbw-j-spec dt {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.3em;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--rbw-gold);
   margin-bottom: 5px;
@@ -659,59 +688,81 @@ button.rbw-j-step {
 
 .rbw-showroom .rbw-j-spec dd {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 17px;
+  font-size: 14.5px;
   font-weight: 500;
-  line-height: 1.28;
+  line-height: 1.35;
   letter-spacing: 0.01em;
   color: var(--rbw-ink);
 }
 
-/* delivery */
+/* delivery & dispatch */
 .rbw-showroom .rbw-j-delivery {
-  padding: 16px 0 6px;
+  padding: 18px 0 6px;
   border-top: 1px solid var(--rbw-line);
 }
 
 .rbw-showroom .rbw-j-pin {
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 340px;
 }
 
 .rbw-showroom .rbw-j-pin input {
-  width: 190px;
-  max-width: 100%;
-  padding: 8px 0;
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 12px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   color: var(--rbw-ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--rbw-line);
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--rbw-line);
+  border-radius: 2px;
   outline: none;
-  transition: border-color 400ms var(--rbw-ease);
+  transition: border-color 300ms var(--rbw-ease);
 }
 
 .rbw-showroom .rbw-j-pin input::placeholder {
   color: var(--rbw-ink-faint);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
 }
 
 .rbw-showroom .rbw-j-pin input:focus {
-  border-bottom-color: var(--rbw-gold);
+  border-color: var(--rbw-gold);
+}
+
+.rbw-showroom .rbw-j-pin-btn {
+  height: 38px;
+  padding: 0 18px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rbw-ink);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--rbw-line);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 250ms var(--rbw-ease);
+}
+
+.rbw-showroom .rbw-j-pin-btn:hover {
+  border-color: var(--rbw-gold);
+  color: var(--rbw-gold);
+  background: #FAF7F2;
 }
 
 .rbw-showroom .rbw-j-trust {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 22px;
+  justify-content: flex-start;
+  gap: 8px 24px;
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.24em;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--rbw-ink-faint);
 }
@@ -719,7 +770,7 @@ button.rbw-j-step {
 .rbw-showroom .rbw-j-trust span {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 
 .rbw-showroom .rbw-j-trust span::before {

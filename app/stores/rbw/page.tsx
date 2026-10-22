@@ -12,13 +12,14 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import ShopByFit from "../../../component/home/ShopByFit";
-import Footer from "../../../component/Footer";
+import ShopByFit from "@/component/onlydenims/home/ShopByFit";
+import Footer from "@/component/onlydenims/ui/Footer";
 import { useCart } from "../../../context/CartContext";
 import { Truck, Check, ShoppingBag, ZoomIn, X, Move, ArrowUpRight, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RbwWashSelection3D } from "../../../component/rbw/3d/RbwWashSelection3D";
 import { RbwJourneyShell, RbwJourneyBar } from "../../../component/rbw/RbwJourneyShell";
+import "@/component/rbw/rbw-pdp.css";
 import { RbwSizeChartModal } from "../../../component/rbw/RbwSizeChartModal";
 
 interface FlyingItemData {
@@ -1120,12 +1121,12 @@ function RBWStorefrontContent() {
 
             return (
               <>
-                <div className="max-w-[1240px] mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start px-6 sm:px-10 md:px-14 pt-6 sm:pt-8 md:pt-10 pb-8">
-                  {/* Left: the plate */}
-                  <div className="rbw-in w-full md:sticky md:top-6 flex flex-col items-center md:items-end" style={reveal(80)}>
-                    <div className="w-full flex items-start justify-center md:justify-end gap-3.5">
+                <div className="rbw-pdp w-[88%] max-w-[1360px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-start px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-12">
+                  {/* Left: Product gallery plate */}
+                  <div className="rbw-in w-full lg:col-span-6 lg:sticky lg:top-6 flex flex-col items-center lg:items-start" style={reveal(80)}>
+                    <div className="w-full flex flex-col-reverse sm:flex-row items-center sm:items-start justify-center lg:justify-start gap-4">
                       {imageUrls.length > 1 && (
-                        <div className="rbw-j-thumbs">
+                        <div className="rbw-j-thumbs flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 max-w-full">
                           {imageUrls.slice(0, 4).map((url: string, idx: number) => (
                             <button
                               key={idx}
@@ -1165,7 +1166,7 @@ function RBWStorefrontContent() {
                             transition: isDragging ? "none" : "transform 250ms cubic-bezier(0.25, 1, 0.5, 1)",
                             cursor: isInlineZoomActive ? (isDragging ? "grabbing" : "grab") : "default"
                           }}
-                          className="rbw-fade w-full h-full object-cover object-center pointer-events-none"
+                          className="rbw-fade w-full h-full object-contain p-2 sm:p-3 object-center pointer-events-none"
                         />
 
                         {isInlineZoomActive && inlineZoomScale > 1 && (
@@ -1233,14 +1234,14 @@ function RBWStorefrontContent() {
                     </div>
 
                     {imageUrls.length > 1 && (
-                      <p className="rbw-j-counter mt-4 text-center w-full">
+                      <p className="rbw-j-counter mt-4 text-center sm:text-left w-full sm:pl-20 lg:pl-24">
                         <b>{String(activeImageIndex + 1).padStart(2, "0")}</b> / {String(Math.min(imageUrls.length, 4)).padStart(2, "0")}
                       </p>
                     )}
                   </div>
 
-                  {/* Right: the piece */}
-                  <div className="w-full max-w-[540px] flex flex-col text-left justify-start">
+                  {/* Right: Product details */}
+                  <div className="w-full lg:col-span-6 flex flex-col text-left justify-start">
                     <p className="rbw-eyebrow rbw-in" style={reveal(120)}>
                       {selectedCategory === "jeans"
                         ? `${selectedWash} · ${selectedFit}`
@@ -1275,7 +1276,7 @@ function RBWStorefrontContent() {
                           <span>Size guide</span>
                         </button>
                       </div>
-                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-8 gap-2">
+                      <div className="rbw-j-sizes grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
                         {sizes.map((sz: string) => (
                           <button
                             key={sz}
@@ -1430,7 +1431,7 @@ function RBWStorefrontContent() {
                             }
                           }}
                         />
-                        <button type="button" onClick={() => handleCheckPincode(pincode)} className="rbw-j-link">
+                        <button type="button" onClick={() => handleCheckPincode(pincode)} className="rbw-j-pin-btn">
                           Check
                         </button>
                         {pincodeStatus && pincodeStatus.valid && (

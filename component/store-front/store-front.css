@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Multi-brand storefront — thin additions on top of the RBW journey styles.
+   Colours/type/spacing come from the RBW tokens (--rbw-*, rbw-j-*, rbw-pdp);
+   only the product-grid card and small header bits live here, all scoped
+   under .od-store so nothing leaks into RBW or any other route.
+   ========================================================================== */
+
+.rbw-showroom.od-store { font-family: var(--font-sans), system-ui, sans-serif; }
+
+/* Same slot and height as RBW's navbar, so the RBW shells' offsets line up exactly. */
+.od-store .od-head {
+  position: absolute; inset: 0 0 auto 0; z-index: 70; height: 75px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 0 clamp(16px, 3vw, 40px);
+  border-bottom: 1px solid var(--rbw-line);
+  background: var(--rbw-glass);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+}
+@media (min-width: 768px) { .od-store .od-head { height: 85px; } }
+@media (min-width: 1280px) { .od-store .od-head { height: 103px; } }
+.od-store .od-head__side { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.od-store .od-logo-btn { background: none; border: 0; padding: 0; cursor: pointer; }
+.od-store .od-cats { display: flex; align-items: center; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.od-store .od-cats::-webkit-scrollbar { display: none; }
+.od-store .od-cat {
+  height: 34px; padding: 0 14px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--rbw-ink); background: var(--rbw-glass); border: 1px solid var(--rbw-line); border-radius: 999px; cursor: pointer; white-space: nowrap;
+  transition: background-color 250ms var(--rbw-ease), border-color 250ms var(--rbw-ease), color 250ms var(--rbw-ease);
+}
+.od-store .od-cat:hover { border-color: var(--rbw-gold); }
+.od-store .od-cat[data-active="true"] { background: #c5a059; border-color: #c5a059; color: #15110a; }
+.od-store .od-cat:focus-visible { outline: 1.5px solid var(--rbw-gold); outline-offset: 2px; }
+@media (max-width: 767px) { .od-store .od-head { grid-template-columns: auto auto 1fr; gap: 8px; padding: 0 12px; } .od-store .od-cat { height: 30px; padding: 0 10px; font-size: 9.5px; } .od-store .od-logo { max-height: 28px; max-width: 30vw; } }
+.od-store .od-head__side--end { justify-content: flex-end; }
+.od-store .od-logo { display: block; max-height: 38px; max-width: min(180px, 42vw); width: auto; height: auto; object-fit: contain; }
+
+.od-store .od-iconbtn, .od-store .od-textbtn {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--rbw-ink); background: transparent; border: 1px solid var(--rbw-line);
+  border-radius: 2px; cursor: pointer; transition: border-color 250ms var(--rbw-ease), background-color 250ms var(--rbw-ease);
+  white-space: nowrap;
+}
+.od-store .od-iconbtn { width: 38px; padding: 0; justify-content: center; }
+.od-store .od-iconbtn:hover, .od-store .od-textbtn:hover { border-color: var(--rbw-gold); background: var(--rbw-glass); }
+.od-store .od-iconbtn:focus-visible, .od-store .od-textbtn:focus-visible, .od-store .od-card:focus-visible {
+  outline: 1.5px solid var(--rbw-gold); outline-offset: 2px;
+}
+.od-store .od-iconbtn[aria-pressed="true"] { border-color: var(--rbw-gold); color: var(--rbw-gold-bright); }
+@media (max-width: 639px) { .od-store .od-textbtn span { display: none; } .od-store .od-textbtn { width: 38px; padding: 0; justify-content: center; } }
+
+.od-store .od-wrap { width: min(92%, 1360px); margin: 0 auto; padding: clamp(24px, 4vw, 48px) 0 64px; }
+.od-store .od-intro { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: clamp(20px, 3vw, 36px); }
+.od-store .od-grid { display: grid; gap: clamp(14px, 2vw, 28px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+
+.od-store .od-card { display: block; text-align: left; width: 100%; background: none; border: 0; padding: 0; cursor: pointer; color: inherit; }
+.od-store .od-card__plate {
+  position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: #f1eee8;
+  border: 1px solid var(--rbw-line); border-radius: 2px;
+  transition: border-color 300ms var(--rbw-ease), transform 500ms var(--rbw-ease), box-shadow 500ms var(--rbw-ease);
+}
+.od-store .od-card:hover .od-card__plate { border-color: var(--rbw-gold); transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(0, 0, 0, 0.55); }
+.od-store .od-card__plate img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.od-store .od-card__tag {
+  position: absolute; top: 10px; left: 10px; padding: 5px 9px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase; color: #1f1d1a; background: rgba(250, 247, 242, 0.92);
+  border: 1px solid rgba(120, 92, 40, 0.3); border-radius: 2px;
+}
+.od-store .od-card__heart { position: absolute; top: 8px; right: 8px; }
+.od-store .od-card__meta { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 12px 2px 0; }
+.od-store .od-card__name { font-family: var(--font-serif), Georgia, serif; font-size: 19px; font-weight: 500; line-height: 1.2; color: var(--rbw-ink); }
+.od-store .od-card__price { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--rbw-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.od-store .od-muted { color: var(--rbw-ink-faint); font-weight: 500; }
+
+.od-store .od-empty { padding: 72px 0; text-align: center; color: var(--rbw-ink-dim); font-size: 13px; letter-spacing: 0.08em; }
+.od-store .od-notice { margin-top: 14px; padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--rbw-ink-dim); border: 1px dashed var(--rbw-line); border-radius: 2px; }
+.od-store .od-btn-disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* back link inside product view */
+.od-store .od-back { display: inline-flex; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rbw-ink-dim); background: none; border: 0; cursor: pointer; padding: 6px 0; }
+.od-store .od-back:hover { color: var(--rbw-ink); }
+
+/* login gate */
+.od-store .od-gate { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 96px 20px 48px; }
+.od-store .od-gate__card { width: min(100%, 400px); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.od-store .od-gate__logo { max-height: 72px; max-width: 220px; width: auto; height: auto; object-fit: contain; margin-bottom: 28px; }
+.od-store .od-gate__field { width: 100%; height: 48px; padding: 0 14px; font-size: 14px; letter-spacing: 0.06em; color: var(--rbw-ink); background: var(--rbw-glass); border: 1px solid var(--rbw-line); border-radius: 2px; outline: none; transition: border-color 250ms var(--rbw-ease); }
+.od-store .od-gate__field:focus-visible { border-color: var(--rbw-gold); outline: 1.5px solid var(--rbw-gold); outline-offset: 2px; }
+.od-store .od-gate__err { margin-top: 12px; font-size: 12.5px; color: #b4493a; min-height: 18px; }
+
+/* Fit step: brands usually have fewer than RBW's six fits. Keep RBW's exact column
+   widths and gaps but centre a short row instead of hugging the left edge. */
+.od-store .rbw-fit__grid {
+  grid-template-columns: repeat(auto-fit, calc((100% - 2 * clamp(4px, 1.5vw, 12px)) / 3));
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  .od-store .rbw-fit__grid { grid-template-columns: repeat(auto-fit, calc((100% - 2 * 28px) / 3)); }
+}
+@media (min-width: 1024px) {
+  .od-store .rbw-fit__grid { grid-template-columns: repeat(auto-fit, calc((100% - 5 * clamp(20px, 3.2vw, 64px)) / 6)); }
+}
+
+/* While an always-light RBW step (the fit step) is open, the header adopts RBW's light
+   tokens too, so it never shows as a muddy dark-on-cream band. */
+.od-store .od-head[data-surface="light"] {
+  --rbw-gold: #c29d55; --rbw-gold-bright: #d8b570; --rbw-ink: #1a1713; --rbw-ink-dim: #5c5345;
+  --rbw-ink-faint: #8e826e; --rbw-line: rgba(194, 157, 85, 0.22); --rbw-glass: rgba(252, 248, 238, 0.92);
+  color: var(--rbw-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rbw-showroom.od-store.od-store *, .rbw-showroom.od-store.od-store *::before, .rbw-showroom.od-store.od-store *::after {
+    transition-duration: 0.01ms; animation-duration: 0.01ms; animation-delay: 0ms;
+  }
+}

@@ -14,13 +14,25 @@ export interface RbwFitItem {
   description: string;
 }
 
+export interface RbwWashOption {
+  key: string;
+  label: string;
+}
+
 interface RbwFitSelectorProps {
-  selectedWash: "raw" | "black" | "white" | "vintage" | null;
+  selectedWash: "raw" | "black" | "white" | "vintage" | string | null;
   selectedFit?: string | null;
   fits: RbwFitItem[];
   sizing: Record<string, RbwSizingSpec[]>;
   onFitClick?: (fitName: string) => void;
-  onWashChange?: (wash: "raw" | "black" | "white" | "vintage") => void;
+  onWashChange?: (wash: any) => void;
+  /** Brand-store overrides (all optional; RBW passes none and is unchanged). */
+  washOptions?: RbwWashOption[];
+  imageFor?: (fitName: string, wash: string | null) => string;
+  onBack?: () => void;
+  backLabel?: string;
+  heading?: string;
+  hideMeasurements?: boolean;
   /** Used only when no onFitClick handler is supplied (plain navigation) */
   hrefFor?: (fitName: string) => string;
   id?: string;
@@ -61,7 +73,19 @@ export function RbwFitSelector({
   onWashChange,
   hrefFor,
   id,
+  washOptions,
+  imageFor,
+  onBack,
+  backLabel,
+  heading,
+  hideMeasurements,
 }: RbwFitSelectorProps) {
+  const fitImg = imageFor ?? fitImage;
+  const washes: RbwWashOption[] = washOptions ?? [
+    { key: "raw", label: "raw" },
+    { key: "black", label: "black" },
+    { key: "white", label: "white" },
+  ];
   const [modalFit, setModalFit] = useState<string | null>(null);
   const [unit, setUnit] = useState<"in" | "cm">("in");
 
@@ -77,8 +101,9 @@ export function RbwFitSelector({
     if (typeof window === "undefined") return;
     fits.forEach((item) => {
       const img = new window.Image();
-      img.src = fitImage(item.name, selectedWash);
+      img.src = fitImg(item.name, selectedWash);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWash, fits]);
 
   const activeFit = modalFit ? fits.find((f) => f.name.toLowerCase() === modalFit.toLowerCase()) : null;
@@ -94,6 +119,7 @@ export function RbwFitSelector({
         <button
           type="button"
           onClick={() => {
+            if (onBack) { onBack(); return; }
             if (typeof window !== "undefined") {
               window.dispatchEvent(new CustomEvent("RESET_RBW_STOREFRONT"));
             }
@@ -103,33 +129,33 @@ export function RbwFitSelector({
           className="absolute left-2 sm:left-4 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[11px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer bg-white hover:bg-white text-zinc-800 hover:text-black border border-zinc-300 hover:border-zinc-600 shadow-xs group shrink-0"
         >
           <ArrowLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:-translate-x-0.5 transition-transform text-[#B9965A]" />
-          <span>Washes</span>
+          <span>{backLabel ?? "Washes"}</span>
         </button>
 
         <div className="flex flex-col items-center text-center">
           <h2 className="rbw-fit__heading rbw-in" style={delayStyle(200)}>
-            SELECT YOUR FIT
+            {heading ?? "SELECT YOUR FIT"}
           </h2>
           <span className="rbw-fit__heading-accent rbw-in" style={delayStyle(320)} />
         </div>
 
         {/* Washes segmented selector in the right corner */}
         <div className="absolute right-2 sm:right-4 flex items-center bg-white/95 border border-zinc-300 rounded-full p-0.5 shadow-xs shrink-0">
-          {(["raw", "black", "white"] as const).map((w) => {
-            const isCur = (selectedWash || "raw").toLowerCase() === w;
+          {washes.map(({ key: w, label }) => {
+            const isCur = (selectedWash || washes[0]?.key || "raw").toLowerCase() === w.toLowerCase();
             return (
               <button
                 key={w}
                 type="button"
                 onClick={() => onWashChange?.(w)}
-                title={`Switch to ${w.toUpperCase()} wash`}
+                title={`Switch to ${label.toUpperCase()}`}
                 className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8.5px] sm:text-[10px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer ${
                   isCur
                     ? "bg-[#B9965A] text-black shadow-xs font-black"
                     : "text-zinc-600 hover:text-black hover:bg-zinc-100"
                 }`}
               >
-                {w}
+                {label}
               </button>
             );
           })}
@@ -168,7 +194,7 @@ export function RbwFitSelector({
               <div className="rbw-fit__stage">
                 <span className="rbw-fit__shadow" aria-hidden="true" />
                 <img
-                  src={fitImage(item.name, selectedWash)}
+                  src={fitImg(item.name, selectedWash)}
                   alt={`${item.name} fit (${selectedWash || "raw"})`}
                   className="rbw-fit__img"
                   draggable={false}
@@ -180,7 +206,7 @@ export function RbwFitSelector({
                 <span className="rbw-fit__idx">{String(idx + 1).padStart(2, "0")}</span>
                 <span className="rbw-fit__name">{item.name}</span>
                 <span className="rbw-fit__line" aria-hidden="true" />
-                <button
+                {!hideMeasurements && <button
                   type="button"
                   className="rbw-fit__measure"
                   title={`View detailed measurements for ${item.name} jeans`}
@@ -193,7 +219,7 @@ export function RbwFitSelector({
                   <Tag className="w-2.5 h-2.5 text-[#B58A43]" strokeWidth={1.75} />
                   <span>MEASUREMENTS</span>
                   <span className="text-[#B58A43] font-normal text-[11px] leading-none ml-0.5">→</span>
-                </button>
+                </button>}
               </div>
             </div>
           );

@@ -1,0 +1,378 @@
+{
+  "schema": 2,
+  "id": "store_933befa8e3b67b4d",
+  "name": "Second army",
+  "slug": "second-army",
+  "status": "active",
+  "logo": {
+    "file": "a55e450165a91f883a25a162.jpg",
+    "mime": "image/jpeg",
+    "bytes": 32654,
+    "originalName": "OD .jpeg"
+  },
+  "logoMode": "original",
+  "categories": [
+    {
+      "id": "jeans",
+      "label": "Jeans"
+    },
+    {
+      "id": "shirts",
+      "label": "Shirts"
+    }
+  ],
+  "colors": [
+    {
+      "id": "raw-indigo",
+      "name": "Raw Indigo",
+      "hex": "#1f2a44"
+    },
+    {
+      "id": "white",
+      "name": "White",
+      "hex": "#f4f2ec"
+    },
+    {
+      "id": "olive",
+      "name": "Olive",
+      "hex": "#5b6140"
+    }
+  ],
+  "fits": {
+    "jeans": [
+      "Straight",
+      "Bootcut",
+      "Baggy"
+    ]
+  },
+  "products": [
+    {
+      "id": "prod_4f8d720e7a8817b7",
+      "categoryId": "jeans",
+      "colorId": "raw-indigo",
+      "fit": "Straight",
+      "name": "Raw Straight Denim",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "f168ca9f77d324bee174bf97.png",
+          "mime": "image/png",
+          "bytes": 115779,
+          "originalName": "Screenshot 2026-08-06 023643.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.748Z",
+      "updatedAt": "2026-10-21T06:26:14.748Z"
+    },
+    {
+      "id": "prod_43fef0c6fcb87a6e",
+      "categoryId": "jeans",
+      "colorId": "raw-indigo",
+      "fit": "Bootcut",
+      "name": "Raw Bootcut denim",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "7285d5f25ae7d51ac23c3f00.png",
+          "mime": "image/png",
+          "bytes": 115299,
+          "originalName": "Screenshot 2026-08-06 023702.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.751Z",
+      "updatedAt": "2026-10-21T06:26:14.751Z"
+    },
+    {
+      "id": "prod_883cd37564467661",
+      "categoryId": "jeans",
+      "colorId": "raw-indigo",
+      "fit": "Baggy",
+      "name": "Raw Indigo Baggy",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "b2fcbf0985b2bbc3491819e2.png",
+          "mime": "image/png",
+          "bytes": 131492,
+          "originalName": "Screenshot 2026-08-06 023729.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.753Z",
+      "updatedAt": "2026-10-21T06:26:14.753Z"
+    },
+    {
+      "id": "prod_2804feacc1d2ba1c",
+      "categoryId": "jeans",
+      "colorId": "white",
+      "fit": "Straight",
+      "name": "White Straight",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "b9febfbc9b4ebad14c9252ab.png",
+          "mime": "image/png",
+          "bytes": 319721,
+          "originalName": "Screenshot 2026-08-06 024227.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.753Z",
+      "updatedAt": "2026-10-21T06:26:14.753Z"
+    },
+    {
+      "id": "prod_8456e639e5eba3db",
+      "categoryId": "jeans",
+      "colorId": "white",
+      "fit": "Bootcut",
+      "name": "White Bootcut",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "31ad5a99bb5d69db5e72a6f0.png",
+          "mime": "image/png",
+          "bytes": 319721,
+          "originalName": "Screenshot 2026-08-06 024227.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.754Z",
+      "updatedAt": "2026-10-21T06:26:14.754Z"
+    },
+    {
+      "id": "prod_124b9d85af18c6d1",
+      "categoryId": "jeans",
+      "colorId": "white",
+      "fit": "Baggy",
+      "name": "White Baggy",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "9c5e8eddd861951113e65e40.png",
+          "mime": "image/png",
+          "bytes": 97909,
+          "originalName": "Screenshot 2026-08-06 030340.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.755Z",
+      "updatedAt": "2026-10-21T06:26:14.755Z"
+    },
+    {
+      "id": "prod_bbc7384c546af5c9",
+      "categoryId": "jeans",
+      "colorId": "olive",
+      "fit": "Straight",
+      "name": "Olive Straight",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "3c29f6be24864897a57a8c37.png",
+          "mime": "image/png",
+          "bytes": 97127,
+          "originalName": "Screenshot 2026-08-06 030124.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.756Z",
+      "updatedAt": "2026-10-21T06:26:14.756Z"
+    },
+    {
+      "id": "prod_0b9de1da07f0ba11",
+      "categoryId": "jeans",
+      "colorId": "olive",
+      "fit": "Bootcut",
+      "name": "Olive Bootcut",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "f774e246a2e00b1f071934cf.png",
+          "mime": "image/png",
+          "bytes": 97831,
+          "originalName": "Screenshot 2026-08-06 030657.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.757Z",
+      "updatedAt": "2026-10-21T06:26:14.757Z"
+    },
+    {
+      "id": "prod_06d527c9ba318612",
+      "categoryId": "jeans",
+      "colorId": "olive",
+      "fit": "Baggy",
+      "name": "Olive Baggy",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "28",
+        "30",
+        "32",
+        "34",
+        "36"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "8b19dee846e2805ec182df1a.png",
+          "mime": "image/png",
+          "bytes": 97831,
+          "originalName": "Screenshot 2026-08-06 030657.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.758Z",
+      "updatedAt": "2026-10-21T06:26:14.758Z"
+    },
+    {
+      "id": "prod_d73a2726f7f3b838",
+      "categoryId": "shirts",
+      "colorId": "raw-indigo",
+      "fit": null,
+      "name": "Raw Shirt",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "eb0e25c795f8235b2d01402e.png",
+          "mime": "image/png",
+          "bytes": 187361,
+          "originalName": "Screenshot 2026-08-06 024918.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.759Z",
+      "updatedAt": "2026-10-21T06:26:14.759Z"
+    },
+    {
+      "id": "prod_da5e6cce48904abc",
+      "categoryId": "shirts",
+      "colorId": "white",
+      "fit": null,
+      "name": "White shirt",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "f08a8d6f2a1c0596da10f7d0.png",
+          "mime": "image/png",
+          "bytes": 255551,
+          "originalName": "Screenshot 2026-08-06 025106.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.760Z",
+      "updatedAt": "2026-10-21T06:26:14.760Z"
+    },
+    {
+      "id": "prod_d98fbdfbf3d1ca03",
+      "categoryId": "shirts",
+      "colorId": "olive",
+      "fit": null,
+      "name": "Olive Shirt",
+      "price": 1900,
+      "description": "",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "stock": "unknown",
+      "images": [
+        {
+          "file": "544707c316eda615b8ef2193.png",
+          "mime": "image/png",
+          "bytes": 227751,
+          "originalName": "Screenshot 2026-08-06 025132.png"
+        }
+      ],
+      "createdAt": "2026-10-21T06:26:14.761Z",
+      "updatedAt": "2026-10-21T06:26:14.761Z"
+    }
+  ],
+  "auth": {
+    "hash": "scrypt$32768$8$1$Hdkn0w1yvGK1XXOc3zKJeQ==$hbNM0ZgSai0Iw3B5eEdvTVACe7nKWIDz3B+SuoHxEoeYPpEMzE9+rd+qrp1ycUN7P1X8wLQcP1VMYLh4vwuoZA==",
+    "version": 1,
+    "updatedAt": "2026-10-21T06:26:15.343Z"
+  },
+  "createdAt": "2026-10-21T06:26:15.343Z",
+  "updatedAt": "2026-10-21T11:55:37.622Z"
+}

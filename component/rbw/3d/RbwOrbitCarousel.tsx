@@ -13,6 +13,8 @@ export interface CarouselItemData {
   category: "jeans" | "jackets" | "shorts" | "accessories";
   type: CarouselItemType;
   washKey: "raw" | "black" | "white" | "vintage";
+  /** Optional lighting recipe override (brand stores with custom colours). Absent for RBW. */
+  atmosphere?: "raw" | "black" | "white";
   colorName?: string;
   colorHex?: string;
   availableSizes?: string[];
@@ -352,6 +354,9 @@ interface RbwOrbitCarouselProps {
   onHoverIndex?: (index: number | null) => void;
   /** Callback triggered when active product is clicked to shop */
   onShopItem?: (item: CarouselItemData) => void;
+  isInspecting?: boolean;
+  setIsInspecting?: React.Dispatch<React.SetStateAction<boolean>> | ((val: boolean) => void);
+  rotationStep?: number;
 }
 
 export function RbwOrbitCarousel({
@@ -365,14 +370,25 @@ export function RbwOrbitCarousel({
   isPaused = false,
   onHoverIndex,
   onShopItem,
+  isInspecting = false,
+  setIsInspecting,
+  rotationStep = 0,
 }: RbwOrbitCarouselProps) {
   const currentOffsetRef = useRef<number>(0);
   const targetOffsetRef = useRef<number>(0);
   const isDraggingRef = useRef<boolean>(false);
   const startPointerXRef = useRef<number>(0);
+  const startPointerYRef = useRef<number>(0);
   const startOffsetRef = useRef<number>(0);
   const dragDistanceRef = useRef<number>(0);
   const autoSlideTimerRef = useRef<number>(0);
+
+  // 360 Inspection rotation & pitch refs
+  const inspectRotationRef = useRef<number>(0);
+  const inspectPitchRef = useRef<number>(0);
+  const inspectRotationTargetRef = useRef<number>(0);
+  const startInspectRotRef = useRef<number>(0);
+  const startInspectPitchRef = useRef<number>(0);
 
   const { gl } = useThree();
   const totalItems = items.length;
@@ -387,6 +403,20 @@ export function RbwOrbitCarousel({
     return () => clearTimeout(timer);
   }, []);
 
+  // Update target inspect rotation when external rotationStep changes (e.g., UI arrows)
+  useEffect(() => {
+    inspectRotationTargetRef.current = rotationStep * (Math.PI / 4);
+  }, [rotationStep]);
+
+  // Reset inspection orientation when exiting inspect mode
+  useEffect(() => {
+    if (!isInspecting) {
+      inspectRotationRef.current = 0;
+      inspectPitchRef.current = 0;
+      inspectRotationTargetRef.current = 0;
+    }
+  }, [isInspecting]);
+
   // Sync external activeIndex changes with shortest cyclic linear distance
   useEffect(() => {
     const curIdx = ((Math.round(targetOffsetRef.current) % totalItems) + totalItems) % totalItems;
@@ -397,22 +427,34 @@ export function RbwOrbitCarousel({
     autoSlideTimerRef.current = 0;
   }, [activeIndex, totalItems]);
 
-  // Pointer drag listeners to slide models horizontally
+  // Pointer drag listeners to slide models horizontally (or rotate in 360 mode)
   useEffect(() => {
     const canvasEl = gl.domElement;
 
     const handlePointerDown = (e: PointerEvent) => {
       isDraggingRef.current = true;
       startPointerXRef.current = e.clientX;
+      startPointerYRef.current = e.clientY;
       dragDistanceRef.current = 0;
       autoSlideTimerRef.current = 0;
       startOffsetRef.current = currentOffsetRef.current;
+      startInspectRotRef.current = inspectRotationRef.current;
+      startInspectPitchRef.current = inspectPitchRef.current;
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDraggingRef.current) return;
       const dx = e.clientX - startPointerXRef.current;
-      dragDistanceRef.current = Math.abs(dx);
+      const dy = e.clientY - startPointerYRef.current;
+      dragDistanceRef.current = Math.max(Math.abs(dx), Math.abs(dy));
+
+      if (isInspecting) {
+        const newRot = startInspectRotRef.current + dx * 0.015;
+        inspectRotationRef.current = newRot;
+        inspectRotationTargetRef.current = newRot;
+        inspectPitchRef.current = Math.max(-0.4, Math.min(0.4, startInspectPitchRef.current + dy * 0.008));
+        return;
+      }
 
       // Dragging left advances forward, dragging right goes back
       const deltaOffset = -dx / 300;
@@ -423,6 +465,8 @@ export function RbwOrbitCarousel({
     const handlePointerUp = () => {
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
+
+      if (isInspecting) return;
 
       // Snap to nearest item if dragged sufficiently
       if (dragDistanceRef.current > 15) {
@@ -442,9 +486,21 @@ export function RbwOrbitCarousel({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [gl, onSelectIndex, totalItems]);
+  }, [gl, onSelectIndex, totalItems, isInspecting]);
 
   useFrame((_, delta) => {
+    if (isInspecting) {
+      if (!isDraggingRef.current) {
+        inspectRotationRef.current = THREE.MathUtils.damp(
+          inspectRotationRef.current,
+          inspectRotationTargetRef.current,
+          8.0,
+          delta
+        );
+      }
+      return;
+    }
+
     if (!isDraggingRef.current) {
       // Smooth linear damp to target slide position
       currentOffsetRef.current = THREE.MathUtils.damp(
@@ -489,7 +545,9 @@ export function RbwOrbitCarousel({
               currentOffsetRef={currentOffsetRef}
               spacing={SLIDE_SPACING}
               isActive={isActive}
-              isInspecting={false}
+              isInspecting={isInspecting}
+              inspectRotationRef={inspectRotationRef}
+              inspectPitchRef={inspectPitchRef}
               cinematic={cinematic}
               reducedMotion={reducedMotion}
               isPaused={isPaused}

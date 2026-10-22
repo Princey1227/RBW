@@ -3,10 +3,10 @@ import { Inter, Cormorant_Garamond, JetBrains_Mono, Oswald } from "next/font/goo
 import "./globals.css";
 
 
-import Navbar from "../component/Navbar/Navbar";
-import Footer from "../component/Footer";
-import ZipperScrollbar from "../component/ZipperScrollbar";
-import MobileBottomNav from "../component/Navbar/MobileBottomNav";
+import Navbar from "@/component/onlydenims/navbar/Navbar";
+import Footer from "@/component/onlydenims/ui/Footer";
+import ZipperScrollbar from "@/component/onlydenims/ui/ZipperScrollbar";
+import MobileBottomNav from "@/component/onlydenims/navbar/MobileBottomNav";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -55,11 +55,11 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "./theme-provider";
-import { ToastProvider } from "../context/ToastContext";
-import { CartProvider } from "../context/CartContext";
-import CartDrawer from "../component/CartDrawer";
-import PasswordGate from "../component/PasswordGate";
-import ChatBotWidget from "../component/ChatBotWidget";
+import { ToastProvider } from "@/context/ToastContext";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/component/onlydenims/ui/CartDrawer";
+import PasswordGate from "@/component/onlydenims/ui/PasswordGate";
+import ChatBotWidget from "@/component/onlydenims/ui/ChatBotWidget";
 
 export default function RootLayout({
   children,

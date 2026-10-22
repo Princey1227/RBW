@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import BrandHeader from "../component/home/BrandHeader";
+import BrandHeader from "@/component/onlydenims/home/BrandHeader";
 import BrandStoreCarousel, {
   BrandStore,
-} from "../component/home/BrandStoreCarousel";
-import BrandWaitlistModal from "../component/home/BrandWaitlistModal";
-import HomeFooterDock from "../component/home/HomeFooterDock";
+} from "@/component/onlydenims/home/BrandStoreCarousel";
+import BrandWaitlistModal from "@/component/onlydenims/home/BrandWaitlistModal";
+import HomeFooterDock from "@/component/onlydenims/home/HomeFooterDock";
 
 const BRANDS: BrandStore[] = [
   {

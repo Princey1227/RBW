@@ -12,7 +12,7 @@ import {
   UPDATE_CART_MUTATION,
   REMOVE_FROM_CART_MUTATION,
 } from "../utils/shopify";
-import { CheckoutTransition } from "../component/common/CheckoutTransition";
+import { CheckoutTransition } from "@/component/onlydenims/ui/CheckoutTransition";
 
 // Define Types
 export interface CartItem {

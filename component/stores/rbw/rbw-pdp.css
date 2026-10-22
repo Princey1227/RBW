@@ -1,0 +1,396 @@
+/* ==========================================================================
+   RBW PRODUCT DETAIL (journey step 3) — page-scoped refinement
+   --------------------------------------------------------------------------
+   Every rule below is anchored to `.rbw-pdp`, a class added only to the
+   product-step grid in app/stores/rbw/page.tsx. Nothing here targets the
+   backdrop (.rbw-bd__*), the ghost lettering, the shell, the navbar or any
+   other journey step, and no shared token is redefined globally: the
+   --pdp-* tokens below are local to this one grid.
+
+   Why this exists: the base .rbw-j-* controls were authored light-first
+   (rgba(255,255,255,.45) fills). On the dark theme those fills render as
+   flat grey slabs with weak text contrast. These rules give the controls
+   proper dark/light surfaces without altering the base file.
+   ========================================================================== */
+
+/* ---- local tokens ------------------------------------------------------- */
+
+.rbw-showroom[data-theme="dark"] .rbw-pdp,
+.rbw-showroom:not([data-theme="light"]) .rbw-pdp {
+  --pdp-fill: rgba(255, 255, 255, 0.045);
+  --pdp-fill-hover: rgba(255, 255, 255, 0.09);
+  --pdp-edge: rgba(255, 255, 255, 0.22);
+  --pdp-hair: rgba(255, 255, 255, 0.13);
+  --pdp-muted: #bdbdc5;
+  --pdp-faint: #92929c;
+  --pdp-gold: #d4b069;
+  --pdp-select-bg: rgba(197, 160, 89, 0.16);
+  --pdp-select-fg: #f1dba7;
+  --pdp-primary-bg: #cfaa66;
+  --pdp-primary-bg-hover: #e0c183;
+  --pdp-primary-fg: #15110a;
+  --pdp-plate: #f1eee8;
+  --pdp-thumb-rest: brightness(0.72) saturate(0.9);
+}
+
+.rbw-showroom[data-theme="light"] .rbw-pdp {
+  --pdp-fill: rgba(255, 255, 255, 0.6);
+  --pdp-fill-hover: #fffdf8;
+  --pdp-edge: rgba(120, 92, 40, 0.32);
+  --pdp-hair: rgba(194, 157, 85, 0.3);
+  --pdp-muted: #5c5345;
+  --pdp-faint: #756b59;
+  --pdp-gold: #84652a;
+  --pdp-select-bg: #1f1d1a;
+  --pdp-select-fg: #faf7f2;
+  --pdp-primary-bg: #1f1d1a;
+  --pdp-primary-bg-hover: #0f0e0c;
+  --pdp-primary-fg: #faf7f2;
+  --pdp-plate: #f1eee8;
+  --pdp-thumb-rest: brightness(0.9) saturate(0.95);
+}
+
+/* ---- layout: give the garment the larger share ---------------------------
+   Base grid is 12 cols with two col-span-6 children. Re-express it as a
+   fluid two-track grid on desktop only; below 1024px the base stacked
+   layout is untouched. */
+
+@media (min-width: 1024px) {
+  .rbw-showroom .rbw-pdp {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    column-gap: clamp(40px, 5vw, 84px);
+  }
+
+  .rbw-showroom .rbw-pdp > * {
+    grid-column: auto;
+  }
+
+  /* keep controls from stretching into an overly long measure on wide screens */
+  .rbw-showroom .rbw-pdp > *:last-child {
+    max-width: 620px;
+  }
+}
+
+/* ---- gallery -------------------------------------------------------------- */
+
+.rbw-showroom .rbw-pdp .rbw-j-frame {
+  min-width: 0;
+  max-width: 680px;
+  /* never taller than the viewport can show; image is object-contain so
+     nothing is cropped when the box is capped */
+  max-height: min(780px, calc(100dvh - 150px));
+  background: var(--pdp-plate);
+  border-radius: 2px;
+}
+
+/* In the side-by-side (row) gallery the plate takes the remaining width.
+   Below 640px the gallery stacks as a column, where a zero flex-basis would
+   collapse the plate's height — so it keeps its natural 100% x 3/4 box. */
+@media (min-width: 640px) {
+  .rbw-showroom .rbw-pdp .rbw-j-frame {
+    flex: 1 1 0;
+  }
+}
+
+/* the photo carries its own studio backdrop; let it meet the plate edge
+   instead of floating inside a second cream margin */
+.rbw-showroom .rbw-pdp .rbw-j-frame > img {
+  padding: 0;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-thumb {
+  background: var(--pdp-plate);
+  border-color: var(--pdp-hair);
+  opacity: 1;
+  /* rest state is dimmed with a filter on the whole tile (not opacity, which
+     would let the dark backdrop show through and grey the image out) */
+  filter: var(--pdp-thumb-rest);
+  transition: filter 300ms var(--rbw-ease), border-color 300ms var(--rbw-ease), box-shadow 300ms var(--rbw-ease);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-thumb:hover {
+  filter: none;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-thumb[data-on="true"] {
+  filter: none;
+  border-color: var(--rbw-gold-bright);
+  box-shadow: 0 0 0 1px var(--rbw-gold-bright);
+}
+
+@media (min-width: 1024px) {
+  .rbw-showroom .rbw-pdp .rbw-j-thumb {
+    width: 68px;
+    height: 90px;
+  }
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-counter {
+  color: var(--pdp-faint);
+}
+
+/* ---- typographic system ---------------------------------------------------
+   Serif (Cormorant) = the product name and garment facts.
+   Sans (Inter)      = price, labels, controls.
+   Wide-tracked caps are reserved for tiny labels only. */
+
+.rbw-showroom .rbw-pdp .rbw-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--pdp-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-title {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  line-height: 1.02;
+  font-size: clamp(40px, 3.9vw, 58px);
+  text-wrap: balance;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-price {
+  font-size: clamp(26px, 2.2vw, 32px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-note {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--pdp-faint);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-status {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--pdp-muted);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--pdp-muted);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-link {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--pdp-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-link:hover {
+  color: var(--rbw-ink);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-rule {
+  background: linear-gradient(90deg, var(--pdp-hair), transparent);
+}
+
+/* ---- size selector ---------------------------------------------------------
+   auto-fill keeps cells a comfortable tap size at any column width and
+   wraps cleanly instead of forcing 8 cramped columns. */
+
+.rbw-showroom .rbw-pdp .rbw-j-sizes {
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-size {
+  height: 46px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--rbw-ink);
+  background: var(--pdp-fill);
+  border-color: var(--pdp-edge);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-size:hover {
+  color: var(--rbw-ink);
+  background: var(--pdp-fill-hover);
+  border-color: var(--rbw-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-size[aria-pressed="true"] {
+  color: var(--pdp-select-fg);
+  background: var(--pdp-select-bg);
+  border-color: var(--rbw-gold-bright);
+  box-shadow: 0 0 0 1px var(--rbw-gold-bright);
+  font-weight: 700;
+}
+
+/* ---- quantity -------------------------------------------------------------- */
+
+.rbw-showroom .rbw-pdp .rbw-j-stepper {
+  height: 42px;
+  background: var(--pdp-fill);
+  border-color: var(--pdp-edge);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-stepper button {
+  width: 42px;
+  color: var(--pdp-muted);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-stepper button:hover {
+  color: var(--rbw-ink);
+  background: var(--pdp-fill-hover);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-stepper span {
+  border-color: var(--pdp-edge);
+}
+
+/* ---- purchase actions ------------------------------------------------------
+   Buy now: solid and unmistakable, but a single control, 54px tall.
+   Add to cart / Change fit: outlined, quieter, still easy to find. */
+
+.rbw-showroom[data-theme] .rbw-pdp .rbw-cta.rbw-j-cta-block {
+  min-height: 54px;
+  padding: 0 24px;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--pdp-primary-fg);
+  background: var(--pdp-primary-bg);
+  border: 1px solid var(--pdp-primary-bg);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.rbw-showroom[data-theme] .rbw-pdp .rbw-cta.rbw-j-cta-block:hover {
+  color: var(--pdp-primary-fg);
+  background: var(--pdp-primary-bg-hover);
+  border-color: var(--pdp-primary-bg-hover);
+}
+
+.rbw-showroom[data-theme] .rbw-pdp .rbw-cta.rbw-j-cta-block:disabled:hover {
+  background: var(--pdp-primary-bg);
+  border-color: var(--pdp-primary-bg);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-btn {
+  min-height: 48px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--rbw-ink);
+  background: transparent;
+  border-color: var(--pdp-edge);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-btn:hover {
+  background: var(--pdp-fill-hover);
+  border-color: var(--rbw-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-btn svg {
+  color: var(--pdp-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-btn[data-state="added"] {
+  color: var(--pdp-gold);
+  border-color: var(--rbw-gold);
+}
+
+/* ---- garment facts --------------------------------------------------------- */
+
+.rbw-showroom .rbw-pdp .rbw-j-specs {
+  column-gap: 32px;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-spec {
+  border-top-color: var(--pdp-hair);
+  padding: 15px 0 16px;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-spec dt {
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--pdp-gold);
+  margin-bottom: 6px;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-spec dd {
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.32;
+}
+
+@media (max-width: 479px) {
+  .rbw-showroom .rbw-pdp .rbw-j-specs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- delivery & dispatch --------------------------------------------------- */
+
+.rbw-showroom .rbw-pdp .rbw-j-delivery {
+  border-top-color: var(--pdp-hair);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin {
+  max-width: 400px;
+  flex-wrap: wrap;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin input {
+  height: 44px;
+  min-width: 0;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--rbw-ink);
+  background: var(--pdp-fill);
+  border-color: var(--pdp-edge);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin input::placeholder {
+  color: var(--pdp-faint);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin-btn {
+  height: 44px;
+  padding: 0 22px;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: var(--rbw-ink);
+  background: transparent;
+  border-color: var(--pdp-edge);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin-btn:hover {
+  color: var(--pdp-gold);
+  background: var(--pdp-fill-hover);
+  border-color: var(--rbw-gold);
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-pin input:focus-visible,
+.rbw-showroom .rbw-pdp .rbw-j-pin-btn:focus-visible {
+  outline: 1.5px solid var(--rbw-gold);
+  outline-offset: 2px;
+}
+
+.rbw-showroom .rbw-pdp .rbw-j-trust {
+  color: var(--pdp-faint);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+/* ---- reduced motion --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rbw-showroom .rbw-pdp.rbw-pdp *,
+  .rbw-showroom .rbw-pdp.rbw-pdp *::before,
+  .rbw-showroom .rbw-pdp.rbw-pdp *::after {
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-delay: 0ms;
+  }
+}
