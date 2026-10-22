@@ -65,11 +65,27 @@ export function adminConfigured(): boolean {
 
 const digest = (s: string) => crypto.createHash("sha256").update(s).digest();
 
+const cleanEnv = (s?: string) => (s ?? "").trim().replace(/^["']|["']$/g, "").trim();
+
 export async function verifyAdminCredentials(user: string, pass: string): Promise<boolean> {
   const { verifyPassword } = await import("./password");
-  const userOk = crypto.timingSafeEqual(digest(user), digest(process.env.STORE_ADMIN_USERNAME || ""));
+  const envUser = cleanEnv(process.env.STORE_ADMIN_USERNAME);
+  const inputUser = user.trim();
+  const userOk = !!envUser && crypto.timingSafeEqual(digest(inputUser), digest(envUser));
+
   let passOk = false;
-  if (process.env.STORE_ADMIN_PASSWORD_HASH) passOk = await verifyPassword(pass, process.env.STORE_ADMIN_PASSWORD_HASH);
-  else if (process.env.STORE_ADMIN_PASSWORD) passOk = crypto.timingSafeEqual(digest(pass), digest(process.env.STORE_ADMIN_PASSWORD));
+  const hashVal = cleanEnv(process.env.STORE_ADMIN_PASSWORD_HASH);
+  const rawVal = cleanEnv(process.env.STORE_ADMIN_PASSWORD);
+
+  if (hashVal && hashVal.startsWith("scrypt$")) {
+    passOk = await verifyPassword(pass, hashVal);
+  } else {
+    // Fall back to plain text comparison (supports both STORE_ADMIN_PASSWORD and plain text STORE_ADMIN_PASSWORD_HASH)
+    const expectedPass = rawVal || hashVal;
+    if (expectedPass) {
+      passOk = crypto.timingSafeEqual(digest(pass), digest(expectedPass));
+    }
+  }
+
   return userOk && passOk;
 }
