@@ -154,7 +154,7 @@ export default function SearchOverlay({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className={`fixed left-0 z-[250] w-full px-6 sm:px-12 md:px-20 font-sans border-b border-transparent shadow-md flex items-center search-overlay-wrapper ${
+          className={`fixed left-0 z-[99999] w-full px-6 sm:px-12 md:px-20 font-sans border-b border-transparent shadow-md flex items-center search-overlay-wrapper ${
             theme === "light"
               ? "bg-white text-black"
               : "bg-black text-white"

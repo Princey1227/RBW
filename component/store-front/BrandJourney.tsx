@@ -2,8 +2,9 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { ArrowLeft, LogOut, Search, ShoppingBag, Sun, Moon, ChevronDown } from "lucide-react";
 import type { ClientProduct, ClientStoreConfig, PublicStore } from "@/lib/stores/types";
+import { useCart } from "@/context/CartContext";
 import { RbwWashSelection3D } from "@/component/rbw/3d/RbwWashSelection3D";
 import { RbwJourneyBar, RbwJourneyShell } from "@/component/rbw/RbwJourneyShell";
 import { RbwFitSelector } from "@/component/rbw/RbwFitSelector";
@@ -28,6 +29,12 @@ export default function BrandJourney({
 }: { store: PublicStore; config: ClientStoreConfig; products: ClientProduct[]; initial: { category?: string; color?: string; fit?: string } }) {
   const router = useRouter();
   const [theme, toggleTheme] = useStoreTheme("dark");
+  const { cart, setIsOpen: setCartOpen } = useCart();
+  const totalCartItems = cart?.lines.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  const subtotal = cart?.lines.reduce((acc, item) => {
+    const price = parseFloat(item.merchandise.price?.amount || "0");
+    return acc + price * item.quantity;
+  }, 0) || 0;
   const firstCat = config.categories[0]?.id ?? "";
   const [category, setCategory] = useState<string>(config.categories.some((c) => c.id === initial.category) ? initial.category! : firstCat);
   const [colorId, setColorId] = useState<string | null>(config.colors.some((c) => c.id === initial.color) ? initial.color! : null);
@@ -123,8 +130,41 @@ export default function BrandJourney({
           </nav>
         </div>
         <button type="button" onClick={home} aria-label={`${store.name} home`} className="od-logo-btn"><StoreLogo store={store} theme={fitOpen ? "light" : theme} /></button>
-        <div className="od-head__side od-head__side--end">
-          <button type="button" className="od-textbtn" onClick={logout} aria-label="Log out"><LogOut size={14} strokeWidth={1.5} /><span>Log out</span></button>
+        <div className="od-head__side od-head__side--end flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("OPEN_SEARCH_OVERLAY"))}
+            aria-label="Search Products"
+            className="p-1.5 rounded-full cursor-pointer flex items-center justify-center text-white/80 hover:text-white"
+          >
+            <Search size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            className="p-1.5 rounded-full cursor-pointer flex items-center justify-center border border-white/15 bg-white/5 text-[#B9965A]"
+          >
+            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCartOpen(true)}
+            aria-label="Shopping Cart"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/5 text-white cursor-pointer select-none"
+          >
+            <div className="relative flex items-center justify-center">
+              <ShoppingBag size={17} />
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 font-sans flex items-center justify-center rounded-full bg-[#B9965A] text-white text-[8px] font-bold w-3.5 h-3.5">
+                  {totalCartItems}
+                </span>
+              )}
+            </div>
+            <span className="hidden sm:inline font-sans text-[11px] font-extrabold">
+              ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </button>
         </div>
       </header>
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ClientProduct, ClientStoreConfig, PublicStore } from "@/lib/stores/types";
 import { atmosphereFor, buildCarouselItems, colorsForCategory } from "@/component/store-front/brandItems";
 import { RbwWashSelection3D } from "./3d/RbwWashSelection3D";
-import { RbwJourneyShell } from "@/component/rbw/RbwJourneyShell";
+import { RbwJourneyShell, RbwJourneyBar } from "@/component/rbw/RbwJourneyShell";
 import Navbar from "./Navbar";
 import ShopByFit from "./ShopByFit";
 import PDP from "./PDP";
@@ -171,9 +171,40 @@ export default function StoreFront({
           open={pdpOpen}
           layerClass="z-55"
           washKey={atm}
-          ghostText={fit || color?.name || store.name}
+          ghostText={(fit || color?.name || store.name).toUpperCase()}
+          ghost="soft"
           scrollRef={pdpRef}
           theme="light"
+          bar={
+            <RbwJourneyBar
+              backLabel={categoryFits.length > 0 ? "Fits" : "Colors"}
+              onBack={categoryFits.length > 0 ? backToFits : goHome}
+              rightSlot={
+                colors.length > 1 ? (
+                  <div className="flex items-center bg-white/95 border border-zinc-300 rounded-full p-0.5 shadow-xs">
+                    {colors.map((c) => {
+                      const isCur = c.id === colorId;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => selectColor(c.id)}
+                          title={`Switch to ${c.name.toUpperCase()}`}
+                          className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer ${
+                            isCur
+                              ? "bg-[#B9965A] text-black shadow-xs font-black"
+                              : "text-zinc-600 hover:text-black hover:bg-zinc-100"
+                          }`}
+                        >
+                          {c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null
+              }
+            />
+          }
         >
           <div className="flex-1 flex flex-col justify-start">
             {activeProduct && (
@@ -182,6 +213,7 @@ export default function StoreFront({
                 categoryLabel={config.categories.find((c) => c.id === category)?.label || category}
                 colorName={color?.name || "Standard"}
                 brandName={store.name}
+                fit={fit}
                 wished={wished}
                 onWish={() => setWished((w) => !w)}
                 onBackToFits={categoryFits.length > 0 ? backToFits : goHome}

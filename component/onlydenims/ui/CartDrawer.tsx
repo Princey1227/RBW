@@ -139,7 +139,7 @@ export default function CartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[99998] bg-black/50 backdrop-blur-sm"
           />
 
           {/* Sliding Panel */}
@@ -153,7 +153,7 @@ export default function CartDrawer() {
               top-0
               right-0
               bottom-0
-              z-[210]
+              z-[99999]
               w-full
               max-w-md
               shadow-[0_0_50px_rgba(0,0,0,0.3)]
